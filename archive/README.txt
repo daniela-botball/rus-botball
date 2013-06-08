@@ -1,0 +1,1 @@
+This folder is intended for old stuff that you may want to refer to, but that you don't want cluttering up your current work.
