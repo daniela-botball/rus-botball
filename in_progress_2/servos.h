@@ -39,26 +39,6 @@ void lift_booster();
 void begin_servos();
 void end_servos();
 
-int main()
-{
-	start_servos();
-	begin_servos();
-	press_a_to_continue();
-	sleep(1);
-	relax_servos();
-	sleep(1);
-	press_a_to_continue();
-	unrelax_servos();
-	sleep(1);
-	press_a_to_continue();
-	grab_booster();
-	sleep(1);
-	press_a_to_continue();
-	lift_booster();
-	press_a_to_continue();
-	
-}
-
 void open_claw()
 {
 	if (_SERVO_STATE == ENABLED)
