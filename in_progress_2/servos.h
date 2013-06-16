@@ -1,5 +1,5 @@
-#ifndef _SERVOS_H_
-#define _SERVOS_H_
+#ifndef _RUS_SERVOS_H_
+#define _RUS_SERVOS_H_
 
 #include "universal_library.h"
 
