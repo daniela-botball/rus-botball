@@ -1,7 +1,7 @@
 // Created: 2/22/2013
 
-#ifndef _CREATE_LIBRARY_H_
-#define _CREATE_LIBRARY_H_
+#ifndef _RUS_CREATE_LIBRARY_H_
+#define _RUS_CREATE_LIBRARY_H_
 
 #include <stdint.h>
 
