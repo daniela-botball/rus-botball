@@ -1,8 +1,7 @@
 // Created on Fri June 14 2013
 
-// Replace FILE with your file's name
-#ifndef _PID_H_
-#define _PID_H_
+#ifndef _RUS_PID_H_
+#define _RUS_PID_H_
 
 #include "lego_library.h"
 #include "universal_library.h"

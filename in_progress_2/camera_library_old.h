@@ -1,6 +1,6 @@
 // Created on Sun March 31 2013
-#ifndef _CAMERA_LIBRARY_H_
-#define _CAMERA_LIBRARY_H_
+#ifndef _RUS_CAMERA_LIBRARY_H_
+#define _RUS_CAMERA_LIBRARY_H_
 
 #include "lego_library.h"
 //#define LEFT_MOTOR 3

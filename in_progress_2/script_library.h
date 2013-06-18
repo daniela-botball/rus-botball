@@ -1,7 +1,7 @@
 // Created: 2/22/2013
 
-#ifndef _SCRIPT_LIBRARY_H_
-#define _SCRIPT_LIBRARY_H_
+#ifndef _RUS_SCRIPT_LIBRARY_H_
+#define _RUS_SCRIPT_LIBRARY_H_
 
 #include <stdint.h>
 

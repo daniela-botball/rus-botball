@@ -1,8 +1,8 @@
 // Created on Tue May 7 2013
 
-// Replace FILE with your file's name
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef _RUS_TIMER_H_
+#define _RUS_TIMER_H_
+
 int TIME;
 
 void start_timer()

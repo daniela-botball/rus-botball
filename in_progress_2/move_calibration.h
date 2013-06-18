@@ -2,8 +2,8 @@
 // Created by Aaron Mutchler
 // Idea from Seth Mutchler
 
-#ifndef _MOVE_CALIBRATION_H_
-#define _MOVE_CALIBRATION_H_
+#ifndef _RUS_MOVE_CALIBRATION_H_
+#define _RUS_MOVE_CALIBRATION_H_
 
 #include "universal_library.h"
 #include "lego_library.h"

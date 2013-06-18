@@ -5,8 +5,8 @@
  * Written by Aaron and David Mutchler, June 2013.
  */
 
-#ifndef _CAMERA_UTILITIES_H_
-#define _CAMERA_UTILITIES_H_
+#ifndef _RUS_CAMERA_LIBRARY_H_
+#define _RUS_CAMERA_LIBRARY_H_
 
 #include <string.h>
 

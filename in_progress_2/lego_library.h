@@ -1,5 +1,5 @@
-#ifndef _LEGO_LIBRARY_H_
-#define _LEGO_LIBRARY_H_
+#ifndef _RUS_LEGO_LIBRARY_H_
+#define _RUS_LEGO_LIBRARY_H_
 
 #include "universal_library.h"
 #include "timer.h"
