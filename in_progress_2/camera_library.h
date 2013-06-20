@@ -32,7 +32,7 @@ void display_blob_numbers(int color_model, int blob, int header_line, int data_l
 // Functions intended to be ** PRIVATE **:
 void _initialize_buttons();
 void _display_model_and_resolution(int color_model, int resolution);
-void _take_a_picture();
+int _take_a_picture();
 void _process_buttons(int* color_model, int* milliseconds_between_pictures, int* is_paused, int* done);
 void _next_color_model(int* color_model);
 void _previous_color_model(int* color_model);
@@ -297,17 +297,21 @@ void display_blob_numbers(int color_model, int blob, int header_line, int data_l
 	}
 }
 
-void _take_a_picture() {
-	int status;
+int _take_a_picture() {
+	int status, errors;
 	
+	errors = 0;
 	while (1) {
 		status = camera_update();
 		if (status == SUCCESS) {
 			break;
 		}
+		++ errors;
 		display_printf(0, CAMERA_ERROR_MESSAGE_LINE, "Could not update camera (i.e., take a picture.");
 		msleep(MILLISECONDS_BETWEEN_PICTURES);
 	}
+	
+	return errors;
 }
 
 void _process_buttons(int* color_model, int* milliseconds_between_pictures, int* is_paused, int* is_done) {

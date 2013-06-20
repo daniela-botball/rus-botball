@@ -2,6 +2,7 @@
 #define _RUS_SERVOS_H_
 
 #include "universal_library.h"
+#include "create_library.h"
 
 #define GATE_SERVO 0
 #define CLAW_SERVO 1
@@ -13,6 +14,7 @@
 #define GATE_SERVO_CLOSED_POSITION 0
 #define CLAW_SERVO_OPEN_POSITION 1012
 #define CLAW_SERVO_CLOSE_POSITION 1900
+#define CLAW_SERVO_HALF_CLOSED_POSITION 1650
 #define JOINT_SERVO_IN_POSITION 117
 #define JOINT_SERVO_OUT_POSITION 1838
 #define JOINT_SERVO_DOWN_POSITION 1203 //1477
@@ -24,7 +26,7 @@
 #define DISABLED 0
 #define ENABLED 1
 
-#define GRABBING_PAUSE_TIME 500
+#define GRABBING_PAUSE_TIME 150
 
 int _SERVO_STATE = DISABLED;
 
@@ -47,6 +49,7 @@ void motor_push_down();
 void fold_in_joint();
 void close_gate();
 void start_gate();
+void half_close_claw();
 
 void open_claw()
 {
@@ -217,6 +220,10 @@ void grab_booster()
 	msleep(GRABBING_PAUSE_TIME);
 	fold_joint_down();
 	msleep(GRABBING_PAUSE_TIME);
+	half_close_claw();
+	msleep(GRABBING_PAUSE_TIME);
+	create_drive_distance(1, 2, BACKWARDS);
+	msleep(GRABBING_PAUSE_TIME);
 	close_claw();
 }
 
@@ -288,6 +295,19 @@ void close_gate()
 	else
 	{
 		set_servo_position(GATE_SERVO, GATE_SERVO_CLOSED_POSITION);
+	}
+}
+
+void half_close_claw()
+{
+	if (_SERVO_STATE == ENABLED)
+	{
+		set_servo_position(CLAW_SERVO, CLAW_SERVO_HALF_CLOSED_POSITION);
+		sleep(1); // fix time
+	}
+	else
+	{
+		set_servo_position(CLAW_SERVO, CLAW_SERVO_HALF_CLOSED_POSITION);
 	}
 }
 
