@@ -2,7 +2,7 @@
 #define _RUS_LEGO_LIBRARY_H_
 
 #include "universal_library.h"
-#include "timer.h"
+//#include "timer.h"
 
 #define LEFT_MOTOR 0
 #define RIGHT_MOTOR 3
