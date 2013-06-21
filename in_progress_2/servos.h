@@ -34,13 +34,14 @@ int _SERVO_STATE = DISABLED;
 void open_claw(int sleeptime);
 void close_claw(int sleeptime);
 void half_close_claw(int sleeptime);
-void fold_joint_in();
-void fold_joint_down();
-void fold_joint_out();
+void fold_joint_to_lift(int sleeptime);
+void fold_joint_for_pickup(int sleeptime);
+void fold_joint_for_drop(int sleeptime);
+void raise_arm(int sleeptime);
+void lower_arm(int sleeptime);
+void start_arm();
 void start_joint();
-void raise_arm();
-void lower_arm();
-void arm_start();
+void start_gate();
 void start_servos();
 void press_a_to_continue(int off_or_on);
 void relax_servos();
@@ -48,9 +49,7 @@ void grab_booster(int sleeptime);
 void unrelax_servos();
 void lift_booster(int sleeptime);
 void motor_push_down();
-void fold_in_joint();
 void close_gate();
-void start_gate();
 void drop_booster(int sleeptime);
 void arm_to_drop();
 
@@ -80,12 +79,25 @@ void close_claw(int sleeptime)
 	}
 }
 
-void fold_joint_in()
+void start_claw()
+{
+	if (_SERVO_STATE == ENABLED)
+	{
+		set_servo_position(CLAW_SERVO, CLAW_SERVO_CLOSE_POSITION);
+		msleep(sleeptime);
+	}
+	else
+	{
+		set_servo_position(CLAW_SERVO, CLAW_SERVO_CLOSE_POSITION);
+	}
+}
+
+void fold_joint_to_lift(int sleeptime)
 {
 	if (_SERVO_STATE == ENABLED)
 	{
 		set_servo_position(JOINT_SERVO, JOINT_SERVO_IN_POSITION);
-		sleep(1); // fix time
+		sleep(sleeptime);
 	}
 	else
 	{
@@ -93,7 +105,7 @@ void fold_joint_in()
 	}
 }
 
-void fold_joint_out()
+void fold_joint_for_drop()
 {
 	if (_SERVO_STATE == ENABLED)
 	{
@@ -146,7 +158,7 @@ void lower_arm()
 	}
 }
 
-void arm_start()
+void start_arm()
 {
 	if (_SERVO_STATE == ENABLED)
 	{
@@ -187,7 +199,7 @@ void start_gate()
 
 void start_servos()
 {
-	close_claw();
+	start_claw();
 	start_joint();
 	arm_start();
 	start_gate();
@@ -220,7 +232,7 @@ void grab_booster(int sleeptime)
 	//motor_push_down();
 	//msleep(sleeptime);
 	open_claw();
-	fold_joint_down();
+	fold_joint_for_pickup();
 	msleep(sleeptime);
 	half_close_claw();
 	msleep(sleeptime);
@@ -231,7 +243,7 @@ void grab_booster(int sleeptime)
 
 void lift_booster(int sleeptime)
 {
-	fold_joint_in();
+	fold_joint_to_lift();
 	msleep(sleeptime);
 	raise_arm();
 	msleep(sleeptime);
@@ -314,7 +326,7 @@ void drop_booster(int sleep_time, int drop_or_lower)
 	if (drop_or_lower == 0)
 	{
 		msleep(sleep_time);
-		fold_joint_out();
+		fold_joint_for_drop();
 		msleep(sleep_time);
 		sleep(1);
 		open_claw();
@@ -324,7 +336,7 @@ void drop_booster(int sleep_time, int drop_or_lower)
 		msleep(sleep_time);
 		create_drive_distance(1, 5, FORWARDS);
 		msleep(sleep_time);
-		fold_joint_out();
+		fold_joint_for_drop();
 		msleep(sleep_time);
 		start_gate();
 		msleep(sleep_time);
