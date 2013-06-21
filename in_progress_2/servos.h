@@ -22,6 +22,7 @@
 #define ARM_SERVO_UP_POSITION 1900 //1765, then 1639
 #define ARM_SERVO_DOWN_POSITION 0
 #define ARM_SERVO_START_POSITION 761
+#define ARM_SERVO_DROP_POSITION 1480
 
 #define DISABLED 0
 #define ENABLED 1
@@ -30,8 +31,9 @@
 
 int _SERVO_STATE = DISABLED;
 
-void open_claw();
-void close_claw();
+void open_claw(int sleeptime);
+void close_claw(int sleeptime);
+void half_close_claw(int sleeptime);
 void fold_joint_in();
 void fold_joint_down();
 void fold_joint_out();
@@ -42,21 +44,22 @@ void arm_start();
 void start_servos();
 void press_a_to_continue(int off_or_on);
 void relax_servos();
-void grab_booster();
+void grab_booster(int sleeptime);
 void unrelax_servos();
-void lift_booster();
+void lift_booster(int sleeptime);
 void motor_push_down();
 void fold_in_joint();
 void close_gate();
 void start_gate();
-void half_close_claw();
+void drop_booster(int sleeptime);
+void arm_to_drop();
 
-void open_claw()
+void open_claw(int sleeptime)
 {
 	if (_SERVO_STATE == ENABLED)
 	{
 		set_servo_position(CLAW_SERVO, CLAW_SERVO_OPEN_POSITION);
-		sleep(1); // fix time
+		msleep(sleeptime);
 	}
 	else
 	{
@@ -64,12 +67,12 @@ void open_claw()
 	}
 }
 
-void close_claw()
+void close_claw(int sleeptime)
 {
 	if (_SERVO_STATE == ENABLED)
 	{
 		set_servo_position(CLAW_SERVO, CLAW_SERVO_CLOSE_POSITION);
-		sleep(1); // fix time
+		msleep(sleeptime);
 	}
 	else
 	{
@@ -103,7 +106,7 @@ void fold_joint_out()
 	}
 }
 
-void fold_joint_down()
+void fold_joint_for_pickup()
 {
 	if (_SERVO_STATE == ENABLED)
 	{
@@ -169,7 +172,7 @@ void start_joint()
 	}
 }
 
-void gate_start()
+void start_gate()
 {
 	if (_SERVO_STATE == ENABLED)
 	{
@@ -187,7 +190,7 @@ void start_servos()
 	close_claw();
 	start_joint();
 	arm_start();
-	gate_start();
+	start_gate();
 	unrelax_servos();
 	sleep(1);
 }
@@ -209,35 +212,30 @@ void unrelax_servos()
 	_SERVO_STATE = ENABLED;
 }
 
-void grab_booster()
+void grab_booster(int sleeptime)
 {
 	//function assumes all servos begin in the relax position
 	lower_arm();
-	msleep(GRABBING_PAUSE_TIME);
-	motor_push_down();
-	msleep(GRABBING_PAUSE_TIME);
+	msleep(sleeptime);
+	//motor_push_down();
+	//msleep(sleeptime);
 	open_claw();
-	msleep(GRABBING_PAUSE_TIME);
 	fold_joint_down();
-	msleep(GRABBING_PAUSE_TIME);
+	msleep(sleeptime);
 	half_close_claw();
-	msleep(GRABBING_PAUSE_TIME);
-	create_drive_distance(1, 2, BACKWARDS);
-	msleep(GRABBING_PAUSE_TIME);
+	msleep(sleeptime);
+	create_drive_distance(1, 5, BACKWARDS);
+	msleep(sleeptime);
 	close_claw();
 }
 
-void lift_booster()
+void lift_booster(int sleeptime)
 {
 	fold_joint_in();
-	sleep(2); // have each function have parameter - msleep amount
-	//press_a_to_continue();
+	msleep(sleeptime);
 	raise_arm();
-	sleep(2);
+	msleep(sleeptime);
 	close_gate();
-	sleep(2);
-	fold_joint_out();
-	sleep(1);
 }
 
 void press_a_to_continue(int off_or_on)
@@ -266,9 +264,9 @@ void motor_push_down()
 {
 	relax_servos();
 	motor(BOOSTER_PORT, 50);
-	sleep(.2);
+	msleep(200);
 	off(BOOSTER_PORT);
-	sleep(1);
+	//sleep(1);
 	unrelax_servos();
 }
 
@@ -298,12 +296,12 @@ void close_gate()
 	}
 }
 
-void half_close_claw()
+void half_close_claw(int sleeptime)
 {
 	if (_SERVO_STATE == ENABLED)
 	{
 		set_servo_position(CLAW_SERVO, CLAW_SERVO_HALF_CLOSED_POSITION);
-		sleep(1); // fix time
+		msleep(sleeptime);
 	}
 	else
 	{
@@ -311,5 +309,42 @@ void half_close_claw()
 	}
 }
 
+void drop_booster(int sleep_time, int drop_or_lower)
+{
+	if (drop_or_lower == 0)
+	{
+		msleep(sleep_time);
+		fold_joint_out();
+		msleep(sleep_time);
+		sleep(1);
+		open_claw();
+	}
+	else
+	{
+		msleep(sleep_time);
+		create_drive_distance(1, 5, FORWARDS);
+		msleep(sleep_time);
+		fold_joint_out();
+		msleep(sleep_time);
+		start_gate();
+		msleep(sleep_time);
+		arm_to_drop();
+		msleep(sleep_time);
+		open_claw();
+	}
+}
+
+void arm_to_drop()
+{
+	if (_SERVO_STATE == ENABLED)
+	{
+		set_servo_position(ARM_SERVO, ARM_SERVO_DROP_POSITION);
+		sleep(1); // fix time
+	}
+	else
+	{
+		set_servo_position(ARM_SERVO, ARM_SERVO_DROP_POSITION);
+	}
+}
 
 #endif

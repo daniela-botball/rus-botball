@@ -11,7 +11,7 @@
 #include <string.h>
 #include "universal_library.h"
 
-#define MILLISECONDS_BETWEEN_PICTURES 50
+#define MILLISECONDS_BETWEEN_PICTURES 0
 #define LARGEST_BLOB 0
 
 #define MAX_ERRORS_ALLOWED_WHEN_OPENING_CAMERA 4
@@ -22,10 +22,15 @@
 #define CAMERA_ERROR_MESSAGE_LINE (2 + NUMBER_OF_BLOBS_TO_SHOW)
 #define APP_MILLISECONDS_BETWEEN_PICTURES 2000
 
+typedef enum {CENTER_X, CENTER_Y, CENTROID_X, CENTROID_Y, AREA, BBOX_ULX, BBOX_ULY, BBOX_LRX, BBOX_LRY} CameraStatistic;
+typedef enum {BACKWARDS_FORWARDS, LEFT_RIGHT} X_OR_Y;
+
 // Functions intended to be ** PUBLIC **:
 int initialize_camera(int resolution);
 int move_so_blob_is_at_x(int color_model, int x, int delta, int minimum_area);
 int move_so_blob_is_at_y(int color_model, int y, int delta, int minimum_area, int target);
+int move_so_blob_is_at(int color_model, int desired_number, int delta, int minimum_area, CameraStatistic statistic, X_OR_Y direction);
+
 void app_to_display_blob_numbers();
 void display_blob_numbers(int color_model, int blob, int header_line, int data_line);
 
@@ -38,6 +43,7 @@ void _next_color_model(int* color_model);
 void _previous_color_model(int* color_model);
 void _increase_refresh_rate(int* milliseconds_between_pictures);
 void _decrease_refresh_rate(int* milliseconds_between_pictures);
+int _get_camera_statistic(CameraStatistic statistic, int color_model);
 
 // Functions that must be defined elsewhere for the move... functions to work.
 extern void spin_left_for_camera_search();
@@ -194,6 +200,81 @@ int move_so_blob_is_at_y(int color_model, int desired_y, int delta, int minimum_
 		
 		// Wait a bit before taking the next picture
 		msleep(MILLISECONDS_BETWEEN_PICTURES);
+	}
+}
+
+int move_so_blob_is_at(int color_model, int desired_number, int delta, int minimum_area, CameraStatistic statistic, X_OR_Y direction) {
+	int blob_area, blob_target, how_many_times_no_blob_is_visible;
+	int current_number;
+	
+	how_many_times_no_blob_is_visible = 0;
+	while (1) {
+		// Take a picture and display the numbers for the biggest blob.
+		_take_a_picture();
+		display_blob_numbers(color_model, LARGEST_BLOB, 0, 1);
+		
+		// Is there a big enough blob?
+		// If not, increment error-count and return failure if the count is too big.
+		blob_area = get_object_area(color_model, LARGEST_BLOB);
+		if (blob_area < minimum_area) {
+			++ how_many_times_no_blob_is_visible;
+			if (how_many_times_no_blob_is_visible > MAX_ERRORS_ALLOWED_WHEN_TAKING_A_PICTURE) {
+				stop_camera_search();
+				display_printf(0, 2, "FAILURE - I cannot see a big enough blob.");
+				return 0;
+			}
+		} else {
+		// If there is a big enough blob:
+		
+			// Get the current number for the specified camera statistic.
+			current_number = _get_camera_statistic(statistic, color_model);
+			
+			// Is the current number within the specified delta of the desired number?
+			// If so, return success.  Otherwise, move the appropriapte direction.
+			if (current_number >= desired_number - delta && current_number <= desired_number + delta) {
+				stop_camera_search();
+				display_printf(0, 2, "SUCCESS - quit at %5i, trying for %5i", current_number, desired_number);
+				return 1;
+			} else if (current_number < desired_number - delta) {
+				if (direction == BACKWARDS_FORWARDS) {
+					display_printf(0, 2, "Move BACKWARDS");
+					move_backwards_for_camera_search();
+				} else {
+					display_printf(0, 2, "Move LEFT");
+					spin_left_for_camera_search();
+				}
+			} else {
+				if (direction == BACKWARDS_FORWARDS) {
+					display_printf(0, 2, "Move FORWARDS");
+					move_forwards_for_camera_search();
+				} else {
+					display_printf(0, 2, "Move RIGHT");
+					spin_right_for_camera_search();
+				}
+			}
+		}
+		
+		// Wait a bit before taking the next picture
+		if (MILLISECONDS_BETWEEN_PICTURES > 0) {
+			msleep(MILLISECONDS_BETWEEN_PICTURES);
+		}
+	}
+}
+
+// Returns the number for the given CameraStatistic, e.g. CAMERA_X or AREA or ...
+int _get_camera_statistic(CameraStatistic statistic, int color_model) {
+	switch (statistic) {
+		case CENTER_X:	return get_object_center(color_model, LARGEST_BLOB).x;
+		case CENTER_Y:	return get_object_center(color_model, LARGEST_BLOB).y;
+		case CENTROID_X:	return get_object_centroid(color_model, LARGEST_BLOB).x;
+		case CENTROID_Y:	return get_object_centroid(color_model, LARGEST_BLOB).y;
+		case AREA:		return get_object_area(color_model, LARGEST_BLOB);
+		case BBOX_ULX:	return get_object_bbox(color_model, LARGEST_BLOB).ulx;
+		case BBOX_ULY:	return get_object_bbox(color_model, LARGEST_BLOB).uly;
+		case BBOX_LRX:	return get_object_bbox(color_model, LARGEST_BLOB).ulx + get_object_bbox(color_model, LARGEST_BLOB).width;
+		case BBOX_LRY:	return get_object_bbox(color_model, LARGEST_BLOB).uly + get_object_bbox(color_model, LARGEST_BLOB).height;
+		default:		show_message("ERROR: Request for an unknown camera statistic!  Using CENTER_X\n");
+						return get_object_center(color_model, LARGEST_BLOB).x;
 	}
 }
 
