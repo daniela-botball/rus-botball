@@ -14,6 +14,10 @@
 #define MILLISECONDS_BETWEEN_PICTURES 0
 #define LARGEST_BLOB 0
 
+#define GREEN 0
+#define ORANGE 1
+#define ROBOT_MARKER 2
+
 #define MAX_ERRORS_ALLOWED_WHEN_OPENING_CAMERA 4
 #define MAX_ERRORS_ALLOWED_BEFORE_FIRST_PICTURE 50
 #define MAX_ERRORS_ALLOWED_WHEN_TAKING_A_PICTURE 50
@@ -22,8 +26,23 @@
 #define CAMERA_ERROR_MESSAGE_LINE (2 + NUMBER_OF_BLOBS_TO_SHOW)
 #define APP_MILLISECONDS_BETWEEN_PICTURES 2000
 
+#define MINIMUM_POM_SIZE 100
+#define MINIMUM_ROBOT_MARKER_SIZE 50
+
 typedef enum {CENTER_X, CENTER_Y, CENTROID_X, CENTROID_Y, AREA, BBOX_ULX, BBOX_ULY, BBOX_LRX, BBOX_LRY} CameraStatistic;
 typedef enum {BACKWARDS_FORWARDS, LEFT_RIGHT} X_OR_Y;
+typedef struct
+{
+	int left;
+	int right;
+	int front;
+	int back;
+	point2 center;
+} bbox;
+
+point2 SCREEN_SIZE = {159, 119};
+point2 NONE = {-1, -1};
+bbox BBOX_NONE = {-1, -1, -1, -1, -1};
 
 // Functions intended to be ** PUBLIC **:
 int initialize_camera(int resolution);
@@ -33,6 +52,9 @@ int move_so_blob_is_at(int color_model, int desired_number, int delta, int minim
 
 void app_to_display_blob_numbers();
 void display_blob_numbers(int color_model, int blob, int header_line, int data_line);
+void turn_to_pile(int direction);
+bbox get_pile_bbox(int color);
+point2 find_center(int color, int object, int minimum_size);
 
 // Functions intended to be ** PRIVATE **:
 void _initialize_buttons();
@@ -378,6 +400,72 @@ void display_blob_numbers(int color_model, int blob, int header_line, int data_l
 	}
 }
 
+bbox get_pile_bbox(int color)
+{
+	bbox pile;
+	rectangle r;
+	int number_of_blobs, i;
+	
+	camera_update();
+	number_of_blobs = get_object_count(color);
+	
+	if (number_of_blobs == 0)
+	{
+		return BBOX_NONE;
+	}
+	
+	r = get_object_bbox(color, 0);
+	pile.left = r.ulx;
+	pile.right = r.ulx + r.width;
+	pile.back = r.uly;
+	pile.front = r.uly + r.height;
+	
+	for (i = 1; i < number_of_blobs; i++)
+	{
+		r = get_object_bbox(color, i);
+		if (r.width * r.height < MINIMUM_POM_SIZE)
+		{
+			break;
+		}
+		
+		if (r.ulx < pile.left)
+		{
+			pile.left = r.ulx;
+		}
+		if (r.ulx + r.width > pile.right)
+		{
+			pile.right = r.ulx + r.width;
+		}
+		if (r.uly < pile.back)
+		{
+			pile.back = r.uly;
+		}
+		if (r.uly + r.height > pile.front)
+		{
+			pile.front = r.uly + r.height;
+		}
+	}
+	pile.center.x = (pile.left + pile.right) / 2;
+	pile.center.y = (pile.front + pile.back) / 2;
+	return pile;
+}
+
+point2 find_center(int color, int object, int minimum_size)
+{
+	point2 object_center;
+	camera_update();
+	if (get_object_count(color) < object + 1)
+	{
+		return NONE;
+	}
+	if (get_object_area(color, object) > minimum_size)
+	{
+		object_center = get_object_center(color, object);
+		return object_center;
+	}
+	return NONE;
+}
+
 int _take_a_picture() {
 	int status, errors;
 	
@@ -449,5 +537,7 @@ void _increase_refresh_rate(int* milliseconds_between_pictures) {
 void _decrease_refresh_rate(int* milliseconds_between_pictures) {
 	*milliseconds_between_pictures = *milliseconds_between_pictures * 2;
 }
+
+
 
 #endif

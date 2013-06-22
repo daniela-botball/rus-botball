@@ -8,7 +8,6 @@
 // CONSIDER: Change the following when the libraries move.
 #include "in_progress_2/camera_library.h"
 #include "in_progress_2/universal_library.h"
-
 int main() {
 	int status;
 	

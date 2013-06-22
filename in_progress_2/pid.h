@@ -21,6 +21,7 @@
 #define LEVER 1
 //#define STOPPING_TOPHAT 3
 //#define STOPPING_TIME 2
+//#define STOPPING_SENSOR 1
 
 int pd_follow(int stopping_type, int i)
 {

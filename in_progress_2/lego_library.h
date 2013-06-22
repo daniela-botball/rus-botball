@@ -7,7 +7,7 @@
 #define LEFT_MOTOR 0
 #define RIGHT_MOTOR 3
 
-#define STOPPING_TOPHAT 1
+#define STOPPING_TOPHAT 3
 #define STOPPING_TIME 2
 
 #define GREEN 0
@@ -25,8 +25,8 @@
 #define MAX_SPEED 100
 #define LREFLECTANCE 1
 #define RREFLECTANCE 0
-#define STOPPING_SENSOR 2
-#define STOPPING_THRESHOLD 100
+#define STOPPING_SENSOR 4
+#define STOPPING_THRESHOLD 300
 
 int centimeters_to_ticks(float centimeters);
 void lego_stop();
