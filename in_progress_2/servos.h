@@ -37,6 +37,7 @@ void raise_arm(int sleeptime);
 void lower_arm(int sleeptime);
 void move_arm_to_drop_position(int sleeptime);
 void close_gate(int sleeptime);
+void open_gate(int sleeptime);
 void motor_push_down(int sleeptime);
 
 
@@ -50,7 +51,7 @@ void start_servos();
 void press_a_to_continue(int off_or_on);
 void relax_servos();
 void unrelax_servos();
-void grab_booster();
+void grab_booster(int distance);
 void lift_booster();
 void drop_booster(Drop_or_lower_booster drop_or_lower);
 
@@ -107,6 +108,12 @@ void lower_arm(int sleeptime)
 void close_gate(int sleeptime)
 {
 	set_servo_position(GATE_SERVO, GATE_SERVO_CLOSED_POSITION);
+	msleep(sleeptime);
+}
+
+void open_gate(int sleeptime)
+{
+	set_servo_position(GATE_SERVO, GATE_SERVO_OPEN_POSITION);
 	msleep(sleeptime);
 }
 
@@ -170,7 +177,7 @@ void unrelax_servos()
 	enable_servos();
 }
 
-void grab_booster()
+void grab_booster(int distance)
 {
 	//function assumes all servos begin in the relax position
 	lower_arm(200);
@@ -179,17 +186,17 @@ void grab_booster()
 	fold_joint_for_pickup(200);
 	half_close_claw(200);
 	press_A_to_continue();
-	create_drive_distance(1, 5, BACKWARDS);
-	close_claw(600);
+	create_drive_distance(distance, 5, BACKWARDS);
+	close_claw(1000);
 	press_A_to_continue();
 	create_drive_distance(2, 5, FORWARDS);
 }
 
 void lift_booster()
 {
-	fold_joint_for_lift(1000);
+	fold_joint_for_lift(1500);
 	press_A_to_continue();
-	raise_arm(1000);
+	raise_arm(2000);
 	close_gate(200);
 }
 
@@ -219,7 +226,7 @@ void drop_booster(Drop_or_lower_booster drop_or_lower)
 {
 	if (drop_or_lower == DROP_BOOSTER)
 	{
-		fold_joint_for_drop(2000);
+		fold_joint_for_drop(3000);
 		open_claw(200);
 	}
 	else
