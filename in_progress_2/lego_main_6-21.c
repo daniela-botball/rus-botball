@@ -9,7 +9,7 @@
 #define DESIRED_X 1
 #define DESIRED_Y 1
 
-#define MOVE_DELAY_TIME .1
+#define MOVE_DELAY_TIME .05
 
 #define SUCKER_MOTOR 2
 #define LIFT_SERVO 1
@@ -17,7 +17,7 @@
 #define LIFT_SERVO_UP_POSITION 2047
 #define LIFT_SERVO_DROP_POSITION 1885
 #define BLACK_THRESHOLD 700
-#define LIFT_SERVO_LOW_POSITION 1192
+#define LIFT_SERVO_LOW_POSITION 1211
 
 void pick_up_green_pom();
 void go_to_first_set_of_poms();
@@ -55,11 +55,11 @@ void line_up_with_green_pom()
 	int i;
 	for (i = 0; i < 2; i++)
 	{
-		move_so_blob_is_at(GREEN, find_center(ROBOT_MARKER, LARGEST_BLOB, MINIMUM_ROBOT_MARKER_SIZE).x, 3, MINIMUM_POM_SIZE, CENTER_X, LEFT_RIGHT);
+		move_so_blob_is_at(GREEN, 77, 2, MINIMUM_POM_SIZE, CENTER_X, LEFT_RIGHT);
 		press_A_to_continue();
 		sleep(1);
 		//break;
-		move_so_blob_is_at(GREEN, 95, 3, MINIMUM_POM_SIZE, CENTER_Y, BACKWARDS_FORWARDS);
+		move_so_blob_is_at(GREEN, 43, 2, MINIMUM_POM_SIZE, CENTER_Y, BACKWARDS_FORWARDS);
 		press_A_to_continue();
 	}
 }
@@ -170,22 +170,26 @@ void arm_drop()
 }
 */
 void spin_left_for_camera_search() {
-	lego_spin(6, LEFT);
+	motor(RIGHT_MOTOR, 4);
+	motor(LEFT_MOTOR, -6);
 	sleep(MOVE_DELAY_TIME);
 	lego_stop();
 }
 void spin_right_for_camera_search() {
-	lego_spin(6, RIGHT);
+	motor(RIGHT_MOTOR, -4);
+	motor(LEFT_MOTOR, 6);
 	sleep(MOVE_DELAY_TIME);
 	lego_stop();
 }
 void move_backwards_for_camera_search() {
-	lego_drive(6, BACKWARDS);
+	motor(RIGHT_MOTOR, -4);
+	motor(LEFT_MOTOR, -6);
 	sleep(MOVE_DELAY_TIME);
 	lego_stop();
 }
 void move_forwards_for_camera_search() {
-	lego_drive(6, FORWARDS);
+	motor(RIGHT_MOTOR, 4);
+	motor(LEFT_MOTOR, 6);
 	sleep(MOVE_DELAY_TIME);
 	lego_stop();
 }

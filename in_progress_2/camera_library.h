@@ -259,16 +259,16 @@ int move_so_blob_is_at(int color_model, int desired_number, int delta, int minim
 				return 1;
 			} else if (current_number < desired_number - delta) {
 				if (direction == BACKWARDS_FORWARDS) {
-					display_printf(0, 2, "Move BACKWARDS");
-					move_backwards_for_camera_search();
+					display_printf(0, 2, "Move FORWARDS");
+					move_forwards_for_camera_search();
 				} else {
 					display_printf(0, 2, "Move LEFT");
 					spin_left_for_camera_search();
 				}
 			} else {
 				if (direction == BACKWARDS_FORWARDS) {
-					display_printf(0, 2, "Move FORWARDS");
-					move_forwards_for_camera_search();
+					display_printf(0, 2, "Move BACKWARDS");
+					move_backwards_for_camera_search();
 				} else {
 					display_printf(0, 2, "Move RIGHT");
 					spin_right_for_camera_search();
