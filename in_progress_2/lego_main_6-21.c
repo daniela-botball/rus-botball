@@ -22,6 +22,7 @@
 
 void pick_up_green_pom();
 void go_to_first_set_of_poms();
+void get_second_green_pom();
 int is_seeing_black(int sensor);
 void turn_onto_line(int direction);
 void arm_drop();
@@ -71,14 +72,14 @@ void go_to_first_set_of_poms()
 	pd_follow(STOPPING_TOPHAT, 0);
 	lego_drive_distance(2, 20, FORWARDS);
 	turn_onto_line(RIGHT);
-	pd_follow(STOPPING_TIME, 1.75);
+	pd_follow(STOPPING_TIME, 2.25);
 	turn_to_pile(RIGHT);
 	pick_up_green_pom();
 }
 
 void get_second_green_pom()
 {
-	lego_spin_degrees(70, 40, LEFT);
+	lego_spin_degrees(50, 40, LEFT);
 	pick_up_green_pom();
 }
 
