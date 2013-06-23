@@ -9,6 +9,8 @@
 #define DESIRED_X 1
 #define DESIRED_Y 1
 
+#define MOVE_DELAY_TIME .1
+
 #define SUCKER_MOTOR 2
 #define LIFT_SERVO 1
 #define LIFT_SERVO_DOWN_POSITION 785
@@ -37,24 +39,28 @@ int main()
 
 void go_to_first_set_of_poms()
 {
-	pd_follow(STOPPING_TOPHAT, 0);
-	lego_drive_distance(2, 20, FORWARDS);
-	turn_onto_line(RIGHT);
-	pd_follow(STOPPING_TIME, 1.5);
-	turn_to_pile(RIGHT);
-	sleep(1);
+	//pd_follow(STOPPING_TOPHAT, 0);
+	//lego_drive_distance(2, 20, FORWARDS);
+	//turn_onto_line(RIGHT);
+	//pd_follow(STOPPING_TIME, 1.5);
+	//turn_to_pile(RIGHT);
+	//sleep(1);
 	pick_up_green_pom();
 }
 
 void line_up_with_green_pom()
 {
 	set_servo_position(LIFT_SERVO, LIFT_SERVO_LOW_POSITION);
+	sleep(2);
 	int i;
-	for (i = 25; i > 5; i -= 5)
+	for (i = 0; i < 2; i++)
 	{
-		
-		move_so_blob_is_at(GREEN, find_center(ROBOT_MARKER, LARGEST_BLOB, MINIMUM_ROBOT_MARKER_SIZE).x, i, MINIMUM_POM_SIZE, CENTER_X, LEFT_RIGHT);
-		move_so_blob_is_at(GREEN, find_center(ROBOT_MARKER, LARGEST_BLOB, MINIMUM_ROBOT_MARKER_SIZE).y, i, MINIMUM_POM_SIZE, CENTER_Y, BACKWARDS_FORWARDS);
+		move_so_blob_is_at(GREEN, find_center(ROBOT_MARKER, LARGEST_BLOB, MINIMUM_ROBOT_MARKER_SIZE).x, 3, MINIMUM_POM_SIZE, CENTER_X, LEFT_RIGHT);
+		press_A_to_continue();
+		sleep(1);
+		//break;
+		move_so_blob_is_at(GREEN, 95, 3, MINIMUM_POM_SIZE, CENTER_Y, BACKWARDS_FORWARDS);
+		press_A_to_continue();
 	}
 }
 
@@ -101,7 +107,7 @@ int is_seeing_black(int sensor)
 void turn_to_pile(int direction)
 {
 	int pile_center;
-	lego_spin(20, direction);
+	lego_spin(10, direction);
 	while (TRUE)
 	{
 		pile_center = get_pile_bbox(ORANGE).center.x;
@@ -163,8 +169,24 @@ void arm_drop()
 	}
 }
 */
-void spin_left_for_camera_search() { lego_spin(5, LEFT); }
-void spin_right_for_camera_search() { lego_spin(5, RIGHT); }
-void move_backwards_for_camera_search() { lego_drive(8, BACKWARDS); }
-void move_forwards_for_camera_search() { lego_drive(8, FORWARDS); }
+void spin_left_for_camera_search() {
+	lego_spin(6, LEFT);
+	sleep(MOVE_DELAY_TIME);
+	lego_stop();
+}
+void spin_right_for_camera_search() {
+	lego_spin(6, RIGHT);
+	sleep(MOVE_DELAY_TIME);
+	lego_stop();
+}
+void move_backwards_for_camera_search() {
+	lego_drive(6, BACKWARDS);
+	sleep(MOVE_DELAY_TIME);
+	lego_stop();
+}
+void move_forwards_for_camera_search() {
+	lego_drive(6, FORWARDS);
+	sleep(MOVE_DELAY_TIME);
+	lego_stop();
+}
 void stop_camera_search() { lego_stop(); }
