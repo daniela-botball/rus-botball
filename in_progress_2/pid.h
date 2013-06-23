@@ -7,8 +7,8 @@
 #include "universal_library.h"
 #include "timer.h"
 
-#define NORMAL_LSPEED 80
-#define NORMAL_RSPEED 80
+#define NORMAL_LSPEED 60
+#define NORMAL_RSPEED 60
 #define DESIRED_L_VALUE 220
 #define DESIRED_R_VALUE 180
 #define KP 5.0

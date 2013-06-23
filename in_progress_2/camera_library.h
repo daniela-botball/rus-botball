@@ -48,7 +48,7 @@ bbox BBOX_NONE = {-1, -1, -1, -1, -1};
 int initialize_camera(int resolution);
 int move_so_blob_is_at_x(int color_model, int x, int delta, int minimum_area);
 int move_so_blob_is_at_y(int color_model, int y, int delta, int minimum_area, int target);
-int move_so_blob_is_at(int color_model, int desired_number, int delta, int minimum_area, CameraStatistic statistic, X_OR_Y direction);
+int move_so_blob_is_at(int color_model, int desired_number, int delta, int minimum_area, CameraStatistic statistic, X_OR_Y direction, int speed);
 
 void app_to_display_blob_numbers();
 void display_blob_numbers(int color_model, int blob, int header_line, int data_line);
@@ -225,7 +225,7 @@ int move_so_blob_is_at_y(int color_model, int desired_y, int delta, int minimum_
 	}
 }
 
-int move_so_blob_is_at(int color_model, int desired_number, int delta, int minimum_area, CameraStatistic statistic, X_OR_Y direction) {
+int move_so_blob_is_at(int color_model, int desired_number, int delta, int minimum_area, CameraStatistic statistic, X_OR_Y direction, int speed) {
 	int blob_area, blob_target, how_many_times_no_blob_is_visible;
 	int current_number;
 	
@@ -260,18 +260,18 @@ int move_so_blob_is_at(int color_model, int desired_number, int delta, int minim
 			} else if (current_number < desired_number - delta) {
 				if (direction == BACKWARDS_FORWARDS) {
 					display_printf(0, 2, "Move FORWARDS");
-					move_forwards_for_camera_search();
+					move_forwards_for_camera_search(speed);
 				} else {
 					display_printf(0, 2, "Move LEFT");
-					spin_left_for_camera_search();
+					spin_left_for_camera_search(speed);
 				}
 			} else {
 				if (direction == BACKWARDS_FORWARDS) {
 					display_printf(0, 2, "Move BACKWARDS");
-					move_backwards_for_camera_search();
+					move_backwards_for_camera_search(speed);
 				} else {
 					display_printf(0, 2, "Move RIGHT");
-					spin_right_for_camera_search();
+					spin_right_for_camera_search(speed);
 				}
 			}
 		}

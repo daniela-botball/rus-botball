@@ -15,8 +15,8 @@
 #define BLUE 1
 #define PINK 2
 
-#define NORMAL_LSPEED 80
-#define NORMAL_RSPEED 80
+#define NORMAL_LSPEED 60
+#define NORMAL_RSPEED 60
 #define DESIRED_LREADING 400
 #define DESIRED_RREADING 400
 #define LKP 0.2
@@ -28,6 +28,16 @@
 #define STOPPING_SENSOR 4
 #define STOPPING_THRESHOLD 300
 
+typedef enum {PWM_RUNNING, PWM_STOPPED} PWM_state;
+
+PWM_state PWM_THREAD = PWM_STOPPED;
+int PWM_CYCLE_LENGTH = 100;
+float PWM_ON_LENGTH = .3;
+int PWM_LEFT_BASE_SPEED = 30;
+int PWM_RIGHT_BASE_SPEED = 30;
+int PWM_DIRECTION;
+thread PWM_PROCCESS;
+
 int centimeters_to_ticks(float centimeters);
 void lego_stop();
 void lego_drive(int speed, int direction);
@@ -35,6 +45,11 @@ int lego_drive_distance(float centimeters, int speed, int direction);
 void start_timer();
 int check_timer();
 void reset_timer();
+void lego_pwm_drive(int speed, int direction);
+void lego_pwm_spin(int speed, int direction);
+void lego_pwm_stop();
+void _pwm_move();
+void _pwm_spin();
 
 void lego_drive(int speed, int direction)
 {
@@ -161,5 +176,60 @@ void line_follow(int stopping_type, int i)
 	off(RIGHT_MOTOR);
 	reset_timer();
 }
+
+void lego_pwm_drive(int speed, int direction) // 0 - 100
+{
+	lego_pwm_stop();
+	PWM_DIRECTION = direction;
+	PWM_ON_LENGTH = speed / 100.0;
+	PWM_PROCCESS = thread_create(_pwm_move);
+	PWM_THREAD = PWM_RUNNING;
+	thread_start(PWM_PROCCESS);
+}
+
+void lego_pwm_spin(int speed, int direction) // 0 - 100
+{
+	lego_pwm_stop();
+	PWM_DIRECTION = direction;
+	PWM_ON_LENGTH = speed / 100.0;
+	PWM_PROCCESS = thread_create(_pwm_spin);
+	PWM_THREAD = PWM_RUNNING;
+	thread_start(PWM_PROCCESS);
+}
+
+void lego_pwm_stop()
+{
+	if (PWM_THREAD == PWM_STOPPED)
+	{
+		return;
+	}
+	PWM_THREAD = PWM_STOPPED;
+	thread_wait(PWM_PROCCESS);
+}
+
+void _pwm_move() {
+	while (PWM_THREAD == PWM_RUNNING) {
+		motor(LEFT_MOTOR, PWM_LEFT_BASE_SPEED * PWM_DIRECTION);
+		motor(RIGHT_MOTOR, PWM_RIGHT_BASE_SPEED * PWM_DIRECTION);
+		msleep((int) (PWM_ON_LENGTH * PWM_CYCLE_LENGTH));
+		
+		motor(LEFT_MOTOR, 0);
+		motor(RIGHT_MOTOR, 0);
+		msleep(PWM_CYCLE_LENGTH - (int) (PWM_ON_LENGTH * PWM_CYCLE_LENGTH));
+	}
+}
+
+void _pwm_spin() {
+	while (PWM_THREAD == PWM_RUNNING) {
+		motor(LEFT_MOTOR, -PWM_LEFT_BASE_SPEED * PWM_DIRECTION);
+		motor(RIGHT_MOTOR, PWM_RIGHT_BASE_SPEED * PWM_DIRECTION);
+		msleep((int) (PWM_ON_LENGTH * PWM_CYCLE_LENGTH));
+		
+		motor(LEFT_MOTOR, 0);
+		motor(RIGHT_MOTOR, 0);
+		msleep(PWM_CYCLE_LENGTH - (int) (PWM_ON_LENGTH * PWM_CYCLE_LENGTH));
+	}
+}
+
 #endif
 

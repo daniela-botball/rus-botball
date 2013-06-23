@@ -18,6 +18,7 @@
 #define LIFT_SERVO_DROP_POSITION 1885
 #define BLACK_THRESHOLD 700
 #define LIFT_SERVO_LOW_POSITION 1211
+#define LIFT_SERVO_SEEK_POSITION 1340
 
 void pick_up_green_pom();
 void go_to_first_set_of_poms();
@@ -27,46 +28,102 @@ void arm_drop();
 void arm_up();
 void arm_down();
 void suck_up_pom();
+void test_pwm();
+void line_up_far_with_green_pom();
 
 int main()
 {
+	//test_pwm();
 	set_servo_position(LIFT_SERVO, LIFT_SERVO_UP_POSITION);
 	enable_servos();
 	initialize_camera(LOW_RES);
 	go_to_first_set_of_poms();
+	get_second_green_pom();
 	return 0;
+}
+
+void test_pwm()
+{
+	lego_pwm_drive(30, FORWARDS);
+	press_A_to_continue();
+	lego_pwm_stop();
+	sleep(1);
+	press_A_to_continue();
+	lego_pwm_drive(30, BACKWARDS);
+	press_A_to_continue();
+	lego_pwm_stop();
+	sleep(1);
+	press_A_to_continue();
+	lego_pwm_spin(30, RIGHT);
+	press_A_to_continue();
+	lego_pwm_stop();
+	sleep(1);
+	press_A_to_continue();
+	lego_pwm_spin(30, LEFT);
+	press_A_to_continue();
+	lego_pwm_stop();
+	sleep(1);
+	press_A_to_continue();
 }
 
 void go_to_first_set_of_poms()
 {
-	//pd_follow(STOPPING_TOPHAT, 0);
-	//lego_drive_distance(2, 20, FORWARDS);
-	//turn_onto_line(RIGHT);
-	//pd_follow(STOPPING_TIME, 1.5);
-	//turn_to_pile(RIGHT);
-	//sleep(1);
+	pd_follow(STOPPING_TOPHAT, 0);
+	lego_drive_distance(2, 20, FORWARDS);
+	turn_onto_line(RIGHT);
+	pd_follow(STOPPING_TIME, 1.75);
+	turn_to_pile(RIGHT);
 	pick_up_green_pom();
 }
 
-void line_up_with_green_pom()
+void get_second_green_pom()
+{
+	lego_spin_degrees(70, 40, LEFT);
+	pick_up_green_pom();
+}
+
+void line_up_far_with_green_pom()
+{
+	set_servo_position(LIFT_SERVO, LIFT_SERVO_SEEK_POSITION);
+	sleep(2);
+	int i;
+	for (i = 0; i < 2; i++)
+	{
+		move_so_blob_is_at(GREEN, 66, 10, MINIMUM_POM_SIZE, CENTER_X, LEFT_RIGHT, 45);
+		//press_A_to_continue();
+		sleep(1);
+		//break;
+		move_so_blob_is_at(GREEN, 99, 10, MINIMUM_POM_SIZE, CENTER_Y, BACKWARDS_FORWARDS, 45);
+		//press_A_to_continue();
+	}
+}
+
+void line_up_close_with_green_pom()
 {
 	set_servo_position(LIFT_SERVO, LIFT_SERVO_LOW_POSITION);
 	sleep(2);
 	int i;
 	for (i = 0; i < 2; i++)
 	{
-		move_so_blob_is_at(GREEN, 77, 2, MINIMUM_POM_SIZE, CENTER_X, LEFT_RIGHT);
-		press_A_to_continue();
+		move_so_blob_is_at(GREEN, 77, 2, MINIMUM_POM_SIZE, CENTER_X, LEFT_RIGHT, 30);
+		//press_A_to_continue();
 		sleep(1);
 		//break;
-		move_so_blob_is_at(GREEN, 43, 2, MINIMUM_POM_SIZE, CENTER_Y, BACKWARDS_FORWARDS);
-		press_A_to_continue();
+		move_so_blob_is_at(GREEN, 43, 2, MINIMUM_POM_SIZE, CENTER_Y, BACKWARDS_FORWARDS, 30);
+		//press_A_to_continue();
 	}
 }
 
 void pick_up_green_pom()
 {
-	line_up_with_green_pom();
+	line_up_far_with_green_pom();
+	line_up_close_with_green_pom();
+	set_servo_position(LIFT_SERVO, LIFT_SERVO_DOWN_POSITION);
+	motor(SUCKER_MOTOR, 100);
+	sleep(1);
+	off(SUCKER_MOTOR);
+	set_servo_position(LIFT_SERVO, LIFT_SERVO_UP_POSITION);
+	sleep(1);
 }
 
 void turn_onto_line(int direction)
@@ -106,17 +163,7 @@ int is_seeing_black(int sensor)
 
 void turn_to_pile(int direction)
 {
-	int pile_center;
-	lego_spin(10, direction);
-	while (TRUE)
-	{
-		pile_center = get_pile_bbox(ORANGE).center.x;
-		if (pile_center > (SCREEN_SIZE.x / 2) - 15 && pile_center < (SCREEN_SIZE.x / 2) + 15)
-		{
-			break;
-		}
-	}
-	lego_stop();
+	lego_spin_degrees(30, 30, direction);
 }
 /*
 void suck_up_pom()
@@ -169,28 +216,8 @@ void arm_drop()
 	}
 }
 */
-void spin_left_for_camera_search() {
-	motor(RIGHT_MOTOR, 4);
-	motor(LEFT_MOTOR, -6);
-	sleep(MOVE_DELAY_TIME);
-	lego_stop();
-}
-void spin_right_for_camera_search() {
-	motor(RIGHT_MOTOR, -4);
-	motor(LEFT_MOTOR, 6);
-	sleep(MOVE_DELAY_TIME);
-	lego_stop();
-}
-void move_backwards_for_camera_search() {
-	motor(RIGHT_MOTOR, -4);
-	motor(LEFT_MOTOR, -6);
-	sleep(MOVE_DELAY_TIME);
-	lego_stop();
-}
-void move_forwards_for_camera_search() {
-	motor(RIGHT_MOTOR, 4);
-	motor(LEFT_MOTOR, 6);
-	sleep(MOVE_DELAY_TIME);
-	lego_stop();
-}
-void stop_camera_search() { lego_stop(); }
+void spin_left_for_camera_search(int speed) { lego_pwm_spin(speed, LEFT); }
+void spin_right_for_camera_search(int speed) { lego_pwm_spin(speed, RIGHT); }
+void move_backwards_for_camera_search(int speed) { lego_pwm_drive(speed, BACKWARDS); }
+void move_forwards_for_camera_search(int speed) { lego_pwm_drive(speed, FORWARDS); }
+void stop_camera_search() { lego_pwm_stop(); }
