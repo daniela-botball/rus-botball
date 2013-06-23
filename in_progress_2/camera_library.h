@@ -234,7 +234,7 @@ int move_so_blob_is_at(int color_model, int desired_number, int delta, int minim
 		// Take a picture and display the numbers for the biggest blob.
 		_take_a_picture();
 		display_blob_numbers(color_model, LARGEST_BLOB, 0, 1);
-		display_printf(0, 4, "%3i, %3i - %3i", find_center(ROBOT_MARKER, LARGEST_BLOB, MINIMUM_ROBOT_MARKER_SIZE).x, find_center(ROBOT_MARKER, LARGEST_BLOB, MINIMUM_ROBOT_MARKER_SIZE).y, desired_number);
+		
 		// Is there a big enough blob?
 		// If not, increment error-count and return failure if the count is too big.
 		blob_area = get_object_area(color_model, LARGEST_BLOB);
@@ -259,16 +259,16 @@ int move_so_blob_is_at(int color_model, int desired_number, int delta, int minim
 				return 1;
 			} else if (current_number < desired_number - delta) {
 				if (direction == BACKWARDS_FORWARDS) {
-					display_printf(0, 2, "Move FORWARDS");
-					move_forwards_for_camera_search();
+					display_printf(0, 2, "Move BACKWARDS");
+					move_backwards_for_camera_search();
 				} else {
 					display_printf(0, 2, "Move LEFT");
 					spin_left_for_camera_search();
 				}
 			} else {
 				if (direction == BACKWARDS_FORWARDS) {
-					display_printf(0, 2, "Move BACKWARDS");
-					move_backwards_for_camera_search();
+					display_printf(0, 2, "Move FORWARDS");
+					move_forwards_for_camera_search();
 				} else {
 					display_printf(0, 2, "Move RIGHT");
 					spin_right_for_camera_search();
