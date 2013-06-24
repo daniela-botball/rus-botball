@@ -15,6 +15,11 @@
 #define BLUE 1
 #define PINK 2
 
+#define PI 3.14159
+#define DIAMETER 5.5 // cm
+#define TICKS_PER_REVOLUTION 1100
+#define OVERSHOOT 0.7
+#define TICKS_PER_CENTIMETER (OVERSHOOT * TICKS_PER_REVOLUTION / (DIAMETER * PI))
 #define NORMAL_LSPEED 60
 #define NORMAL_RSPEED 60
 #define DESIRED_LREADING 400
@@ -105,10 +110,7 @@ void lego_stop()
 
 int centimeters_to_ticks(float centimeters)
 {
-	
-	float ticks_per_centimeter = 1050.0 / 8.0;
-	float ticks = ticks_per_centimeter * centimeters;
-	return (int) ticks;
+	return (int) (centimeters * TICKS_PER_CENTIMETER);
 }
 
 int degrees_to_ticks(int degrees)
