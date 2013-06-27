@@ -74,7 +74,9 @@ int pd_follow(int stopping_type, int i)
 		
 		l_multiplier = (new_l_error * KP) + (l_derivative * KD);
 		r_multiplier = (new_r_error * KP) + (r_derivative * KD);
-		
+		display_printf(0, 1, "left, right current value: %4i  %4i", l_current_value, r_current_value);
+		display_printf(0, 2, "left, right multiplier: %6.2f  %6.2f", l_multiplier, r_multiplier);
+
 		if (l_multiplier < -1.0)
 		{
 			l_multiplier = -1.0;
@@ -96,6 +98,7 @@ int pd_follow(int stopping_type, int i)
 		motor(LEFT_MOTOR, l_speed);
 		motor(RIGHT_MOTOR, r_speed);
 		display_printf(0, 0, "left, right - %4i, %4i", l_speed, r_speed);
+		
 		sleep(.05);
 		//display_printf(0,"%0.2f ", new);
 		//display_printf("%0.2f ", old);

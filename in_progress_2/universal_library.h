@@ -21,7 +21,7 @@
 #define LEGO 1
 #define sleep(seconds) msleep(seconds * 1000)
 
-#define DEFAULT_ERROR_MESSAGE_LINE 10
+#define DEFAULT_ERROR_MESSAGE_LINE 6
 #define BLANK_LINE "                                          "
 #define HANDS_OFF  "Hands off!                                "
 #define MILLISECONDS_TO_WAIT_AFTER_HANDS_OFF 500

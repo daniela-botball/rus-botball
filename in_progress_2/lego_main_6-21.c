@@ -2,10 +2,11 @@
 
 /*
 Failures:
-1) the sucker does not always activate
-2) the robot often bounces (use accelerometer to fix)
-3) it must avoid running over poms, either with a pusher or using the camera
+2) 
+3) redo the start
+4) the robot often bounces (use accelerometer to fix)
 4) must secure the camera, and have a simple test that confirms that it is in the right place
+4) must make the motor wires (especially left) stay in.  checklist!
 */
 
 #include "lego_library.h"
@@ -24,6 +25,8 @@ Failures:
 
 #define LIFT_SERVO_DOWN_POSITION 1000
 #define LIFT_SERVO_UP_POSITION 2047
+#define LIFT_SERVO_START_POSITION LIFT_SERVO_UP_POSITION
+#define LIFT_SERVO_RUN_POSITION 1880
 #define LIFT_SERVO_HIGH_POSITION 1460
 #define LIFT_SERVO_MIDDLE_POSITION 1340
 #define LIFT_SERVO_LOW_POSITION 1211
@@ -32,11 +35,12 @@ Failures:
 #define MINIMUM_GREEN_SEARCH_SIZE 1500
 
 void test_pwm();
+void push_transport_and_turn();
 void go_to_first_green_pom();
 void go_to_second_green_pom();
 void go_to_third_green_pom();
 void go_to_fourth_green_pom();
-void go_to_pom(int servo_position, int color, int x, int y, int delta, int speed);
+void go_to_pom(int servo_position, int color, int x, int y, int delta, int xspeed, int yspeed);
 void pick_up_green_pom();
 void turn_onto_line(int direction);
 int is_seeing_black(int sensor);
@@ -44,119 +48,140 @@ void move_servo_gently(int servo, int position);
 
 int main()
 {
-	motor(SUCKER_MOTOR, 100);
-	sleep(100);
-	//off(SUCKER_MOTOR);
-	return 0;
 	//test_pwm();
-	set_servo_position(LIFT_SERVO, LIFT_SERVO_UP_POSITION);
+	//press_A_to_continue();
+	set_servo_position(LIFT_SERVO, LIFT_SERVO_START_POSITION);
 	enable_servos();
 	sleep(2);
 	initialize_camera(LOW_RES);
 	press_A_to_continue();
-
+	
+	push_transport_and_turn();
+	press_A_to_continue();
+	
 	go_to_first_green_pom();
 	press_A_to_continue();
+	
 	go_to_second_green_pom();
 	press_A_to_continue();
+	
 	go_to_third_green_pom();
 	press_A_to_continue();
+	
 	go_to_fourth_green_pom();
+	press_A_to_continue();
+	
 	return 0;
 }
 
 void test_pwm()
 {
-	lego_pwm_drive(30, FORWARDS);
+	lego_pwm_drive(15, FORWARDS);
 	press_A_to_continue();
 	lego_pwm_stop();
 	sleep(1);
 	press_A_to_continue();
-	lego_pwm_drive(30, BACKWARDS);
+	lego_pwm_drive(15, BACKWARDS);
 	press_A_to_continue();
 	lego_pwm_stop();
 	sleep(1);
 	press_A_to_continue();
-	lego_pwm_spin(30, RIGHT);
+	lego_pwm_spin(15, RIGHT);
 	press_A_to_continue();
 	lego_pwm_stop();
 	sleep(1);
 	press_A_to_continue();
-	lego_pwm_spin(30, LEFT);
+	lego_pwm_spin(15, LEFT);
 	press_A_to_continue();
 	lego_pwm_stop();
 	sleep(1);
 	press_A_to_continue();
 }
 
-void go_to_first_green_pom()
+void push_transport_and_turn()
 {
+	set_servo_position(LIFT_SERVO, LIFT_SERVO_DOWN_POSITION);
+	msleep(1000);
+	set_servo_position(LIFT_SERVO, LIFT_SERVO_START_POSITION);
+	msleep(1000);
+	press_A_to_continue();
+	
 	lego_drive_distance(5, 30, FORWARDS);
 	lego_drive_distance(5, 60, FORWARDS);
-
+	lego_drive_distance(5, 80, FORWARDS);
+	press_A_to_continue();
+	
+	turn_onto_line(LEFT);
+}
+	
+void go_to_first_green_pom()
+{
+	lego_drive_distance(2, 30, FORWARDS);
+	lego_drive_distance(2, 60, FORWARDS);
+	
 	pd_follow(STOPPING_TOPHAT, 0);
 	turn_onto_line(RIGHT);
 	
 	sleep(0.2);
-	lego_drive_distance(2, 30, FORWARDS);
-	lego_drive_distance(2, 60, FORWARDS);
+	lego_drive_distance(1, 30, FORWARDS);
+	lego_drive_distance(1, 60, FORWARDS);
 	pd_follow(STOPPING_TIME, 1.5);
-	lego_spin_degrees(25, 25, RIGHT);
+	lego_spin_degrees(35, 35, RIGHT);
 	pick_up_green_pom();
 }
 
 void go_to_second_green_pom()
 {
-	lego_drive_distance(25, 40, FORWARDS);
+	lego_drive_distance(40, 40, FORWARDS);
 	lego_spin_degrees(5, 30, LEFT);
-	lego_drive_distance(50, 40, FORWARDS);
+	lego_drive_distance(25, 40, FORWARDS);
 	pick_up_green_pom();
 }
 
 void go_to_third_green_pom()
 {
-	lego_drive_distance(5, 20, BACKWARDS);
-	lego_spin_degrees(80, 40, LEFT);
+	lego_drive_distance(5, 20, FORWARDS);
+	lego_spin_degrees(90, 40, LEFT);
 	pick_up_green_pom();
 }
 
 void go_to_fourth_green_pom()
 {
-	lego_spin_degrees(120, 30, LEFT);
+	lego_spin_degrees(90, 30, LEFT);
 	lego_drive_distance(20, 40, FORWARDS);
 	pick_up_green_pom();
 }
 
-void go_to_pom(int servo_position, int color, int x, int y, int delta, int speed)
+void go_to_pom(int servo_position, int color, int x, int y, int delta, int xspeed, int yspeed)
 {
 	move_servo_gently(LIFT_SERVO, servo_position);
 	int i;
 	for (i = 0; i < 2; i++)
 	{
-		move_so_blob_is_at(color, x, delta, MINIMUM_POM_SIZE, CENTER_X, LEFT_RIGHT, speed);
+		move_so_blob_is_at(color, x, delta, MINIMUM_POM_SIZE, CENTER_X, LEFT_RIGHT, xspeed);
 		//press_A_to_continue();
-		sleep(1);
+		sleep(1); // TODO: Set this number appropriately
 		//break;
-		move_so_blob_is_at(color, y, delta, MINIMUM_POM_SIZE, CENTER_Y, BACKWARDS_FORWARDS, speed);
+		move_so_blob_is_at(color, y, delta, MINIMUM_POM_SIZE, CENTER_Y, BACKWARDS_FORWARDS, yspeed);
 		//press_A_to_continue();
 	}
 }
 
 void pick_up_green_pom()
 {
-	go_to_pom(LIFT_SERVO_HIGH_POSITION, GREEN, 77, 91, 10, 45);
-	go_to_pom(LIFT_SERVO_MIDDLE_POSITION, GREEN, 77, 90, 6, 45);
-	go_to_pom(LIFT_SERVO_LOW_POSITION, GREEN, 77, 43, 2, 30);
+	go_to_pom(LIFT_SERVO_HIGH_POSITION, GREEN, 77, 91, 10, 45, 60);
+	go_to_pom(LIFT_SERVO_MIDDLE_POSITION, GREEN, 77, 90, 6, 30, 45);
+	go_to_pom(LIFT_SERVO_LOW_POSITION, GREEN, 77, 40, 2, 15, 30);
 	move_servo_gently(LIFT_SERVO, LIFT_SERVO_DOWN_POSITION);
 	motor(SUCKER_MOTOR, 100);
-	sleep(3);
+	sleep(2); // TODO: Set this number appropriately.
 	off(SUCKER_MOTOR);
 	move_servo_gently(LIFT_SERVO, LIFT_SERVO_UP_POSITION);
 }
 
 void turn_onto_line(int direction)
 {
-	lego_spin(30, direction);
+	lego_spin(5, direction);
 	if (direction == RIGHT)
 	{
 		while (TRUE)
