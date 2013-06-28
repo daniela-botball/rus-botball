@@ -22,6 +22,7 @@ Failures:
 
 #define SUCKER_MOTOR 1
 #define LIFT_SERVO 1
+#define DUMPER_SERVO 3
 
 #define LIFT_SERVO_DOWN_POSITION 1000
 #define LIFT_SERVO_UP_POSITION 2047
@@ -30,31 +31,46 @@ Failures:
 #define LIFT_SERVO_HIGH_POSITION 1460
 #define LIFT_SERVO_MIDDLE_POSITION 1340
 #define LIFT_SERVO_LOW_POSITION 1211
+#define LIFT_SERVO_DUMP_POSITION 1800
+
+#define DUMPER_SERVO_START_POSITION 1200
+#define DUMPER_SERVO_RUN_POSITION 1200
+#define DUMPER_SERVO_COLLECT_POSITION 1200
+#define DUMPER_SERVO_DUMP_POSITION 600
 
 #define BLACK_THRESHOLD 700
 #define MINIMUM_GREEN_SEARCH_SIZE 1500
 
-void test_pwm();
 void push_transport_and_turn();
 void go_to_first_green_pom();
 void go_to_second_green_pom();
 void go_to_third_green_pom();
 void go_to_fourth_green_pom();
+void put_poms_into_transport();
+void dump_poms();
+
 void go_to_pom(int servo_position, int color, int x, int y, int delta, int xspeed, int yspeed);
 void pick_up_green_pom();
 void turn_onto_line(int direction);
 int is_seeing_black(int sensor);
 void move_servo_gently(int servo, int position);
 
+void test_pwm();
+void test_dumper();
+
 int main()
 {
-	//test_pwm();
-	//press_A_to_continue();
-	set_servo_position(LIFT_SERVO, LIFT_SERVO_START_POSITION);
+    // FIXME:  Move so that they don't crash into each other
+	set_servo_position(LIFT_SERVO, LIFT_SERVO_RUN_POSITION);
+	set_servo_position(DUMPER_SERVO, DUMPER_SERVO_START_POSITION);
+
 	enable_servos();
 	sleep(2);
 	initialize_camera(LOW_RES);
 	press_A_to_continue();
+	
+	test_dumper();
+	return 1;
 	
 	push_transport_and_turn();
 	press_A_to_continue();
@@ -96,6 +112,10 @@ void test_pwm()
 	lego_pwm_stop();
 	sleep(1);
 	press_A_to_continue();
+}
+
+void test_dumper() {
+    put_poms_into_transport();
 }
 
 void push_transport_and_turn()
@@ -220,24 +240,50 @@ void move_servo_gently(int servo, int desired_position)
 	int delta = 5;
 	int sleeptime = 10;
 
-	current_position = get_servo_position(LIFT_SERVO);
+	current_position = get_servo_position(servo);
 	if (desired_position < current_position)
 	{
 		while (current_position > desired_position + delta) {
 			current_position = current_position - delta;
-			set_servo_position(LIFT_SERVO, current_position);
+			set_servo_position(servo, current_position);
 			msleep(sleeptime);
 		}
 		
 	} else {
 		while (current_position < desired_position - delta) {
 			current_position = current_position + delta;
-			set_servo_position(LIFT_SERVO, current_position);
+			set_servo_position(servo, current_position);
 			msleep(sleeptime);
 		}
 	}
-	set_servo_position(LIFT_SERVO, desired_position);
+	set_servo_position(servo, desired_position);
 	msleep(sleeptime);
+}
+
+void put_poms_into_transport() {
+    lego_spin_degrees(75, 40, LEFT); // FIXME, really 90
+	press_A_to_continue();
+	
+	lego_drive_distance(5, 30, FORWARDS);
+	lego_drive_distance(5, 60, FORWARDS);
+	lego_drive_distance(15, 100, FORWARDS);
+	press_A_to_continue();
+	
+	//lego_drive_distance(3, 30, BACKWARDS);
+	//press_A_to_continue();
+	
+	lego_spin_degrees(75, 40, RIGHT);  // FIXME, really 90
+	press_A_to_continue();
+	
+	dump_poms();
+	press_A_to_continue();
+}
+	
+void dump_poms() {
+    set_servo_position(LIFT_SERVO, LIFT_SERVO_DUMP_POSITION);
+	msleep(200);
+    set_servo_position(DUMPER_SERVO, DUMPER_SERVO_DUMP_POSITION);
+	msleep(1000);
 }
 
 void spin_left_for_camera_search(int speed) { lego_pwm_spin(speed, LEFT); }
