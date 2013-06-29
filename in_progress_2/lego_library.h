@@ -22,16 +22,17 @@
 #define TICKS_PER_CENTIMETER (OVERSHOOT * TICKS_PER_REVOLUTION / (DIAMETER * PI))
 #define NORMAL_LSPEED 60
 #define NORMAL_RSPEED 60
-#define DESIRED_LREADING 50 // was 400
-#define DESIRED_RREADING 50 // was 400
+#define DESIRED_LREADING 40 // was 400, then 50
+#define DESIRED_RREADING 40 // was 400, then 50
 #define LKP 0.2
 #define RKP 0.2
 #define MIN_SPEED 10
 #define MAX_SPEED 100
-#define LREFLECTANCE 1
-#define RREFLECTANCE 0
+
+#define L_REFLECTANCE 0
+#define R_REFLECTANCE 2
 #define STOPPING_SENSOR 4
-#define STOPPING_THRESHOLD 300
+#define STOPPING_THRESHOLD 800
 
 typedef enum {PWM_RUNNING, PWM_STOPPED} PWM_state;
 
@@ -121,6 +122,7 @@ int degrees_to_ticks(int degrees)
 	return ticks;
 }
 
+/*
 void line_follow(int stopping_type, int i)
 {
 	int rspeed = NORMAL_RSPEED;
@@ -178,6 +180,7 @@ void line_follow(int stopping_type, int i)
 	off(RIGHT_MOTOR);
 	reset_timer();
 }
+*/
 
 void lego_pwm_drive(int speed, int direction) // 0 - 100
 {
@@ -233,5 +236,7 @@ void _pwm_spin() {
 	}
 }
 
+
+	
 #endif
 

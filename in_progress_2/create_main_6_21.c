@@ -5,6 +5,7 @@
 #include "create_library.h"
 #include "camera_library.h"
 
+#define BOOSTER_COLOR 0
 
 void initialize_create();
 void turn_to_pole();
@@ -15,7 +16,6 @@ void drop_booster_main(int distance, int booster);
 int main()
 {
 	//_SKIP_PRESS_A_TO_CONTINUE = TRUE;
-	
 	
 	initialize_create();
 	turn_to_pole();
@@ -34,7 +34,6 @@ int main()
 	
 	drive_to_booster(2, FORWARDS);
 	grab_booster_main(3);
-	
 	
 	return 0;
 }
@@ -67,14 +66,24 @@ void drive_to_booster(int distance, int direction)
 	press_A_to_continue();
 	create_spin_degrees(87, 87, RIGHT);									// Turns towards the booster
 	press_A_to_continue();
-	move_so_blob_is_at_x(0, 91, 5, 0);									// Spins to the x of the booster
+	
+	move_so_blob_is_at(BOOSTER_COLOR, 159, 5, 100, LOWEST_CENTER_X, LEFT_RIGHT, 20);
+	press_A_to_continue();
+	move_so_blob_is_at(BOOSTER_COLOR, 95, 5, 100, LOWEST_LRY, BACKWARDS_FORWARDS, 40);
+	press_A_to_continue();
+	
+	move_so_blob_is_at(BOOSTER_COLOR, 159, 2, 100, LOWEST_CENTER_X, LEFT_RIGHT, 20);
+	press_A_to_continue();
+	move_so_blob_is_at(BOOSTER_COLOR, 95, 1, 100, LOWEST_LRY, BACKWARDS_FORWARDS, 40);
+	press_A_to_continue();
+	/*move_so_blob_is_at_x(0, 91, 5, 0);									// Spins to the x of the booster
 	press_A_to_continue();
 	move_so_blob_is_at_y(0, 30, 1, 0, 0);								// Moves to the y of the booster
 	press_A_to_continue();
 	move_so_blob_is_at_x(0, 91, 2, 0);									// Fixes any inaccuracies in the previous x fix
 	press_A_to_continue();
 	move_so_blob_is_at_y(0, 30, 1, 0, 0);								// Fixes any inaccuracies caused by the second move to x
-	press_A_to_continue();
+	press_A_to_continue();*/
 }
 
 void grab_booster_main(int distance)
@@ -111,8 +120,8 @@ void drop_booster_main(int distance, int booster)
 	drop_booster(DROP_BOOSTER);											// Drops the booster
 }
 
-void spin_left_for_camera_search() { create_spin_CCW(20); }
-void spin_right_for_camera_search() { create_spin_CW(20); }
-void move_backwards_for_camera_search() { create_drive_straight(-40); }
-void move_forwards_for_camera_search() { create_drive_straight(40); }
+void spin_left_for_camera_search(int speed) { create_spin_CCW(speed); } // was 20
+void spin_right_for_camera_search(int speed) { create_spin_CW(speed); }
+void move_backwards_for_camera_search(int speed) { create_drive_straight(-speed); }  // was -40
+void move_forwards_for_camera_search(int speed) { create_drive_straight(speed); } // was 40
 void stop_camera_search() { create_stop(); }

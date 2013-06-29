@@ -29,7 +29,7 @@
 #define MINIMUM_POM_SIZE 100
 #define MINIMUM_ROBOT_MARKER_SIZE 50
 
-typedef enum {CENTER_X, CENTER_Y, CENTROID_X, CENTROID_Y, AREA, BBOX_ULX, BBOX_ULY, BBOX_LRX, BBOX_LRY} CameraStatistic;
+typedef enum {CENTER_X, CENTER_Y, CENTROID_X, CENTROID_Y, AREA, BBOX_ULX, BBOX_ULY, BBOX_LRX, BBOX_LRY, LOWEST_LRY, LOWEST_CENTER_X} CameraStatistic;
 typedef enum {BACKWARDS_FORWARDS, LEFT_RIGHT} X_OR_Y;
 typedef struct
 {
@@ -65,13 +65,14 @@ void _next_color_model(int* color_model);
 void _previous_color_model(int* color_model);
 void _increase_refresh_rate(int* milliseconds_between_pictures);
 void _decrease_refresh_rate(int* milliseconds_between_pictures);
-int _get_camera_statistic(CameraStatistic statistic, int color_model);
+int _get_camera_statistic(CameraStatistic statistic, int color_model, int minimum_area);
+point2 lowest_blob(int color_model, int minimum_area);
 
 // Functions that must be defined elsewhere for the move... functions to work.
-extern void spin_left_for_camera_search();
-extern void spin_right_for_camera_search();
-extern void move_backwards_for_camera_search();
-extern void move_forwards_for_camera_search();
+extern void spin_left_for_camera_search(int speed);
+extern void spin_right_for_camera_search(int speed);
+extern void move_backwards_for_camera_search(int speed);
+extern void move_forwards_for_camera_search(int speed);
 extern void stop_camera_search();
 
 // Opens the camera at the given resolution.
@@ -166,10 +167,10 @@ int move_so_blob_is_at_x(int color_model, int desired_x, int delta, int minimum_
 				return 1;
 			} else if (blob_center_x < desired_x - delta) {
 				display_printf(0, 2, "Spin LEFT ");
-				spin_left_for_camera_search();
+				spin_left_for_camera_search(20);
 			} else {
 				display_printf(0, 2, "Spin RIGHT");
-				spin_right_for_camera_search();
+				spin_right_for_camera_search(20);
 			}
 		}
 		
@@ -214,10 +215,10 @@ int move_so_blob_is_at_y(int color_model, int desired_y, int delta, int minimum_
 			return 1;
 		} else if (blob_target_y < desired_y - delta) {
 			display_printf(0, 2, "Move BACKWARDS");
-			move_backwards_for_camera_search();
+			move_backwards_for_camera_search(40);
 		} else {
 			display_printf(0, 2, "Move FORWARDS ");
-			move_forwards_for_camera_search();
+			move_forwards_for_camera_search(40);
 		}
 		
 		// Wait a bit before taking the next picture
@@ -249,7 +250,7 @@ int move_so_blob_is_at(int color_model, int desired_number, int delta, int minim
 		// If there is a big enough blob:
 		
 			// Get the current number for the specified camera statistic.
-			current_number = _get_camera_statistic(statistic, color_model);
+			current_number = _get_camera_statistic(statistic, color_model, minimum_area);
 			
 			// Is the current number within the specified delta of the desired number?
 			// If so, return success.  Otherwise, move the appropriapte direction.
@@ -284,7 +285,7 @@ int move_so_blob_is_at(int color_model, int desired_number, int delta, int minim
 }
 
 // Returns the number for the given CameraStatistic, e.g. CAMERA_X or AREA or ...
-int _get_camera_statistic(CameraStatistic statistic, int color_model) {
+int _get_camera_statistic(CameraStatistic statistic, int color_model, int minimum_area) {
 	switch (statistic) {
 		case CENTER_X:	return get_object_center(color_model, LARGEST_BLOB).x;
 		case CENTER_Y:	return get_object_center(color_model, LARGEST_BLOB).y;
@@ -295,9 +296,42 @@ int _get_camera_statistic(CameraStatistic statistic, int color_model) {
 		case BBOX_ULY:	return get_object_bbox(color_model, LARGEST_BLOB).uly;
 		case BBOX_LRX:	return get_object_bbox(color_model, LARGEST_BLOB).ulx + get_object_bbox(color_model, LARGEST_BLOB).width;
 		case BBOX_LRY:	return get_object_bbox(color_model, LARGEST_BLOB).uly + get_object_bbox(color_model, LARGEST_BLOB).height;
+		case LOWEST_LRY: return lowest_blob(color_model, minimum_area).y;
+		case LOWEST_CENTER_X: return lowest_blob(color_model, minimum_area).x;
 		default:		show_message("ERROR: Request for an unknown camera statistic!  Using CENTER_X\n");
 						return get_object_center(color_model, LARGEST_BLOB).x;
 	}
+}
+
+// Return the center of line that is the bottom of the lowest big enough blob (intended for boosters).
+point2 lowest_blob(int color_model, int minimum_area)
+{
+	int k, size, y, biggest_y, center_x;
+	point2 p;
+	
+	k = 1;
+	biggest_y = get_object_bbox(color_model, 0).uly + get_object_bbox(color_model, 0).height;
+	center_x = get_object_bbox(color_model, 0).ulx + (get_object_bbox(color_model, 0).width / 2);
+	
+	while (TRUE)
+	{
+		size = get_object_area(color_model, k);
+		if (size < minimum_area)
+		{
+			break;
+		}
+		y = get_object_bbox(color_model, k).uly + get_object_bbox(color_model, k).height;
+		if (y > biggest_y) {
+		    biggest_y = y;
+			center_x = get_object_bbox(color_model, k).ulx + (get_object_bbox(color_model, k).width / 2);
+		}
+		k = k + 1;
+	}
+	
+	p.x = center_x;
+	p.y = biggest_y;
+	
+	return p;
 }
 
 // FIXME - write this spec
@@ -537,7 +571,5 @@ void _increase_refresh_rate(int* milliseconds_between_pictures) {
 void _decrease_refresh_rate(int* milliseconds_between_pictures) {
 	*milliseconds_between_pictures = *milliseconds_between_pictures * 2;
 }
-
-
 
 #endif

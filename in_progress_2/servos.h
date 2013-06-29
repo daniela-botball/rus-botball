@@ -4,18 +4,21 @@
 #include "universal_library.h"
 #include "create_library.h"
 
-#define GATE_SERVO 0
-#define CLAW_SERVO 1
+
+#define CLAW_SERVO 0
+#define ARM_SERVO 1
 #define JOINT_SERVO 2
-#define ARM_SERVO 3
+#define CAMERA_SERVO 3
 #define BOOSTER_PORT 1
+#define GATE_SERVO 0
 
 #define GATE_SERVO_OPEN_POSITION 925
 #define GATE_SERVO_CLOSED_POSITION 0
-#define CLAW_SERVO_OPEN_POSITION 1012
-#define CLAW_SERVO_CLOSE_POSITION 1900
-#define CLAW_SERVO_HALF_CLOSED_POSITION 1650
-#define JOINT_SERVO_IN_POSITION 117
+#define CLAW_SERVO_OPEN_POSITION 1500
+#define CLAW_SERVO_CLOSE_POSITION 500
+#define CLAW_SERVO_START_POSITION 1240
+#define CLAW_SERVO_HALF_CLOSED_POSITION 1240
+#define JOINT_SERVO_IN_POSITION 160
 #define JOINT_SERVO_OUT_POSITION 1838
 #define JOINT_SERVO_DOWN_POSITION 1203 //1477
 #define JOINT_SERVO_START_POSITION 1900
@@ -23,9 +26,10 @@
 #define ARM_SERVO_DOWN_POSITION 0
 #define ARM_SERVO_START_POSITION 761
 #define ARM_SERVO_DROP_POSITION 1480
+#define CAMERA_START_POSITION 1110
+#define CAMERA_PICKUP_BOOSTER_POSITION 1110
 
 typedef enum {DROP_BOOSTER, LOWER_BOOSTER} Drop_or_lower_booster;
-
 
 void open_claw(int sleeptime);
 void close_claw(int sleeptime);
@@ -39,8 +43,6 @@ void move_arm_to_drop_position(int sleeptime);
 void close_gate(int sleeptime);
 void open_gate(int sleeptime);
 void motor_push_down(int sleeptime);
-
-
 
 void start_claw();
 void start_arm();
@@ -134,7 +136,7 @@ void motor_push_down(int sleeptime)
 
 void start_claw()
 {
-	set_servo_position(CLAW_SERVO, CLAW_SERVO_CLOSE_POSITION);
+	set_servo_position(CLAW_SERVO, CLAW_SERVO_START_POSITION);
 }
 
 void start_arm()
@@ -152,12 +154,19 @@ void start_gate()
 	set_servo_position(GATE_SERVO, GATE_SERVO_OPEN_POSITION);
 }
 
+
+void start_camera_servo()
+{
+    set_servo_position(CAMERA_SERVO, CAMERA_START_POSITION);
+}
+
 void start_servos()
 {
 	start_claw();
 	start_joint();
 	start_arm();
-	start_gate();
+	start_camera_servo();
+	//start_gate();
 	unrelax_servos();
 	msleep(1000);
 }
@@ -173,7 +182,8 @@ void unrelax_servos()
 	set_servo_position(JOINT_SERVO, get_servo_position(JOINT_SERVO));
 	set_servo_position(ARM_SERVO, get_servo_position(ARM_SERVO));
 	set_servo_position(CLAW_SERVO, get_servo_position(CLAW_SERVO));
-	set_servo_position(GATE_SERVO, get_servo_position(GATE_SERVO));
+	//set_servo_position(CAMERA_SERVO, get_servo_position(CAMERA_SERVO));
+	set_servo_position(CAMERA_SERVO, CAMERA_PICKUP_BOOSTER_POSITION); // FIXME: Maybe too far motion for camera??
 	enable_servos();
 }
 

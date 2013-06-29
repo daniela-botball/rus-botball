@@ -28,9 +28,9 @@ Failures:
 #define LIFT_SERVO_UP_POSITION 2047
 #define LIFT_SERVO_START_POSITION LIFT_SERVO_UP_POSITION
 #define LIFT_SERVO_RUN_POSITION 1880
-#define LIFT_SERVO_HIGH_POSITION 1460
-#define LIFT_SERVO_MIDDLE_POSITION 1340
-#define LIFT_SERVO_LOW_POSITION 1211
+#define LIFT_SERVO_HIGH_POSITION 1500
+#define LIFT_SERVO_MIDDLE_POSITION 1400
+#define LIFT_SERVO_LOW_POSITION 1280 // not used
 #define LIFT_SERVO_DUMP_POSITION 1800
 
 #define DUMPER_SERVO_START_POSITION 1200
@@ -54,23 +54,20 @@ void pick_up_green_pom();
 void turn_onto_line(int direction);
 int is_seeing_black(int sensor);
 void move_servo_gently(int servo, int position);
+void drive_until_line();
 
 void test_pwm();
-void test_dumper();
 
 int main()
 {
-    // FIXME:  Move so that they don't crash into each other
-	set_servo_position(LIFT_SERVO, LIFT_SERVO_RUN_POSITION);
+	
+	// FIXME:  Move so that they don't crash into each other
+	set_servo_position(LIFT_SERVO, LIFT_SERVO_START_POSITION);
 	set_servo_position(DUMPER_SERVO, DUMPER_SERVO_START_POSITION);
 
 	enable_servos();
 	sleep(2);
 	initialize_camera(LOW_RES);
-	press_A_to_continue();
-	
-	test_dumper();
-	return 1;
 	
 	push_transport_and_turn();
 	press_A_to_continue();
@@ -86,6 +83,11 @@ int main()
 	
 	go_to_fourth_green_pom();
 	press_A_to_continue();
+	
+	put_poms_into_transport();
+	press_A_to_continue();
+	
+	drive_until_line();
 	
 	return 0;
 }
@@ -114,21 +116,22 @@ void test_pwm()
 	press_A_to_continue();
 }
 
-void test_dumper() {
-    put_poms_into_transport();
-}
 
 void push_transport_and_turn()
 {
 	set_servo_position(LIFT_SERVO, LIFT_SERVO_DOWN_POSITION);
 	msleep(1000);
-	set_servo_position(LIFT_SERVO, LIFT_SERVO_START_POSITION);
+	set_servo_position(LIFT_SERVO, LIFT_SERVO_RUN_POSITION);
 	msleep(1000);
 	press_A_to_continue();
 	
+	/* TODO: delete this after testing what follows
 	lego_drive_distance(5, 30, FORWARDS);
 	lego_drive_distance(5, 60, FORWARDS);
 	lego_drive_distance(5, 80, FORWARDS);
+	*/
+	drive_until_line();
+	lego_drive_distance(5, 30, FORWARDS);
 	press_A_to_continue();
 	
 	turn_onto_line(LEFT);
@@ -136,10 +139,10 @@ void push_transport_and_turn()
 	
 void go_to_first_green_pom()
 {
-	lego_drive_distance(2, 30, FORWARDS);
-	lego_drive_distance(2, 60, FORWARDS);
+	lego_drive_distance(1, 40, FORWARDS);
 	
 	pd_follow(STOPPING_TOPHAT, 0);
+	press_A_to_continue();
 	turn_onto_line(RIGHT);
 	
 	sleep(0.2);
@@ -189,9 +192,9 @@ void go_to_pom(int servo_position, int color, int x, int y, int delta, int xspee
 
 void pick_up_green_pom()
 {
-	go_to_pom(LIFT_SERVO_HIGH_POSITION, GREEN, 77, 91, 10, 45, 60);
-	go_to_pom(LIFT_SERVO_MIDDLE_POSITION, GREEN, 77, 90, 6, 30, 45);
-	go_to_pom(LIFT_SERVO_LOW_POSITION, GREEN, 77, 40, 2, 15, 30);
+	go_to_pom(LIFT_SERVO_HIGH_POSITION, GREEN, 84, 85, 10, 45, 60);
+	go_to_pom(LIFT_SERVO_MIDDLE_POSITION, GREEN, 73, 84, 2, 15, 30); // was 6, 30, 45
+	//go_to_pom(LIFT_SERVO_LOW_POSITION, GREEN, 77, 40, 2, 15, 30);
 	move_servo_gently(LIFT_SERVO, LIFT_SERVO_DOWN_POSITION);
 	motor(SUCKER_MOTOR, 100);
 	sleep(2); // TODO: Set this number appropriately.
@@ -201,7 +204,7 @@ void pick_up_green_pom()
 
 void turn_onto_line(int direction)
 {
-	lego_spin(5, direction);
+	lego_spin(20, direction);
 	if (direction == RIGHT)
 	{
 		while (TRUE)
@@ -261,6 +264,11 @@ void move_servo_gently(int servo, int desired_position)
 }
 
 void put_poms_into_transport() {
+
+	lego_spin_degrees(75, 40, LEFT);
+	press_A_to_continue();
+	drive_until_line();
+
     lego_spin_degrees(75, 40, LEFT); // FIXME, really 90
 	press_A_to_continue();
 	
@@ -285,6 +293,16 @@ void dump_poms() {
     set_servo_position(DUMPER_SERVO, DUMPER_SERVO_DUMP_POSITION);
 	msleep(1000);
 }
+
+
+void drive_until_line()
+{
+	lego_drive_distance(1, 40, FORWARDS);
+	lego_drive(60, FORWARDS);
+	while (analog10(STOPPING_SENSOR) < STOPPING_THRESHOLD) {}
+	lego_stop();
+}
+
 
 void spin_left_for_camera_search(int speed) { lego_pwm_spin(speed, LEFT); }
 void spin_right_for_camera_search(int speed) { lego_pwm_spin(speed, RIGHT); }

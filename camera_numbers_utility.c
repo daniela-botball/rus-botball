@@ -10,7 +10,7 @@
 #include "in_progress_2/universal_library.h"
 int main() {
 	int status;
-	set_servo_position(1, 1460); //1650
+	set_servo_position(3, 1110); //1500, 1400, 1280
 	enable_servos();
 	
 	status = initialize_camera(LOW_RES);

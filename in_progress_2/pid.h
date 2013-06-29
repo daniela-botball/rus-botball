@@ -15,8 +15,6 @@
 #define KD 0.0
 #define MIN_SPEED 10
 #define MAX_SPEED 100
-#define L_REFLECTANCE 0
-#define R_REFLECTANCE 2
 #define STOPPING_BUMP 0
 #define LEVER 1
 //#define STOPPING_TOPHAT 3
