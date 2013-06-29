@@ -9,11 +9,10 @@
 #define ARM_SERVO 1
 #define JOINT_SERVO 2
 #define CAMERA_SERVO 3
-#define BOOSTER_PORT 1
-#define GATE_SERVO 0
+#define BOOSTER_MOTOR 1
+#define GATE_MOTOR 2
 
-#define GATE_SERVO_OPEN_POSITION 925
-#define GATE_SERVO_CLOSED_POSITION 0
+#define GATE_DISTANCE 550
 #define CLAW_SERVO_OPEN_POSITION 1500
 #define CLAW_SERVO_CLOSE_POSITION 500
 #define CLAW_SERVO_START_POSITION 1240
@@ -56,14 +55,13 @@ void unrelax_servos();
 void grab_booster(int distance);
 void lift_booster();
 void drop_booster(Drop_or_lower_booster drop_or_lower);
-
+void move_servo_gently(int servo, int desired_position);
 
 void open_claw(int sleeptime)
 {
 	set_servo_position(CLAW_SERVO, CLAW_SERVO_OPEN_POSITION);
 	msleep(sleeptime);
 }
-
 
 void close_claw(int sleeptime)
 {
@@ -109,13 +107,19 @@ void lower_arm(int sleeptime)
 
 void close_gate(int sleeptime)
 {
-	set_servo_position(GATE_SERVO, GATE_SERVO_CLOSED_POSITION);
+    clear_motor_position_counter(GATE_MOTOR);
+    motor(GATE_MOTOR, -100);
+	while (-get_motor_position_counter(GATE_MOTOR) < GATE_DISTANCE);
+	off(GATE_MOTOR);
 	msleep(sleeptime);
 }
 
 void open_gate(int sleeptime)
 {
-	set_servo_position(GATE_SERVO, GATE_SERVO_OPEN_POSITION);
+	clear_motor_position_counter(GATE_MOTOR);
+    motor(GATE_MOTOR, 100);
+	while (get_motor_position_counter(GATE_MOTOR) < GATE_DISTANCE);
+	off(GATE_MOTOR);
 	msleep(sleeptime);
 }
 
@@ -128,9 +132,9 @@ void half_close_claw(int sleeptime)
 void motor_push_down(int sleeptime)
 {
 	relax_servos();
-	motor(BOOSTER_PORT, 50);
+	motor(BOOSTER_MOTOR, 50);
 	msleep(sleeptime);
-	off(BOOSTER_PORT);
+	off(BOOSTER_MOTOR);
 	unrelax_servos();
 }
 
@@ -149,9 +153,9 @@ void start_joint()
 	set_servo_position(JOINT_SERVO, JOINT_SERVO_START_POSITION);
 }
 
-void start_gate()
+void start_gate() // Precondition: Motor arm must be against the stop
 {
-	set_servo_position(GATE_SERVO, GATE_SERVO_OPEN_POSITION);
+	// Purposefully does nothing
 }
 
 
@@ -166,7 +170,7 @@ void start_servos()
 	start_joint();
 	start_arm();
 	start_camera_servo();
-	//start_gate();
+	start_gate();
 	unrelax_servos();
 	msleep(1000);
 }
@@ -182,8 +186,7 @@ void unrelax_servos()
 	set_servo_position(JOINT_SERVO, get_servo_position(JOINT_SERVO));
 	set_servo_position(ARM_SERVO, get_servo_position(ARM_SERVO));
 	set_servo_position(CLAW_SERVO, get_servo_position(CLAW_SERVO));
-	//set_servo_position(CAMERA_SERVO, get_servo_position(CAMERA_SERVO));
-	set_servo_position(CAMERA_SERVO, CAMERA_PICKUP_BOOSTER_POSITION); // FIXME: Maybe too far motion for camera??
+	move_servo_gently(CAMERA_SERVO, CAMERA_PICKUP_BOOSTER_POSITION); // FIXME: Maybe too far motion for camera??
 	enable_servos();
 }
 
@@ -208,6 +211,32 @@ void lift_booster()
 	press_A_to_continue();
 	raise_arm(2000);
 	close_gate(200);
+}
+
+void move_servo_gently(int servo, int desired_position)
+{
+	int current_position, k;
+	int delta = 5;
+	int sleeptime = 10;
+
+	current_position = get_servo_position(servo);
+	if (desired_position < current_position)
+	{
+		while (current_position > desired_position + delta) {
+			current_position = current_position - delta;
+			set_servo_position(servo, current_position);
+			msleep(sleeptime);
+		}
+		
+	} else {
+		while (current_position < desired_position - delta) {
+			current_position = current_position + delta;
+			set_servo_position(servo, current_position);
+			msleep(sleeptime);
+		}
+	}
+	set_servo_position(servo, desired_position);
+	msleep(sleeptime);
 }
 
 void press_a_to_continue(int off_or_on)

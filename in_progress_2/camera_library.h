@@ -298,7 +298,7 @@ int _get_camera_statistic(CameraStatistic statistic, int color_model, int minimu
 		case BBOX_LRY:	return get_object_bbox(color_model, LARGEST_BLOB).uly + get_object_bbox(color_model, LARGEST_BLOB).height;
 		case LOWEST_LRY: return lowest_blob(color_model, minimum_area).y;
 		case LOWEST_CENTER_X: return lowest_blob(color_model, minimum_area).x;
-		default:		show_message("ERROR: Request for an unknown camera statistic!  Using CENTER_X\n");
+		default:		display_printf(0, 3, "ERROR: Request for an unknown camera statistic!  Using CENTER_X\n");
 						return get_object_center(color_model, LARGEST_BLOB).x;
 	}
 }
@@ -309,9 +309,10 @@ point2 lowest_blob(int color_model, int minimum_area)
 	int k, size, y, biggest_y, center_x;
 	point2 p;
 	
-	k = 1;
 	biggest_y = get_object_bbox(color_model, 0).uly + get_object_bbox(color_model, 0).height;
 	center_x = get_object_bbox(color_model, 0).ulx + (get_object_bbox(color_model, 0).width / 2);
+	
+	k = 1;
 	
 	while (TRUE)
 	{
@@ -432,6 +433,7 @@ void display_blob_numbers(int color_model, int blob, int header_line, int data_l
 			get_object_bbox(color_model, blob).ulx + get_object_bbox(color_model, blob).width,
 			get_object_bbox(color_model, blob).uly + get_object_bbox(color_model, blob).height);
 	}
+	msleep(1000); // FIXME
 }
 
 bbox get_pile_bbox(int color)

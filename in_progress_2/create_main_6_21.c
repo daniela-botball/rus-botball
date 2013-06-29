@@ -67,6 +67,7 @@ void drive_to_booster(int distance, int direction)
 	create_spin_degrees(87, 87, RIGHT);									// Turns towards the booster
 	press_A_to_continue();
 	
+	unrelax_servos();
 	move_so_blob_is_at(BOOSTER_COLOR, 159, 5, 100, LOWEST_CENTER_X, LEFT_RIGHT, 20);
 	press_A_to_continue();
 	move_so_blob_is_at(BOOSTER_COLOR, 95, 5, 100, LOWEST_LRY, BACKWARDS_FORWARDS, 40);
@@ -87,8 +88,7 @@ void drive_to_booster(int distance, int direction)
 }
 
 void grab_booster_main(int distance)
-{
-	unrelax_servos();													// Turns the servos on to pick up the first booster
+{													
 	open_gate(600);														// Opens the gate so the arm can come down
 	grab_booster(distance);												// Grabs the booster
 	press_A_to_continue();
@@ -120,8 +120,8 @@ void drop_booster_main(int distance, int booster)
 	drop_booster(DROP_BOOSTER);											// Drops the booster
 }
 
-void spin_left_for_camera_search(int speed) { create_spin_CCW(speed); } // was 20
-void spin_right_for_camera_search(int speed) { create_spin_CW(speed); }
-void move_backwards_for_camera_search(int speed) { create_drive_straight(-speed); }  // was -40
-void move_forwards_for_camera_search(int speed) { create_drive_straight(speed); } // was 40
+void spin_left_for_camera_search(int speed) { /*create_spin_CCW(speed);*/ } // was 20
+void spin_right_for_camera_search(int speed) { /*create_spin_CW(speed);*/ }
+void move_backwards_for_camera_search(int speed) { /*create_drive_straight(-speed);*/ }  // was -40
+void move_forwards_for_camera_search(int speed) { /*create_drive_straight(speed);*/ } // was 40
 void stop_camera_search() { create_stop(); }

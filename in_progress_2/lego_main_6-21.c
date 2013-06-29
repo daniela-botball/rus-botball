@@ -48,6 +48,7 @@ void go_to_third_green_pom();
 void go_to_fourth_green_pom();
 void put_poms_into_transport();
 void dump_poms();
+void suck_up_pom();
 
 void go_to_pom(int servo_position, int color, int x, int y, int delta, int xspeed, int yspeed);
 void pick_up_green_pom();
@@ -131,7 +132,7 @@ void push_transport_and_turn()
 	lego_drive_distance(5, 80, FORWARDS);
 	*/
 	drive_until_line();
-	lego_drive_distance(5, 30, FORWARDS);
+	lego_drive_distance(6.5, 30, FORWARDS);
 	press_A_to_continue();
 	
 	turn_onto_line(LEFT);
@@ -149,14 +150,14 @@ void go_to_first_green_pom()
 	lego_drive_distance(1, 30, FORWARDS);
 	lego_drive_distance(1, 60, FORWARDS);
 	pd_follow(STOPPING_TIME, 1.5);
-	lego_spin_degrees(35, 35, RIGHT);
+	lego_spin_degrees(39, 35, RIGHT);
 	pick_up_green_pom();
 }
 
 void go_to_second_green_pom()
 {
-	lego_drive_distance(40, 40, FORWARDS);
-	lego_spin_degrees(5, 30, LEFT);
+	lego_drive_distance(33, 40, FORWARDS); //was 40
+	lego_spin_degrees(6, 30, LEFT);
 	lego_drive_distance(25, 40, FORWARDS);
 	pick_up_green_pom();
 }
@@ -164,7 +165,7 @@ void go_to_second_green_pom()
 void go_to_third_green_pom()
 {
 	lego_drive_distance(5, 20, FORWARDS);
-	lego_spin_degrees(90, 40, LEFT);
+	lego_spin_degrees(40, 40, LEFT); //was 60
 	pick_up_green_pom();
 }
 
@@ -196,10 +197,23 @@ void pick_up_green_pom()
 	go_to_pom(LIFT_SERVO_MIDDLE_POSITION, GREEN, 73, 84, 2, 15, 30); // was 6, 30, 45
 	//go_to_pom(LIFT_SERVO_LOW_POSITION, GREEN, 77, 40, 2, 15, 30);
 	move_servo_gently(LIFT_SERVO, LIFT_SERVO_DOWN_POSITION);
+	suck_up_pom();
+	move_servo_gently(LIFT_SERVO, LIFT_SERVO_UP_POSITION);
+	suck_up_pom();
+	
+}
+
+void suck_up_pom()
+{
 	motor(SUCKER_MOTOR, 100);
 	sleep(2); // TODO: Set this number appropriately.
 	off(SUCKER_MOTOR);
-	move_servo_gently(LIFT_SERVO, LIFT_SERVO_UP_POSITION);
+	return;
+	motor(SUCKER_MOTOR, 100);
+	while (TRUE)
+	{
+		//if (SUCKER_TOPHAT < POM_DISTANCE
+	}
 }
 
 void turn_onto_line(int direction)
