@@ -3,24 +3,30 @@
 #ifndef _RUS_TIMER_H_
 #define _RUS_TIMER_H_
 
-int TIME;
+float TIME;
 int TIME2;
 
 void timer();
+void start_timer();
+float check_timer();
+void reset_timer();
+int check_timer2();
+
 
 void start_timer()
 {
+	reset_timer();
 	thread timer_thread;
 	TIME = seconds();
-	timer_thread = thread_create(timer);
-	thread_start(timer_thread);
+	//timer_thread = thread_create(timer);
+	//thread_start(timer_thread);
 }
 
-int check_timer()
+float check_timer()
 {
 	double current_time;
 	current_time = seconds() - TIME;
-	return (int) current_time;
+	return current_time;
 }
 
 int check_timer2()
@@ -30,7 +36,7 @@ int check_timer2()
 
 void reset_timer()
 {
-	TIME = 0;
+	TIME = 0.0;
 }
 
 void timer() {

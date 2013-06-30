@@ -91,8 +91,8 @@ int pd_follow(int stopping_type, int i)
 		{
 			r_multiplier = 1.0;
 		}
-		l_speed = l_multiplier * 20.0 + 80.0;
-		r_speed = r_multiplier * 20.0 + 80.0;
+		l_speed = l_multiplier * 40.0 + 60.0; // was 20, 80
+		r_speed = r_multiplier * 40.0 + 60.0;
 		motor(LEFT_MOTOR, l_speed);
 		motor(RIGHT_MOTOR, r_speed);
 		display_printf(0, 0, "left, right - %4i, %4i", l_speed, r_speed);

@@ -39,8 +39,8 @@ typedef enum {PWM_RUNNING, PWM_STOPPED} PWM_state;
 PWM_state PWM_THREAD = PWM_STOPPED;
 int PWM_CYCLE_LENGTH = 100;
 float PWM_ON_LENGTH = .3;
-int PWM_LEFT_BASE_SPEED = 30;
-int PWM_RIGHT_BASE_SPEED = 30;
+int PWM_LEFT_BASE_SPEED = 40; // was 30
+int PWM_RIGHT_BASE_SPEED = 40; // was 30
 int PWM_DIRECTION;
 thread PWM_PROCCESS;
 
@@ -49,7 +49,7 @@ void lego_stop();
 void lego_drive(int speed, int direction);
 int lego_drive_distance(float centimeters, int speed, int direction);
 void start_timer();
-int check_timer();
+float check_timer();
 void reset_timer();
 void lego_pwm_drive(int speed, int direction);
 void lego_pwm_spin(int speed, int direction);

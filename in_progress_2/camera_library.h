@@ -433,7 +433,6 @@ void display_blob_numbers(int color_model, int blob, int header_line, int data_l
 			get_object_bbox(color_model, blob).ulx + get_object_bbox(color_model, blob).width,
 			get_object_bbox(color_model, blob).uly + get_object_bbox(color_model, blob).height);
 	}
-	msleep(1000); // FIXME
 }
 
 bbox get_pile_bbox(int color)

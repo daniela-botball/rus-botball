@@ -56,12 +56,14 @@ void turn_onto_line(int direction);
 int is_seeing_black(int sensor);
 void move_servo_gently(int servo, int position);
 void drive_until_line();
+void drive_to_transport();
 
 void test_pwm();
 
 int main()
 {
 	
+	//_SKIP_PRESS_A_TO_CONTINUE = TRUE;
 	// FIXME:  Move so that they don't crash into each other
 	set_servo_position(LIFT_SERVO, LIFT_SERVO_START_POSITION);
 	set_servo_position(DUMPER_SERVO, DUMPER_SERVO_START_POSITION);
@@ -72,7 +74,7 @@ int main()
 	
 	push_transport_and_turn();
 	press_A_to_continue();
-	
+	/*
 	go_to_first_green_pom();
 	press_A_to_continue();
 	
@@ -84,11 +86,12 @@ int main()
 	
 	go_to_fourth_green_pom();
 	press_A_to_continue();
+	*/
+	drive_to_transport();
+	press_A_to_continue();
 	
 	put_poms_into_transport();
 	press_A_to_continue();
-	
-	drive_until_line();
 	
 	return 0;
 }
@@ -141,23 +144,34 @@ void push_transport_and_turn()
 void go_to_first_green_pom()
 {
 	lego_drive_distance(1, 40, FORWARDS);
-	
 	pd_follow(STOPPING_TOPHAT, 0);
 	press_A_to_continue();
+	
+	//lego_drive_distance(1, 30, FORWARDS);
+	press_A_to_continue();
+	
 	turn_onto_line(RIGHT);
 	
 	sleep(0.2);
 	lego_drive_distance(1, 30, FORWARDS);
 	lego_drive_distance(1, 60, FORWARDS);
 	pd_follow(STOPPING_TIME, 1.5);
-	lego_spin_degrees(39, 35, RIGHT);
+	press_A_to_continue();
+	
+	move_servo_gently(LIFT_SERVO, LIFT_SERVO_HIGH_POSITION);
+	lego_spin_degrees(10, 40, RIGHT);
+	press_A_to_continue();
+	move_so_blob_is_at(ORANGE, 110, 10, 50, CENTER_X, LEFT_RIGHT, 40);
+	press_A_to_continue();
+	//lego_spin_degrees(20, 35, RIGHT);
+	press_A_to_continue();
 	pick_up_green_pom();
 }
 
 void go_to_second_green_pom()
 {
 	lego_drive_distance(33, 40, FORWARDS); //was 40
-	lego_spin_degrees(6, 30, LEFT);
+	lego_spin_degrees(15, 30, LEFT);
 	lego_drive_distance(25, 40, FORWARDS);
 	pick_up_green_pom();
 }
@@ -165,14 +179,24 @@ void go_to_second_green_pom()
 void go_to_third_green_pom()
 {
 	lego_drive_distance(5, 20, FORWARDS);
-	lego_spin_degrees(40, 40, LEFT); //was 60
+	lego_spin_degrees(36, 40, LEFT); //was 60
 	pick_up_green_pom();
 }
 
 void go_to_fourth_green_pom()
 {
-	lego_spin_degrees(90, 30, LEFT);
-	lego_drive_distance(20, 40, FORWARDS);
+	lego_spin_degrees(120, 30, RIGHT);
+	press_A_to_continue();
+	lego_drive_distance(15, 40, FORWARDS);
+	press_A_to_continue();
+	lego_drive_distance(1.5, 40, BACKWARDS);
+	press_A_to_continue();
+	lego_spin_degrees(75, 40, RIGHT);
+	press_A_to_continue();
+	lego_drive_distance(40, 40, FORWARDS);
+	press_A_to_continue();
+	lego_spin_degrees(25, 40, RIGHT);
+	press_A_to_continue();
 	pick_up_green_pom();
 }
 
@@ -194,13 +218,13 @@ void go_to_pom(int servo_position, int color, int x, int y, int delta, int xspee
 void pick_up_green_pom()
 {
 	go_to_pom(LIFT_SERVO_HIGH_POSITION, GREEN, 84, 85, 10, 45, 60);
+	press_A_to_continue();
 	go_to_pom(LIFT_SERVO_MIDDLE_POSITION, GREEN, 73, 84, 2, 15, 30); // was 6, 30, 45
 	//go_to_pom(LIFT_SERVO_LOW_POSITION, GREEN, 77, 40, 2, 15, 30);
 	move_servo_gently(LIFT_SERVO, LIFT_SERVO_DOWN_POSITION);
 	suck_up_pom();
 	move_servo_gently(LIFT_SERVO, LIFT_SERVO_UP_POSITION);
 	suck_up_pom();
-	
 }
 
 void suck_up_pom()
@@ -277,14 +301,15 @@ void move_servo_gently(int servo, int desired_position)
 	msleep(sleeptime);
 }
 
-void put_poms_into_transport() {
+void put_poms_into_transport() 
+{
 
 	lego_spin_degrees(75, 40, LEFT);
 	press_A_to_continue();
 	drive_until_line();
 
-    lego_spin_degrees(75, 40, LEFT); // FIXME, really 90
-	press_A_to_continue();
+    //lego_spin_degrees(75, 40, LEFT); // FIXME, really 90
+	//press_A_to_continue();
 	
 	lego_drive_distance(5, 30, FORWARDS);
 	lego_drive_distance(5, 60, FORWARDS);
@@ -294,7 +319,7 @@ void put_poms_into_transport() {
 	//lego_drive_distance(3, 30, BACKWARDS);
 	//press_A_to_continue();
 	
-	lego_spin_degrees(75, 40, RIGHT);  // FIXME, really 90
+	lego_spin_degrees(72, 40, RIGHT);  // FIXME, really 90
 	press_A_to_continue();
 	
 	dump_poms();
@@ -317,6 +342,16 @@ void drive_until_line()
 	lego_stop();
 }
 
+
+void drive_to_transport()
+{
+	pd_follow(STOPPING_TOPHAT, 0);
+	press_A_to_continue();
+	turn_onto_line(LEFT);
+	press_A_to_continue();
+	pd_follow(STOPPING_TIME, 4);
+}
+	
 
 void spin_left_for_camera_search(int speed) { lego_pwm_spin(speed, LEFT); }
 void spin_right_for_camera_search(int speed) { lego_pwm_spin(speed, RIGHT); }
