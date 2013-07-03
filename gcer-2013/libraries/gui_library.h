@@ -39,7 +39,7 @@
 #ifndef _RUS_GUI_LIBRARY_H_
 #define _RUS_GUI_LIBRARY_H_
 
-#include "../libraries/universal_library.h"
+#include "universal_library.h"
 
 typedef enum {NO_BUTTON, A_BUTTON, B_BUTTON, C_BUTTON, X_BUTTON, Y_BUTTON, Z_BUTTON} Button;
 
@@ -169,7 +169,6 @@ void show_message_on_line(char* message, int line) {
 		printf(message);
 		printf("\n");
 	}
-
 }
 
 void press_A_to_continue() {

@@ -4,7 +4,6 @@
 #include "universal_library.h"
 #include "create_library.h"
 
-
 #define CLAW_SERVO 0
 #define ARM_SERVO 1
 #define JOINT_SERVO 2
@@ -12,7 +11,7 @@
 #define BOOSTER_MOTOR 1
 #define GATE_MOTOR 2
 
-#define GATE_DISTANCE 550
+#define GATE_DISTANCE 400 // was 550, FIXME
 #define CLAW_SERVO_OPEN_POSITION 1500
 #define CLAW_SERVO_CLOSE_POSITION 500
 #define CLAW_SERVO_START_POSITION 1240
@@ -26,7 +25,7 @@
 #define ARM_SERVO_START_POSITION 761
 #define ARM_SERVO_DROP_POSITION 1480
 #define CAMERA_START_POSITION 1110
-#define CAMERA_PICKUP_BOOSTER_POSITION 1110
+#define CAMERA_PICKUP_BOOSTER_POSITION 950 // was 1110
 
 typedef enum {DROP_BOOSTER, LOWER_BOOSTER} Drop_or_lower_booster;
 
@@ -105,20 +104,20 @@ void lower_arm(int sleeptime)
 	msleep(sleeptime);
 }
 
-void close_gate(int sleeptime)
+void close_gate(int sleeptime)	// Precondition: Gagte must be in the OPEN position
 {
     clear_motor_position_counter(GATE_MOTOR);
-    motor(GATE_MOTOR, -100);
-	while (-get_motor_position_counter(GATE_MOTOR) < GATE_DISTANCE);
+    motor(GATE_MOTOR, 100);
+	while (get_motor_position_counter(GATE_MOTOR) < GATE_DISTANCE) ;
 	off(GATE_MOTOR);
 	msleep(sleeptime);
 }
 
-void open_gate(int sleeptime)
+void open_gate(int sleeptime)	// Precondition: Gagte must be in the CLOSED position
 {
 	clear_motor_position_counter(GATE_MOTOR);
-    motor(GATE_MOTOR, 100);
-	while (get_motor_position_counter(GATE_MOTOR) < GATE_DISTANCE);
+    motor(GATE_MOTOR, -100);
+	while (-get_motor_position_counter(GATE_MOTOR) < GATE_DISTANCE) ;
 	off(GATE_MOTOR);
 	msleep(sleeptime);
 }
@@ -153,9 +152,9 @@ void start_joint()
 	set_servo_position(JOINT_SERVO, JOINT_SERVO_START_POSITION);
 }
 
-void start_gate() // Precondition: Motor arm must be against the stop
-{
-	// Purposefully does nothing
+void start_gate()	// Precondition: Motor arm must be against the "gate is open" stop
+{					// POSITIVE motor direction should CLOSE the gate.
+	// Purposefully does nothing.
 }
 
 

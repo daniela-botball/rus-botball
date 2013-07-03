@@ -29,8 +29,23 @@
 #define MINIMUM_POM_SIZE 100
 #define MINIMUM_ROBOT_MARKER_SIZE 50
 
-typedef enum {CENTER_X, CENTER_Y, CENTROID_X, CENTROID_Y, AREA, BBOX_ULX, BBOX_ULY, BBOX_LRX, BBOX_LRY, LOWEST_LRY, LOWEST_CENTER_X} CameraStatistic;
+// In the following, all are as one would expect (UL meanns UpperLeft and LR means LowerRight)
+// except BoosterX and BoosterY are defined as follows:
+//   -- Consider only blobs whose ULX is in the righmost third of the screen (i.e., > 106)
+//   -- Of those, find the blob whose ULY is highest on the screen (i.e., furthest from camera, i.e., smallest number)
+//   -- BOOSTER_Y is the y-value of the top of the blob (i.e., that ULY)
+//   -- BOOSTER_X is the x-value of the center of the top of that blob
+//        (i.e., the midpoint of the ULX and LRX associatedfor that blob)
+typedef enum {CENTER_X, CENTER_Y, CENTROID_X, CENTROID_Y, AREA, BBOX_ULX, BBOX_ULY, BBOX_LRX, BBOX_LRY, BOOSTER_X, BOOSTER_Y} CameraStatistic;
+
 typedef enum {BACKWARDS_FORWARDS, LEFT_RIGHT} X_OR_Y;
+
+typedef struct
+{
+	point2 endpoint1;
+	point2 endpoint2;
+} Line;
+
 typedef struct
 {
 	int left;
@@ -66,7 +81,7 @@ void _previous_color_model(int* color_model);
 void _increase_refresh_rate(int* milliseconds_between_pictures);
 void _decrease_refresh_rate(int* milliseconds_between_pictures);
 int _get_camera_statistic(CameraStatistic statistic, int color_model, int minimum_area);
-point2 lowest_blob(int color_model, int minimum_area);
+point2 booster_blob(int color_model, int minimum_area);
 
 // Functions that must be defined elsewhere for the move... functions to work.
 extern void spin_left_for_camera_search(int speed);
@@ -260,16 +275,16 @@ int move_so_blob_is_at(int color_model, int desired_number, int delta, int minim
 				return 1;
 			} else if (current_number < desired_number - delta) {
 				if (direction == BACKWARDS_FORWARDS) {
-					display_printf(0, 2, "Move FORWARDS");
-					move_forwards_for_camera_search(speed);
+					display_printf(0, 2, "Move BACKWARDS");
+					move_backwards_for_camera_search(speed);
 				} else {
 					display_printf(0, 2, "Move LEFT");
 					spin_left_for_camera_search(speed);
 				}
 			} else {
 				if (direction == BACKWARDS_FORWARDS) {
-					display_printf(0, 2, "Move BACKWARDS");
-					move_backwards_for_camera_search(speed);
+					display_printf(0, 2, "Move FORWARDS");
+					move_forwards_for_camera_search(speed);
 				} else {
 					display_printf(0, 2, "Move RIGHT");
 					spin_right_for_camera_search(speed);
@@ -296,41 +311,62 @@ int _get_camera_statistic(CameraStatistic statistic, int color_model, int minimu
 		case BBOX_ULY:	return get_object_bbox(color_model, LARGEST_BLOB).uly;
 		case BBOX_LRX:	return get_object_bbox(color_model, LARGEST_BLOB).ulx + get_object_bbox(color_model, LARGEST_BLOB).width;
 		case BBOX_LRY:	return get_object_bbox(color_model, LARGEST_BLOB).uly + get_object_bbox(color_model, LARGEST_BLOB).height;
-		case LOWEST_LRY: return lowest_blob(color_model, minimum_area).y;
-		case LOWEST_CENTER_X: return lowest_blob(color_model, minimum_area).x;
+		case BOOSTER_Y: return booster_blob(color_model, minimum_area).y;
+		case BOOSTER_X: return booster_blob(color_model, minimum_area).x;
 		default:		display_printf(0, 3, "ERROR: Request for an unknown camera statistic!  Using CENTER_X\n");
 						return get_object_center(color_model, LARGEST_BLOB).x;
 	}
 }
 
-// Return the center of line that is the bottom of the lowest big enough blob (intended for boosters).
-point2 lowest_blob(int color_model, int minimum_area)
+// CReturn the center of line that is the bottom of the lowest big enough blob (intended for boosters).
+// Return the  point2  defined as follows:
+//   -- Consider only blobs whose ULX is in the righmost third of the screen (i.e., > 106)
+//   -- Of those, find the blob whose ULY is highest on the screen (i.e., furthest from camera, i.e., smallest number)
+//   -- The point2's y is the y-value of the top of the blob (i.e., that ULY)
+//   -- The point2's x is the x-value of the center of the top of that blob
+//        (i.e., the midpoint of the ULX and LRX associatedfor that blob)
+point2 booster_blob(int color_model, int minimum_area)
 {
-	int k, size, y, biggest_y, center_x;
+	int k, size, ulx, uly, smallest_y, center_x;
+	int have_found_a_blob_on_rhs;
 	point2 p;
 	
-	biggest_y = get_object_bbox(color_model, 0).uly + get_object_bbox(color_model, 0).height;
-	center_x = get_object_bbox(color_model, 0).ulx + (get_object_bbox(color_model, 0).width / 2);
-	
-	k = 1;
+	have_found_a_blob_on_rhs = FALSE;
+	k = -1;
 	
 	while (TRUE)
 	{
+		// Next blob.
+		k = k + 1;
+		
+		// Consider only big-enough blobs.  Stop when all remaining blobs are smaller.
 		size = get_object_area(color_model, k);
+		display_printf(0, 4, "size: %4i", size);
 		if (size < minimum_area)
 		{
 			break;
 		}
-		y = get_object_bbox(color_model, k).uly + get_object_bbox(color_model, k).height;
-		if (y > biggest_y) {
-		    biggest_y = y;
-			center_x = get_object_bbox(color_model, k).ulx + (get_object_bbox(color_model, k).width / 2);
+		
+		// Consider only blobx whose ULX is on the rightmost third of the screen.
+		ulx = get_object_bbox(color_model, k).ulx;
+		display_printf(0, 5, "ulx: %4i", ulx);
+		if (ulx <= 80)
+		{
+			continue;
 		}
-		k = k + 1;
+		
+		uly = get_object_bbox(color_model, k).uly;
+		display_printf(0, 6, "uly: %4i", uly);
+		
+		if (!have_found_a_blob_on_rhs || uly < smallest_y) {
+		    smallest_y = uly;
+			center_x = get_object_bbox(color_model, k).ulx + (get_object_bbox(color_model, k).width / 2);
+			have_found_a_blob_on_rhs = TRUE;
+		}
 	}
 	
 	p.x = center_x;
-	p.y = biggest_y;
+	p.y = smallest_y;
 	
 	return p;
 }
@@ -571,6 +607,23 @@ void _increase_refresh_rate(int* milliseconds_between_pictures) {
 
 void _decrease_refresh_rate(int* milliseconds_between_pictures) {
 	*milliseconds_between_pictures = *milliseconds_between_pictures * 2;
+}
+
+/*
+ * Given an array of lines, find the center of the pole that the lines
+ * represent, using the following algorithm:
+ *   1. Examine all the lines to find:
+ *        -- L1 - the line whose slope is largest of all the lines
+ *        -- L2 - the line whose slope is next largest of all the lines.
+ *   2. Find the midpoints M1 and M2 of L1 and L2 respectively.
+ *   3. Return the midpoint of the line between M1 and M2.
+ * This should be a reasonable approximation of the center of the poles
+ * if the poles are nearly vertical in the image, only one pole
+ * is visible in the image, and that pole is represented by 2 lines
+ * (and not built up of multiple line segments).
+ */
+void identify_pole_center(Line lines[], int size)
+{
 }
 
 #endif

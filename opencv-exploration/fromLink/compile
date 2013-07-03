@@ -1,0 +1,6 @@
+#gcc -c -include kovan/kovan.h -include stdio.h -include target.h -include math.h -o test_camera.o test_camera.c
+#gcc -c -include kovan/kovan.hpp -include stdio.h -include math.h -o rus_camera_interface.o rus_camera_interface.cpp
+#gcc -c -include kovan/kovan.hpp -include stdio.h -include math.h -o rus_camera.o rus_camera.cpp
+#gcc -lkovan -lm -lpthread -lstdc++ -lopencv_core -lopencv_highgui rus_camera_interface.o test_camera.o
+
+cp rus_camera_interface.o rus_camera.o rus_camera_interface.h /kovan/archives
