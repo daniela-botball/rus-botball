@@ -23,6 +23,8 @@ int main()
 	press_A_to_continue();
 	
 	set_servo_position(BLUE_GRIPPER, BLUE_GRIPPER_CLOSED_POSITION);
+	press_A_to_continue();
+	
 	set_servo_position(GREEN_GRIPPER, GREEN_GRIPPER_CLOSED_POSITION);
 	press_A_to_continue();
 	

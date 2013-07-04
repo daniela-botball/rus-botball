@@ -47,7 +47,7 @@ typedef enum {NO_BUTTON, A_BUTTON, B_BUTTON, C_BUTTON, X_BUTTON, Y_BUTTON, Z_BUT
 #define DEFAULT_SECOND_MESSAGE_LINE 7
 #define BLANK_LINE "                                          "
 #define HANDS_OFF  "Hands off!                                "
-#define DEFAULT_MILLISECONDS_TO_WAIT_AFTER_HANDS_OFF 200
+#define DEFAULT_MILLISECONDS_TO_WAIT_AFTER_HANDS_OFF 100
 
 Boolean _SKIP_PRESS_A_TO_CONTINUE = FALSE;
 Boolean _USE_DISPLAY_PRINTF = FALSE;

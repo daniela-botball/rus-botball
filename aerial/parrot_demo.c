@@ -8,6 +8,7 @@ void show_data();
 void show_data_until_C(int milliseconds_between_refreshes);
 void g_drone_up();
 void g_drone_down();
+void g_drone_hover();
 
 int main() {
 	int status;
@@ -50,8 +51,12 @@ void take_off_stay_up_land(int milliseconds_to_stay_up) {
 }
 
 void show_data() {
-	display_printf(0, 0, "x, y, z: %6.2f %6.2f %6.2f",
+	display_printf(0, 0, "Battery: %5i",
+		get_drone_battery());
+	display_printf(0, 1, "x, y, z: %6.2f %6.2f %6.2f",
 		get_drone_x(), get_drone_y(), get_drone_z());
+	display_printf(0, 2, "Altitude, Pitch, Roll: %6.2f %6.2f %6.2f",
+		get_drone_altitude(), get_drone_pitch(), get_drone_roll());
 }
 
 void show_data_until_C(int milliseconds_between_refreshes) {
@@ -59,9 +64,12 @@ void show_data_until_C(int milliseconds_between_refreshes) {
 	int is_done;
 	int k;
 	
+	extra_buttons_show();
 	set_a_button_text("Go up");
 	set_b_button_text("Go down");
 	set_c_button_text("Land");
+	
+	set_x_button_text("Hover");
 	
 	is_done = FALSE;
 	k = 0;
@@ -71,6 +79,7 @@ void show_data_until_C(int milliseconds_between_refreshes) {
 			case A_BUTTON: { g_drone_up(); break; }
 			case B_BUTTON: { g_drone_down(); break; }
 			case C_BUTTON: { is_done = TRUE; break; }
+			case X_BUTTON: { g_drone_hover(); break; }
 		}
 		if (is_done) {
 			break;
@@ -109,4 +118,8 @@ void g_drone_down() {
 	drone_move(0, 0, -150, 0);
 	msleep(3000);
 	drone_move(0, 0, 0, 0);
+}
+
+void g_drone_hover() {
+	drone_hover();
 }

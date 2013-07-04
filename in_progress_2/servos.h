@@ -5,8 +5,8 @@
 #include "create_library.h"
 
 #define CLAW_SERVO 0
-#define ARM_SERVO 1
-#define JOINT_SERVO 2
+#define JOINT_SERVO 1
+#define ARM_SERVO 2
 #define CAMERA_SERVO 3
 #define BOOSTER_MOTOR 1
 #define GATE_MOTOR 2
@@ -18,13 +18,14 @@
 #define CLAW_SERVO_HALF_CLOSED_POSITION 1240
 #define JOINT_SERVO_IN_POSITION 160
 #define JOINT_SERVO_OUT_POSITION 1838
-#define JOINT_SERVO_DOWN_POSITION 1203 //1477
+#define JOINT_SERVO_DOWN_POSITION 1103 // was 1203
 #define JOINT_SERVO_START_POSITION 1900
 #define ARM_SERVO_UP_POSITION 1900 //1765, then 1639
 #define ARM_SERVO_DOWN_POSITION 0
-#define ARM_SERVO_START_POSITION 761
+#define ARM_SERVO_START_POSITION 930
 #define ARM_SERVO_DROP_POSITION 1480
-#define CAMERA_START_POSITION 1110
+#define CAMERA_START_POSITION 2000
+#define CAMERA_TRAVEL_POSITION 2000
 #define CAMERA_PICKUP_BOOSTER_POSITION 950 // was 1110
 
 typedef enum {DROP_BOOSTER, LOWER_BOOSTER} Drop_or_lower_booster;
@@ -157,7 +158,6 @@ void start_gate()	// Precondition: Motor arm must be against the "gate is open" 
 	// Purposefully does nothing.
 }
 
-
 void start_camera_servo()
 {
     set_servo_position(CAMERA_SERVO, CAMERA_START_POSITION);
@@ -170,7 +170,7 @@ void start_servos()
 	start_arm();
 	start_camera_servo();
 	start_gate();
-	unrelax_servos();
+	enable_servos();
 	msleep(1000);
 }
 

@@ -25,7 +25,7 @@ typedef enum {TRUE = 1, FALSE = 0} Boolean;
 typedef enum {FORWARDS, BACKWARDS, LEFT, RIGHT, FORWARDS_LEFT = 1, BACKWARDS_RIGHT = -1} Direction;
 typedef enum {TOURNAMENT_MODE, PRACTICE_MODE} RunMode;
 typedef enum {LEGO, CREATE, ANY} Robot;
-typedef enum {SUCCESS, FAILURE} Status;
+typedef enum {SUCCESS = 1, FAILURE = 0, NORMAL_EXIT = 0, ABNORMAL_EXIT = 1} Status;
 
 Robot _ROBOT;
 RunMode _MODE;

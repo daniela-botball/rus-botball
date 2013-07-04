@@ -12,12 +12,20 @@ void turn_to_pole();
 void drive_to_booster(int distance, int direction);
 void grab_booster_main(int distance);
 void drop_booster_main(int distance, int booster);
+void get_birdie();
+void set_servos_for_getting_birdie();
 
 int main()
 {
 	//_SKIP_PRESS_A_TO_CONTINUE = TRUE;
 	
 	initialize_create();
+	
+	set_servos_for_getting_birdie();
+	press_A_to_continue();
+	
+	get_birdie();
+	press_A_to_continue();
 	
 	turn_to_pole();
 	
@@ -42,6 +50,7 @@ int main()
 void initialize_create()
 {
 	printf("Program starts OK\n");										// Initializing procceses
+	printf("Trying to connect to the Create.\n");
 	create_connect();
 	printf("Connected!\n");
 	create_full();
@@ -69,14 +78,14 @@ void drive_to_booster(int distance, int direction)
 	press_A_to_continue();
 	
 	unrelax_servos();
-	move_so_blob_is_at(BOOSTER_COLOR, (112 + 148) / 2, 5, 100, BOOSTER_X, LEFT_RIGHT, 20); // was 159
+	move_so_blob_is_at(BOOSTER_COLOR, (116 + 144) / 2, 5, 100, BOOSTER_X, LEFT_RIGHT, 20); // was 159
 	press_A_to_continue();
-	move_so_blob_is_at(BOOSTER_COLOR, 55, 5, 100, BOOSTER_Y, BACKWARDS_FORWARDS, 40);
+	move_so_blob_is_at(BOOSTER_COLOR, 51, 5, 100, BOOSTER_Y, BACKWARDS_FORWARDS, 40);
 	press_A_to_continue();
 	
-	move_so_blob_is_at(BOOSTER_COLOR, (112 + 148) / 2, 2, 100, BOOSTER_X, LEFT_RIGHT, 20);
+	move_so_blob_is_at(BOOSTER_COLOR, (116 + 144) / 2, 2, 100, BOOSTER_X, LEFT_RIGHT, 20);
 	press_A_to_continue();
-	move_so_blob_is_at(BOOSTER_COLOR, 55, 1, 100, BOOSTER_Y, BACKWARDS_FORWARDS, 40);
+	move_so_blob_is_at(BOOSTER_COLOR, 51, 1, 100, BOOSTER_Y, BACKWARDS_FORWARDS, 40);
 	press_A_to_continue();
 	/*move_so_blob_is_at_x(0, 91, 5, 0);									// Spins to the x of the booster
 	press_A_to_continue();
@@ -107,18 +116,51 @@ void drop_booster_main(int distance, int booster)
 		create_drive_distance(15, 20, BACKWARDS);						// Drives forward so the camera can see the pole
 		press_A_to_continue();
 	}
-	
-	move_so_blob_is_at_x(0, 80, 2, 0);									// Spins to correct to the x of the pole
+	move_so_blob_is_at(BOOSTER_COLOR, 64, 2, 100, CENTER_X, BACKWARDS_FORWARDS, 40);
 	press_A_to_continue();
 	
 	if (booster == 1 || booster == 2)
 	{
-		move_so_blob_is_at_y(0, 7, 2, 0, 0);							// Drives to the correct y
+		move_so_blob_is_at(BOOSTER_COLOR, 102, 2, 100, CENTER_Y, BACKWARDS_FORWARDS, 40);
+		press_A_to_continue();
 	}	
 	
-	create_drive_distance(distance, 20, BACKWARDS);						// Drives against the wall of the poles to correct itsef and drop the booster
+	create_drive_distance(distance, 3, BACKWARDS);						// Drives against the wall of the poles to correct itsef and drop the booster
 	press_A_to_continue();
 	drop_booster(DROP_BOOSTER);											// Drops the booster
+}
+
+void get_birdie() {
+	// Back up until hits front bump sensor.
+	create_drive(20, FORWARDS);
+	while (TRUE)
+	{
+		if (get_create_lbump(0.05) == 1 || get_create_rbump(0.05) == 1)
+		{
+			break;
+		}
+	}
+	create_stop();
+	press_A_to_continue();
+	
+	// Go forward 19 cm.
+	create_drive_distance(19, 20, FORWARDS);
+	press_A_to_continue();
+	
+	// Turn right 90 degrees.
+	create_spin_degrees(87, 87, RIGHT);
+	press_A_to_continue();
+	
+	// Go backwards 30 cm.
+	create_drive_distance(30, 20, BACKWARDS);
+	press_A_to_continue();
+}
+
+void set_servos_for_getting_birdie() {
+	set_servo_position(CLAW_SERVO, CLAW_SERVO_CLOSE_POSITION);
+	set_servo_position(JOINT_SERVO, JOINT_SERVO_IN_POSITION);
+	set_servo_position(ARM_SERVO, ARM_SERVO_UP_POSITION);
+	set_servo_position(CAMERA_SERVO, CAMERA_TRAVEL_POSITION);
 }
 
 void spin_left_for_camera_search(int speed) { create_spin_CCW(speed); } // was 20
