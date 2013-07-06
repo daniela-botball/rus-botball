@@ -10,6 +10,7 @@
 
 #include <string.h>
 #include "universal_library.h"
+#include "/kovan/archives/opencv/rus_opencv_library.h"
 
 #define MILLISECONDS_BETWEEN_PICTURES 0
 #define LARGEST_BLOB 0
@@ -28,6 +29,8 @@
 
 #define MINIMUM_POM_SIZE 100
 #define MINIMUM_ROBOT_MARKER_SIZE 50
+
+#define INFINITE_SLOPE 1000000
 
 // In the following, all are as one would expect (UL meanns UpperLeft and LR means LowerRight)
 // except BoosterX and BoosterY are defined as follows:
@@ -82,6 +85,8 @@ void _increase_refresh_rate(int* milliseconds_between_pictures);
 void _decrease_refresh_rate(int* milliseconds_between_pictures);
 int _get_camera_statistic(CameraStatistic statistic, int color_model, int minimum_area);
 point2 booster_blob(int color_model, int minimum_area);
+int identify_pole_center(Line lines[], int size);
+float slope(Line line);
 
 // Functions that must be defined elsewhere for the move... functions to work.
 extern void spin_left_for_camera_search(int speed);
@@ -622,8 +627,64 @@ void _decrease_refresh_rate(int* milliseconds_between_pictures) {
  * is visible in the image, and that pole is represented by 2 lines
  * (and not built up of multiple line segments).
  */
-void identify_pole_center(Line lines[], int size)
+int identify_pole_center(Line lines[], int size)
 {
+	// Maybe restrict to middle of window.
+	int biggest, next_biggest;
+	int k;
+	int one_x, other_x;
+	Line oldline;
+	
+	if (size < 2) { printf("BAD!!!\n"); }
+	
+	// Find biggest.
+	biggest = 0;
+	for (k = 1; k < size; ++k)
+	{
+		if (slope(lines[k]) > slope(lines[biggest]))
+		{
+			biggest = k;
+		}
+	}
+	
+	// Find next biggest.  Wipe out biggest and repeat above.
+	oldline = lines[biggest];
+	lines[biggest].endpoint1.y = lines[biggest].endpoint2.y = 1;
+	lines[biggest].endpoint1.x = 1;
+	lines[biggest].endpoint2.x = 2;
+	next_biggest = 0;
+	for (k = 1; k < size; ++k)
+	{
+		if (slope(lines[k]) > slope(lines[next_biggest]))
+		{
+			next_biggest = k;
+		}
+	}
+	
+	one_x = (lines[biggest].endpoint1.x + lines[biggest].endpoint2.x) / 2;
+	other_x = (lines[next_biggest].endpoint1.x + lines[next_biggest].endpoint2.x) / 2;
+	
+	return (one_x + other_x) / 2;
+}
+
+float slope(Line line)
+{
+	int rise, run;
+	float slope;
+	
+	run = line.endpoint1.x - line.endpoint2.x;
+	rise = line.endpoint1.y - line.endpoint2.y;
+	
+	if (run == 0) return INFINITE_SLOPE;
+	
+	
+	slope = ((float) rise) / run;
+	if (slope < 0)
+	{
+		slope = -slope;
+	}
+	
+	return slope;
 }
 
 #endif
