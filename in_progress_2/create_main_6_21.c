@@ -6,26 +6,27 @@
 #include "camera_library.h"
 
 #define BOOSTER_COLOR 0
+#define DRIVE_TO_FRONT_BUMP_SPEED 400 // mm per second
 
-void initialize_create();
+void initialize_create_and_camera();
+void initialize_servos();
 void turn_to_pole();
 void drive_to_booster(int distance, int direction);
 void grab_booster_main(int distance);
 void drop_booster_main(int distance, int booster);
 void get_birdie();
-void set_servos_for_getting_birdie();
+
+void test_grab_booster();
+void test_get_birdie();
 
 int main()
 {
 	//_SKIP_PRESS_A_TO_CONTINUE = TRUE;
+	initialize_create_and_camera();
+	initialize_servos();
 	
-	initialize_create();
-	
-	set_servos_for_getting_birdie();
-	press_A_to_continue();
-	
-	get_birdie();
-	press_A_to_continue();
+	// test_grab_booster();
+	test_get_birdie();
 	
 	turn_to_pole();
 	
@@ -47,14 +48,19 @@ int main()
 	return 0;
 }
 
-void initialize_create()
+void initialize_create_and_camera()
 {
 	printf("Program starts OK\n");										// Initializing procceses
 	printf("Trying to connect to the Create.\n");
 	create_connect();
 	printf("Connected!\n");
 	create_full();
+	
 	camera_open(LOW_RES);
+	press_A_to_continue();
+}
+
+void initialize_servos() {
 	printf("Have you adjusted the joint servo yet????\n");
 	press_A_to_continue();
 	start_servos();
@@ -131,8 +137,12 @@ void drop_booster_main(int distance, int booster)
 }
 
 void get_birdie() {
-	// Back up until hits front bump sensor.
-	create_drive(20, FORWARDS);
+	// Set servos for driving to birdie.
+	set_servos_for_driving_to_birdie();
+	press_A_to_continue();
+	
+	// Go forward until hits front bump sensor.
+	create_drive(DRIVE_TO_FRONT_BUMP_SPEED, FORWARDS);
 	while (TRUE)
 	{
 		if (get_create_lbump(0.05) == 1 || get_create_rbump(0.05) == 1)
@@ -143,8 +153,8 @@ void get_birdie() {
 	create_stop();
 	press_A_to_continue();
 	
-	// Go forward 19 cm.
-	create_drive_distance(19, 20, FORWARDS);
+	// Go backward 19 cm.
+	create_drive_distance(19, 20, BACKWARDS);
 	press_A_to_continue();
 	
 	// Turn right 90 degrees.
@@ -154,13 +164,19 @@ void get_birdie() {
 	// Go backwards 30 cm.
 	create_drive_distance(30, 20, BACKWARDS);
 	press_A_to_continue();
+	
+	// Lower arm so that claw is ready to go through hole.
+	set_servos_and_gate_for_going_through_hole();
+	press_A_to_continue();
 }
 
-void set_servos_for_getting_birdie() {
-	set_servo_position(CLAW_SERVO, CLAW_SERVO_CLOSE_POSITION);
-	set_servo_position(JOINT_SERVO, JOINT_SERVO_IN_POSITION);
-	set_servo_position(ARM_SERVO, ARM_SERVO_UP_POSITION);
-	set_servo_position(CAMERA_SERVO, CAMERA_TRAVEL_POSITION);
+void test_get_birdie() {
+	get_birdie();
+	press_A_to_continue();
+}
+
+void test_grab_booster() {
+	grab_booster_main(5);
 }
 
 void spin_left_for_camera_search(int speed) { create_spin_CCW(speed); } // was 20

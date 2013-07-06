@@ -16,17 +16,24 @@
 #define CLAW_SERVO_CLOSE_POSITION 500
 #define CLAW_SERVO_START_POSITION 1240
 #define CLAW_SERVO_HALF_CLOSED_POSITION 1240
+#define CLAW_SERVO_THROUGH_HOLE_POSITION 500
+
 #define JOINT_SERVO_IN_POSITION 160
 #define JOINT_SERVO_OUT_POSITION 1838
 #define JOINT_SERVO_DOWN_POSITION 1103 // was 1203
 #define JOINT_SERVO_START_POSITION 1900
+#define JOINT_SERVO_THROUGH_HOLE_POSITION 1838
+
 #define ARM_SERVO_UP_POSITION 1900 //1765, then 1639
 #define ARM_SERVO_DOWN_POSITION 0
 #define ARM_SERVO_START_POSITION 930
 #define ARM_SERVO_DROP_POSITION 1480
+#define ARM_SERVO_THROUGH_HOLE_POSITION 930
+
 #define CAMERA_START_POSITION 2000
 #define CAMERA_TRAVEL_POSITION 2000
 #define CAMERA_PICKUP_BOOSTER_POSITION 950 // was 1110
+#define CAMERA_THROUGH_HOLE_POSITION 800
 
 typedef enum {DROP_BOOSTER, LOWER_BOOSTER} Drop_or_lower_booster;
 
@@ -48,6 +55,8 @@ void start_arm();
 void start_joint();
 void start_gate();
 void start_servos();
+void set_servos_for_driving_to_birdie();
+void set_servos_and_gate_for_going_through_hole();
 
 void press_a_to_continue(int off_or_on);
 void relax_servos();
@@ -114,7 +123,7 @@ void close_gate(int sleeptime)	// Precondition: Gagte must be in the OPEN positi
 	msleep(sleeptime);
 }
 
-void open_gate(int sleeptime)	// Precondition: Gagte must be in the CLOSED position
+void open_gate(int sleeptime)	// Precondition: Gate must be in the CLOSED position
 {
 	clear_motor_position_counter(GATE_MOTOR);
     motor(GATE_MOTOR, -100);
@@ -189,19 +198,46 @@ void unrelax_servos()
 	enable_servos();
 }
 
+void set_servos_for_driving_to_birdie() {
+	move_servo_gently(CLAW_SERVO, CLAW_SERVO_CLOSE_POSITION);
+	move_servo_gently(JOINT_SERVO, JOINT_SERVO_IN_POSITION);
+	move_servo_gently(ARM_SERVO, ARM_SERVO_UP_POSITION);
+	move_servo_gently(CAMERA_SERVO, CAMERA_TRAVEL_POSITION);
+}
+
+void set_servos_and_gate_for_going_through_hole()
+{
+	open_gate(200);
+	move_servo_gently(CAMERA_SERVO, CAMERA_THROUGH_HOLE_POSITION);
+	move_servo_gently(ARM_SERVO, ARM_SERVO_THROUGH_HOLE_POSITION);
+	move_servo_gently(JOINT_SERVO, JOINT_SERVO_THROUGH_HOLE_POSITION);
+	move_servo_gently(CLAW_SERVO, CLAW_SERVO_THROUGH_HOLE_POSITION);
+}
+	
 void grab_booster(int distance)
 {
 	//function assumes all servos begin in the relax position
 	lower_arm(200);
+	press_A_to_continue();
+	
 	//motor_push_down();
 	open_claw(200);
+	press_A_to_continue();
+	
 	fold_joint_for_pickup(200);
+	press_A_to_continue();
+	
 	half_close_claw(200);
 	press_A_to_continue();
+	
 	create_drive_distance(distance, 5, BACKWARDS);
+	press_A_to_continue();
+	
 	close_claw(1000);
 	press_A_to_continue();
+	
 	create_drive_distance(2, 5, FORWARDS);
+	press_A_to_continue();
 }
 
 void lift_booster()
@@ -237,28 +273,6 @@ void move_servo_gently(int servo, int desired_position)
 	set_servo_position(servo, desired_position);
 	msleep(sleeptime);
 }
-
-void press_a_to_continue(int off_or_on)
-{
-	if (off_or_on == 1)
-	{
-		while (1)
-		{
-			if (a_button() == 1)
-			{
-				printf("hands off\n");
-				while (a_button() == 1);
-				sleep(.5);
-				return;
-			}
-		}
-	}
-	else
-	{
-		return;
-	}
-}
-
 
 void drop_booster(Drop_or_lower_booster drop_or_lower)
 {
