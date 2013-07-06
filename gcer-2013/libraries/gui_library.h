@@ -144,6 +144,7 @@ void always_press_A_to_continue();
 
 Button which_button_is_pressed();
 Button wait_for_button_press();
+Button choose_using_buttons(char* button_texts[]);
 void hands_off(Button button);
 
 void skip_press_A_to_continue(Boolean b);
@@ -239,6 +240,21 @@ void set_first_message_line(int line) {
 
 void set_second_message_line(int line) {
     _SECOND_MESSAGE_LINE = line;
+}
+
+// Display the 6 given texts on 6 buttons,
+// wait for the user to choose one,
+// then return the one the user chose.
+Button choose_using_buttons(char* button_texts[]) {
+	extra_ buttons_show();
+	set_a_button_text(button_texts[0]);
+	set_b_button_text(button_texts[1]);
+	set_c_button_text(button_texts[2]);
+	set_x_button_text(button_texts[3]);
+	set_y_button_text(button_texts[4]);
+	set_z_button_text(button_texts[5]);
+	
+	return wait_for_button_press();
 }
 
 #endif

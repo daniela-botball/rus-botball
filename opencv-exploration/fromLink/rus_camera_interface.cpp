@@ -1,4 +1,3 @@
-
 #include "rus_camera_interface.h"
 #include <opencv2/opencv.hpp>
 

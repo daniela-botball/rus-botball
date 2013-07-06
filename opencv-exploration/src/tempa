@@ -1,0 +1,4 @@
+[General]
+LD_FLAGS=-lkovan -lm -lpthread
+C_FLAGS=-include kovan/kovan.h -include stdio.h -include target.h -include math.h
+CPP_FLAGS=-include kovan/kovan.hpp -include stdio.h -include target.h -include math.h

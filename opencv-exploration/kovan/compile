@@ -1,0 +1,5 @@
+cd /kovan/archives/src
+
+gcc -c -include kovan/kovan.hpp -include stdio.h -include math.h -o rus_opencv_library.o rus_opencv_library.cpp
+gcc -c -include kovan/kovan.h -include stdio.h -include target.h -include math.h -o test_opencv.o test_opencv.c
+gcc -lkovan -lm -lpthread -lstdc++ rus_opencv_library.o test_opencv.o

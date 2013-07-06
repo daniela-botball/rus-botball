@@ -59,11 +59,15 @@ void app_to_display_blob_numbers(int first_line, int number_of_blobs_to_show) {
 	camera_app_data.resolution = LOW_RES;
 	camera_app_data.number_of_blobs_to_show = number_of_blobs_to_show;
 	for (k = 0; k < 4; ++k) {
-		camera_app_data.servo_positions[k] = 0;
+		camera_app_data.servo_positions[k] = -1;
 	}
 	
 	old_printf_mode = _USE_DISPLAY_PRINTF;
 	_USE_DISPLAY_PRINTF = TRUE;
+	
+	// Set servo positions.
+	
+	// Show blob data.
 	
 	_initialize_buttons();	
 	display_printf(0, first_line + 2, "B  Center Cntroid Area Cfd ulX ulY lrX lrY");
@@ -137,28 +141,29 @@ void display_blob_numbers(int color_model, int blob, int line) {
 	}
 }
 
-void _initialize_buttons() {
+void set_blob_data_buttons() {
 	extra_buttons_show();
 	
-	set_a_button_text("NextColorModel");
-	set_b_button_text("RefreshFaster");
-	set_c_button_text("Quit");
+	set_a_button_text("Color Model");
+	set_b_button_text("Refresh Rate");
+	set_c_button_text("# of Blobs");
 	set_x_button_text("Pause / resume");
-	set_y_button_text("RefreshSlower");
-	set_z_button_text("More options");
+	set_y_button_text("Servos");
+	set_z_button_text("Quit");
 }
 
-void _initialize_screen2_buttons() {
+void set_servo_screen_buttons() {
 	extra_buttons_show();
 	
-	set_a_button_text("Servos Lego");
-	set_b_button_text("Serv Create 1");
-	set_c_button_text("Serv Create 2");
-	set_x_button_text("Set servos");
-	set_y_button_text("More options");
-	set_z_button_text("Back");
+	set_a_button_text("Preset");
+	set_b_button_text("Servo");
+	set_c_button_text("Show blobs");
+	set_x_button_text("Next screen");
+	set_y_button_text("Tens");
+	set_z_button_text("Ones");
 }
 
+void process_
 Boolean _process_buttons(CameraAppData* camera_app_data) {
 	//int* color_model, int* milliseconds_between_pictures, int* is_paused, int* is_done) {
 	Button button;
