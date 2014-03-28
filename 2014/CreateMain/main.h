@@ -5,7 +5,7 @@
 #define WINCH_MOTOR 1
 #define BAR_SERVO 0
 #define BAR_OPEN_POSITION 100
-#define BAR_CLOSED_POSITION 1150
+#define BAR_CLOSED_POSITION 1050
 #define UP 1
 #define DOWN -1
 #define FORWARDS 1
@@ -19,6 +19,7 @@
 #define SCORING_POSITION 75
 #define DOUBLER_POSITION -2050
 #define THRESHOLD 700
+#define DOUBLER_PICK_UP_POSITION 400
 
 void move_until_line();
 void raise_winch();
@@ -41,33 +42,39 @@ void drop_three_hangers() {
 	press_a_to_continue();
 	create_spin_degrees(87, 30, LEFT);
 	press_a_to_continue();
-	create_drive_distance(103, 25, FORWARDS);
+	create_drive_distance(90, 25, FORWARDS);
 	press_a_to_continue();
-	create_spin_degrees(90, 45, RIGHT);
+	create_spin_degrees(90, 50, RIGHT);
 	press_a_to_continue();
 	//create_drive_distance(26, 15, FORWARDS);				// add black line sensor stop?
 	move_until_line();
 	press_a_to_continue();
 	operate_winch(RELEASING_POSITION);
 	press_a_to_continue();
+	create_drive_distance(5, 15, BACKWARDS);
+	press_a_to_continue();
 	set_servo_position(BAR_SERVO, BAR_OPEN_POSITION);
 	press_a_to_continue();
 }
 
 void pick_up_first_doubler() {
-	create_drive_distance(35, 10, BACKWARDS);
+	create_drive_distance(20, 10, BACKWARDS);
 	press_a_to_continue();
-	create_spin_degrees(90, 30, LEFT);
+	create_spin_degrees(90, 50, LEFT);
 	press_a_to_continue();
-	create_drive_distance(8, 15, FORWARDS);
+	create_drive_distance(26, 40, FORWARDS);
 	press_a_to_continue();
-	create_spin_degrees(90, 45, RIGHT);
+	create_spin_degrees(90, 50, RIGHT);
 	press_a_to_continue();
 	operate_winch(DOUBLER_POSITION);
 	press_a_to_continue();
-	create_drive_distance(29, 20, FORWARDS);
+	create_drive_distance(20, 20, FORWARDS);
 	press_a_to_continue();
 	set_servo_position(BAR_SERVO, BAR_CLOSED_POSITION);
+	press_a_to_continue();
+	operate_winch(DOUBLER_PICK_UP_POSITION);
+	msleep(8000);
+	create_drive_distance(20, 10, BACKWARDS);
 }
 
 /*
@@ -106,6 +113,13 @@ void operate_winch(int position) {
 
 void operate_winch(int position) {
 	int direction;
+	if (position == DOUBLER_PICK_UP_POSITION) {
+		clear_motor_position_counter(WINCH_MOTOR);
+		motor(WINCH_MOTOR, 10);
+		while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(DOUBLER_PICK_UP_POSITION));
+		freeze(WINCH_MOTOR);
+		return;
+	}
 	if (position > 0) {
 		direction = 1;
 	} else {

@@ -12,8 +12,17 @@ int main()
 	create_full();
 	set_servo_position(BAR_SERVO, BAR_CLOSED_POSITION);
 	enable_servos();
+	
+	operate_winch(DOUBLER_POSITION);
+	press_a_to_continue();
+	operate_winch(DOUBLER_PICK_UP_POSITION);
+	msleep(8000);
+	
+	return 0;
+	
 	drop_three_hangers();
 	pick_up_first_doubler();
+	
 	create_disconnect();
 	return 0;
 }
