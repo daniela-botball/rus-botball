@@ -11,17 +11,20 @@ int main()
 	create_connect();
 	create_full();
 	set_servo_position(BAR_SERVO, BAR_CLOSED_POSITION);
+	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
+	set_servo_position(GYRO_SERVO, GYRO_SETTING_POSITION);
 	enable_servos();
+	msleep(3000);
+	// operate_winch(WINCH_START_POSITION);
+	// set_servo_position(GYRO_SERVO, GYRO_START_POSITION);
+	// press_a_to_continue();
 	
-	operate_winch(DOUBLER_POSITION);
-	press_a_to_continue();
-	operate_winch(DOUBLER_PICK_UP_POSITION);
-	msleep(8000);
-	
-	return 0;
-	
+	// set_servo_position(GYRO_SERVO, GYRO_SETTING_POSITION);
+	// msleep(2000);
 	drop_three_hangers();
-	pick_up_first_doubler();
+	//pick_up_first_doubler();
+	pick_up_cube();
+	
 	
 	create_disconnect();
 	return 0;
