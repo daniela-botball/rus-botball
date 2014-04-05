@@ -160,7 +160,7 @@ void create_drive_until_line(int speed, int direction)
 	{
 		lcliff_reading = get_create_lcliff(0.05);
 		rcliff_reading = get_create_rcliff(0.05);
-
+		
 		if (lcliff_reading || rcliff_reading)
 		{
 			create_halt();
@@ -188,7 +188,7 @@ void play_script()
 	printf("Loading Script\n");
 	write_byte(OI_PLAY_SCRIPT);
 	write_byte(create_script.length);
-
+	
 	for (i = 0; i < create_script.length++; i++)
 	{
 		write_byte(create_script.script[i]);
@@ -223,3 +223,5 @@ void write_script_byte(int byte)
 #define STOPPING_THRESHOLD 100
 
 #endif
+
+

@@ -4,23 +4,28 @@
 
 void test();
 void test_1();
-void robot_setup();
 
 int main()
 {
 	get_mode();
-	robot_setup();
-	press_a_to_continue();
-	// wait_for_light();
-	while(!a_button());
-	msleep(1000);
-	move_servo_slowly(BAR_SERVO, BAR_CLOSED_POSITION);
-	msleep(2000);
+	create_connect();
+	create_full();
+	set_servo_position(BAR_SERVO, BAR_CLOSED_POSITION);
+	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
+	set_servo_position(GYRO_SERVO, GYRO_SETTING_POSITION);
+	enable_servos();
+	msleep(3000);
+	// operate_winch(WINCH_START_POSITION);
+	// set_servo_position(GYRO_SERVO, GYRO_START_POSITION);
+	// press_a_to_continue();
+	
+	// set_servo_position(GYRO_SERVO, GYRO_SETTING_POSITION);
+	// msleep(2000);
 	drop_three_hangers();
 	//pick_up_first_doubler();
 	pick_up_cube();
-
-
+	
+	
 	create_disconnect();
 	return 0;
 }
@@ -42,16 +47,4 @@ void test_1() {
 		press_a_to_continue();
 		k += 100;
 	}
-}
-
-void robot_setup() {
-	create_connect();
-	create_full();
-	set_servo_position(BAR_SERVO, BAR_START_POSITION);
-	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
-	set_servo_position(GYRO_SERVO, GYRO_START_POSITION);
-	enable_servos();
-	msleep(3000);
-	operate_winch(WINCH_START_POSITION);
-	create_drive_distance(15.5, 20, FORWARDS);
 }
