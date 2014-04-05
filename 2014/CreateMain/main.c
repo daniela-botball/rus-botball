@@ -12,7 +12,7 @@ int main()
 	robot_setup();
 	press_a_to_continue();
 	// wait_for_light();
-	while(!a_button());
+	while(!a_button()); // simulates wait_for_light()
 	msleep(1000);
 	move_servo_slowly(BAR_SERVO, BAR_CLOSED_POSITION);
 	msleep(2000);
