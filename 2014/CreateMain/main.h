@@ -19,24 +19,25 @@
 #define PRACTICE 1
 
 #define WINCH_START_POSITION -1550
+#define WINCH_DUMPING_POSITION -1550
 #define WINCH_RELEASING_POSITION -525
 #define WINCH_SCORING_POSITION 25
 #define WINCH_FIRST_CUBE_POSITION 600
 #define WINCH_TRAVEL_POSITION -2650
-#define WINCH_SECOND_CUBE_POSITION -600
+#define WINCH_SECOND_CUBE_POSITION -601
 #define DOUBLER_POSITION -2050
 #define THRESHOLD 770
 #define DOUBLER_PICK_UP_POSITION 400
 #define GYRO_FIRST_CUBE_POSITION 2047
-#define GYRO_SECOND_CUBE_POSITION 1850
+#define GYRO_SECOND_CUBE_POSITION 1770
 #define GYRO_START_POSITION 0
-#define CLAW_CLOSED_POSITION 300
-#define CLAW_OPEN_POSITION 1200
+#define CLAW_CLOSED_POSITION 260
+#define CLAW_OPEN_POSITION 1550
 #define BAR_START_POSITION 620
 #define BAR_OPEN_POSITION 100
 #define BAR_CLOSED_POSITION 1050
 
-#define SERVO_INCREMENT 10
+#define SERVO_INCREMENT 15
 
 #define DESIRED_X_POSITION 57
 #define CENTER_OF_SCREEN_Y 60
@@ -134,7 +135,7 @@ void pick_up_cube() {
 	center_on_cube();
 	press_a_to_continue();
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
-	operate_winch(WINCH_TRAVEL_POSITION);
+	operate_winch(WINCH_SECOND_CUBE_POSITION);
 	move_servo_slowly(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
 	create_drive_distance(6, 20, BACKWARDS); // This should be center on the second cube_left_edge
 	press_a_to_continue();
@@ -149,7 +150,22 @@ void pick_up_cube() {
 	center_on_cube();
 	press_a_to_continue();
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
-	
+	msleep(500);
+	operate_winch(WINCH_SECOND_CUBE_POSITION);
+	move_until_bump(200, BACKWARDS, 8);
+	press_a_to_continue();
+	create_drive_distance(7, 20, FORWARDS);
+	press_a_to_continue();
+	create_spin_degrees(90, 40, RIGHT);
+	press_a_to_continue();
+	create_drive_distance(20, 20, FORWARDS);
+	press_a_to_continue();
+	operate_winch(WINCH_DUMPING_POSITION);
+	press_a_to_continue();
+	create_spin_degrees(180, 40, LEFT);
+	press_a_to_continue();
+	move_until_bump(200, BACKWARDS, 8);
+	press_a_to_continue();
 	
 }
 
@@ -237,12 +253,12 @@ void move_servo_slowly(int port, int position) {
 	if (get_servo_position(port) < position) {
 		for (i = get_servo_position(port); i < position; i += SERVO_INCREMENT) {
 			set_servo_position(port, i);
-			msleep(40);
+			msleep(20);
 		}
 		} else if (get_servo_position(port) > position) {
 		for (i = get_servo_position(port); i > position; i -= SERVO_INCREMENT) {
 			set_servo_position(port, i);
-			msleep(40);
+			msleep(20);
 		}
 	} else {return;}
 	msleep(500);
