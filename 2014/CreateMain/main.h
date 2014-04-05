@@ -22,7 +22,8 @@
 #define WINCH_RELEASING_POSITION -525
 #define WINCH_SCORING_POSITION 25
 #define WINCH_FIRST_CUBE_POSITION 600
-#define WINCH_SECOND_CUBE_POSITION -2650
+#define WINCH_TRAVEL_POSITION -2650
+#define WINCH_SECOND_CUBE_POSITION -600
 #define DOUBLER_POSITION -2050
 #define THRESHOLD 770
 #define DOUBLER_PICK_UP_POSITION 400
@@ -37,11 +38,12 @@
 
 #define SERVO_INCREMENT 10
 
-#define CENTER_OF_SCREEN_X 80
+#define DESIRED_X_POSITION 57
 #define CENTER_OF_SCREEN_Y 60
 #define CUBE_CHANNEL 0
 
 void move_until_line();
+void move_until_bump(int speed, int direction, int port);
 void raise_winch();
 void operate_winch(int position);
 void press_a_to_continue();
@@ -50,6 +52,7 @@ void pick_up_cube();
 void get_mode();
 void drop_three_hangers();
 void center_on_cube();
+void move_servo_slowly(int port, int position);
 
 int _mode = TOURNAMENT;
 
@@ -63,7 +66,7 @@ void drop_three_hangers() {
 	press_a_to_continue();
 	create_spin_degrees(87, 30, LEFT);
 	press_a_to_continue();
-	create_drive_distance(90, 25, FORWARDS);
+	create_drive_distance(86, 25, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, RIGHT);
 	msleep(1000);
@@ -101,33 +104,53 @@ void pick_up_first_doubler() {
 void pick_up_cube() {
 	create_drive_distance(20, 10, BACKWARDS);			
 	press_a_to_continue();
-	create_spin_degrees(90, 50, RIGHT);				
+	create_spin_degrees(90, 90, RIGHT);				
 	press_a_to_continue();
-	operate_winch(WINCH_SECOND_CUBE_POSITION);
+	operate_winch(WINCH_TRAVEL_POSITION);
 	msleep(3000);
 	set_servo_position(BAR_SERVO, BAR_CLOSED_POSITION);
 	msleep(2000);
 	set_servo_position(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
 	press_a_to_continue();
-	create_drive_distance(113, 20, BACKWARDS);
+	move_until_bump(200, BACKWARDS, 8);
 	press_a_to_continue();
-	create_drive_distance(4, 20, FORWARDS);
+	create_drive_distance(3, 20, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, RIGHT);
 	press_a_to_continue();
-	create_drive_distance(45, 20, BACKWARDS);
+	move_until_bump(200, BACKWARDS, 8);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, LEFT);
 	press_a_to_continue();
-	create_drive_distance(7, 20, BACKWARDS);
+	move_until_bump(200, BACKWARDS, 8);
 	press_a_to_continue();
 	create_drive_distance(80, 20, FORWARDS);
+	_mode = PRACTICE;
 	press_a_to_continue();
-	operate_winch(WINCH_FIRST_CUBE_POSITION);
-	msleep(1000);
 	move_servo_slowly(GYRO_SERVO, GYRO_FIRST_CUBE_POSITION);
+	msleep(1000);
+	operate_winch(WINCH_FIRST_CUBE_POSITION);
 	press_a_to_continue();
 	center_on_cube();
+	press_a_to_continue();
+	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
+	operate_winch(WINCH_TRAVEL_POSITION);
+	move_servo_slowly(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
+	create_drive_distance(6, 20, BACKWARDS); // This should be center on the second cube_left_edge
+	press_a_to_continue();
+	move_servo_slowly(CLAW_SERVO, CLAW_OPEN_POSITION);
+	press_a_to_continue();
+	create_drive_distance(6, 20, FORWARDS);
+	press_a_to_continue();
+	move_servo_slowly(GYRO_SERVO, GYRO_FIRST_CUBE_POSITION);
+	msleep(1000);
+	operate_winch(WINCH_FIRST_CUBE_POSITION);
+	press_a_to_continue();
+	center_on_cube();
+	press_a_to_continue();
+	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
+	
+	
 }
 
 void operate_winch(int position) {
@@ -140,8 +163,14 @@ void operate_winch(int position) {
 		return;
 	} else if (position == WINCH_FIRST_CUBE_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, -10);
+		motor(WINCH_MOTOR, 10);
 		while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(WINCH_FIRST_CUBE_POSITION));
+		freeze(WINCH_MOTOR);
+		return;
+	} else if (position == WINCH_SECOND_CUBE_POSITION) {
+		clear_motor_position_counter(WINCH_MOTOR);
+		motor(WINCH_MOTOR, -10);
+		while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(WINCH_SECOND_CUBE_POSITION));
 		freeze(WINCH_MOTOR);
 		return;
 	}
@@ -197,6 +226,12 @@ void move_until_line() {
 	create_stop();
 }
 
+void move_until_bump(int speed, int direction, int port) {
+	create_drive(speed, direction);
+	while (!digital(port));
+	create_stop();
+}
+
 void move_servo_slowly(int port, int position) {
 	int i;
 	if (get_servo_position(port) < position) {
@@ -216,18 +251,24 @@ void move_servo_slowly(int port, int position) {
 
 // PRECONDITION: Camera must already be open
 void center_on_cube() {
-	int cube_center_x = 0;
-	create_drive(15, BACKWARDS);
+	int cube_left_edge = 0;
+	int flag = 1;
+	create_drive(10, BACKWARDS);
 	while (1) {
 		camera_update();
 		if (get_object_count(CUBE_CHANNEL) > 0) {
 			if (get_object_area(CUBE_CHANNEL, 0) > 100) {
-				cube_center_x = get_object_center(CUBE_CHANNEL, 0).x;
-				if (cube_center_x > CENTER_OF_SCREEN_X - 3 && cube_center_x < CENTER_OF_SCREEN_X + 3) {
+				cube_left_edge = get_object_bbox_ulx(CUBE_CHANNEL, 0);
+				flag = 1;
+				printf("Left edge at %i\n", cube_left_edge);
+				if (cube_left_edge > DESIRED_X_POSITION - 3 && cube_left_edge < DESIRED_X_POSITION + 3) {
 					create_stop();
 					return;
 				}
 			}
+		} else if (flag == 1) {
+			printf("no blob in sight\n");
+			flag = 0;
 		}
 	}
 }

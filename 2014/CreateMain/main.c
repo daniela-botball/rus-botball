@@ -45,6 +45,7 @@ void test_1() {
 }
 
 void robot_setup() {
+	int i;
 	create_connect();
 	create_full();
 	set_servo_position(BAR_SERVO, BAR_START_POSITION);
@@ -52,6 +53,11 @@ void robot_setup() {
 	set_servo_position(GYRO_SERVO, GYRO_START_POSITION);
 	enable_servos();
 	msleep(3000);
+	camera_open();
+	for (i = 0; i < 20; i++) {
+		camera_update();
+		msleep(100);
+	}
 	operate_winch(WINCH_START_POSITION);
 	create_drive_distance(15.5, 20, FORWARDS);
 }
