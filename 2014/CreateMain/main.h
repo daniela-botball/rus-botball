@@ -18,22 +18,24 @@
 #define TOURNAMENT 0
 #define PRACTICE 1
 
-#define WINCH_START_POSITION -1550
+#define DOUBLER_POSITION -2050
+#define DOUBLER_PICK_UP_POSITION 400
+
+#define WINCH_START_POSITION -1440 //-1550
 #define WINCH_DUMPING_POSITION -1550
 #define WINCH_RELEASING_POSITION -525
 #define WINCH_SCORING_POSITION 25
-#define WINCH_FIRST_CUBE_POSITION 600
-#define WINCH_TRAVEL_POSITION -2650
+#define WINCH_TRAVEL_POSITION -2150
+#define WINCH_FIRST_CUBE_POSITION 550
 #define WINCH_SECOND_CUBE_POSITION -601
-#define DOUBLER_POSITION -2050
-#define THRESHOLD 770
-#define DOUBLER_PICK_UP_POSITION 400
+
 #define GYRO_FIRST_CUBE_POSITION 2047
 #define GYRO_SECOND_CUBE_POSITION 1770
 #define GYRO_START_POSITION 0
 #define CLAW_CLOSED_POSITION 260
 #define CLAW_OPEN_POSITION 1550
-#define BAR_START_POSITION 620
+#define CLAW_START_POSITION 260
+#define BAR_START_POSITION 420
 #define BAR_OPEN_POSITION 100
 #define BAR_CLOSED_POSITION 1050
 
@@ -42,20 +44,25 @@
 #define DESIRED_X_POSITION 57
 #define CENTER_OF_SCREEN_Y 60
 #define CUBE_CHANNEL 0
+#define THRESHOLD 770
+#define CURRENT_THRESHOLD 64680
+int _mode = TOURNAMENT;
 
+void create_virtual_bump(int speed, int direction) ;
 void move_until_line();
 void move_until_bump(int speed, int direction, int port);
 void raise_winch();
 void operate_winch(int position);
 void press_a_to_continue();
 void pick_up_first_doubler();
-void pick_up_cube();
+void score_cubes();
+void move_to_cubes();
+void pick_up_cubes();
+void drop_cubes();
 void get_mode();
 void drop_three_hangers();
 void center_on_cube();
 void move_servo_slowly(int port, int position);
-
-int _mode = TOURNAMENT;
 
 void drop_three_hangers() {
 	operate_winch(WINCH_SCORING_POSITION);
@@ -69,7 +76,7 @@ void drop_three_hangers() {
 	press_a_to_continue();
 	create_drive_distance(86, 25, FORWARDS);
 	press_a_to_continue();
-	create_spin_degrees(90, 50, RIGHT);
+	create_spin_degrees(87, 50, RIGHT);
 	msleep(1000);
 	press_a_to_continue();
 	move_until_line();
@@ -102,30 +109,44 @@ void pick_up_first_doubler() {
 	create_drive_distance(20, 10, BACKWARDS);
 }
 
-void pick_up_cube() {
+void score_cubes() {
+	move_to_cubes();
+	pick_up_cubes();
+	drop_cubes();
+}
+
+void move_to_cubes() {
+	_mode = PRACTICE;
 	create_drive_distance(20, 10, BACKWARDS);			
 	press_a_to_continue();
 	create_spin_degrees(90, 90, RIGHT);				
 	press_a_to_continue();
 	operate_winch(WINCH_TRAVEL_POSITION);
-	msleep(3000);
+	msleep(500);
 	set_servo_position(BAR_SERVO, BAR_CLOSED_POSITION);
-	msleep(2000);
+	msleep(1500);
 	set_servo_position(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
+	msleep(2000);
+	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
 	press_a_to_continue();
-	move_until_bump(200, BACKWARDS, 8);
+	create_virtual_bump(200, BACKWARDS);
 	press_a_to_continue();
-	create_drive_distance(3, 20, FORWARDS);
+	create_drive_distance(5, 20, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, RIGHT);
 	press_a_to_continue();
-	move_until_bump(200, BACKWARDS, 8);
+	create_virtual_bump(200, BACKWARDS);
+	press_a_to_continue();
+	create_drive_distance(3, 20, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, LEFT);
 	press_a_to_continue();
-	move_until_bump(200, BACKWARDS, 8);
+	create_virtual_bump(200, BACKWARDS);
 	press_a_to_continue();
-	create_drive_distance(80, 20, FORWARDS);
+	create_drive_distance(86, 20, FORWARDS);
+}
+
+void pick_up_cubes() {
 	_mode = PRACTICE;
 	press_a_to_continue();
 	move_servo_slowly(GYRO_SERVO, GYRO_FIRST_CUBE_POSITION);
@@ -152,40 +173,42 @@ void pick_up_cube() {
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
 	msleep(500);
 	operate_winch(WINCH_SECOND_CUBE_POSITION);
-	move_until_bump(200, BACKWARDS, 8);
+}
+
+void drop_cubes() {
+	create_virtual_bump(200, BACKWARDS);
 	press_a_to_continue();
 	create_drive_distance(7, 20, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 40, RIGHT);
 	press_a_to_continue();
-	create_drive_distance(20, 20, FORWARDS);
+	create_drive_distance(30, 20, FORWARDS);
 	press_a_to_continue();
 	operate_winch(WINCH_DUMPING_POSITION);
 	press_a_to_continue();
 	create_spin_degrees(180, 40, LEFT);
 	press_a_to_continue();
-	move_until_bump(200, BACKWARDS, 8);
+	create_virtual_bump(200, BACKWARDS);
 	press_a_to_continue();
-	
 }
 
 void operate_winch(int position) {
 	int direction;
 	if (position == DOUBLER_PICK_UP_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, 10);
+		motor(WINCH_MOTOR, 60);
 		while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(DOUBLER_PICK_UP_POSITION));
 		freeze(WINCH_MOTOR);
 		return;
 	} else if (position == WINCH_FIRST_CUBE_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, 10);
+		motor(WINCH_MOTOR, 60);
 		while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(WINCH_FIRST_CUBE_POSITION));
 		freeze(WINCH_MOTOR);
 		return;
 	} else if (position == WINCH_SECOND_CUBE_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, -10);
+		motor(WINCH_MOTOR, -60);
 		while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(WINCH_SECOND_CUBE_POSITION));
 		freeze(WINCH_MOTOR);
 		return;
@@ -196,16 +219,22 @@ void operate_winch(int position) {
 		direction = -1;
 	}
 	raise_winch();
+	msleep(2000);
 	clear_motor_position_counter(WINCH_MOTOR);
-	motor(WINCH_MOTOR, 50 * direction);
-	while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(position));
-	freeze(WINCH_MOTOR);			
+	printf("Motor position after clearing: %i\n", get_motor_position_counter(WINCH_MOTOR));
+	printf("Given position: %i\n", position);
+	motor(WINCH_MOTOR, 60 * direction);
+	while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(position)) {
+		printf("%i\n", get_motor_position_counter(WINCH_MOTOR));
+	}
+	freeze(WINCH_MOTOR);
+	printf("Motor position - %i\n", get_motor_position_counter(WINCH_MOTOR));
 }
 
 void raise_winch() {
-	motor(WINCH_MOTOR, 50);
+	motor(WINCH_MOTOR, 100);
 	while (!digital(15) && !digital(14));
-	off(WINCH_MOTOR);
+	freeze(WINCH_MOTOR);
 }
 
 void press_a_to_continue() {
@@ -287,6 +316,14 @@ void center_on_cube() {
 			flag = 0;
 		}
 	}
+}
+
+void create_virtual_bump(int speed, int direction) {
+	create_drive(speed, direction);
+	while (create_get_sensor(CURRENT) > CURRENT_THRESHOLD) {
+		//msleep(20);
+	}
+	create_stop();
 }
 #endif
 

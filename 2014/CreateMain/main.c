@@ -8,17 +8,20 @@ void robot_setup();
 
 int main()
 {
+	//create_virtual_bump(200, BACKWARDS);
+	//return 0;
 	get_mode();
 	robot_setup();
 	press_a_to_continue();
 	// wait_for_light();
-	while(!a_button()); // simulates wait_for_light()
+	
+	while(!a_button()); // loop and msleep() simulate wait_for_light()
 	msleep(1000);
+	
 	move_servo_slowly(BAR_SERVO, BAR_CLOSED_POSITION);
-	msleep(2000);
+	msleep(500);
 	drop_three_hangers();
-	//pick_up_first_doubler();
-	pick_up_cube();
+	score_cubes();
 
 
 	create_disconnect();
@@ -49,15 +52,15 @@ void robot_setup() {
 	create_connect();
 	create_full();
 	set_servo_position(BAR_SERVO, BAR_START_POSITION);
-	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
+	set_servo_position(CLAW_SERVO, CLAW_START_POSITION);
 	set_servo_position(GYRO_SERVO, GYRO_START_POSITION);
 	enable_servos();
 	msleep(3000);
 	camera_open();
-	for (i = 0; i < 20; i++) {
+	for (i = 0; i < 15; i++) {
 		camera_update();
 		msleep(100);
 	}
 	operate_winch(WINCH_START_POSITION);
-	create_drive_distance(15.5, 20, FORWARDS);
+	create_drive_distance(16.5, 20, FORWARDS);
 }

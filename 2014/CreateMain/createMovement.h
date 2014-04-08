@@ -19,6 +19,7 @@
 #define CLIFF_FRONT_RIGHT 30
 #define CLIFF_RIGHT 31
 #define PACKET_OI_MODE 35
+#define CURRENT 23
 
 struct create_script_buffer
 {
@@ -168,10 +169,10 @@ void create_drive_until_line(int speed, int direction)
 		}
 	}
 }
-/*
+
 int create_get_sensor(int packet_number)
 {
-	uint8_t buffer[2];
+	char buffer[4];
 	write_byte(OI_SENSORS);
 	write_byte(packet_number);
 	while (create_read_block(buffer, 2) == -1);
@@ -179,7 +180,7 @@ int create_get_sensor(int packet_number)
 	printf("%i\n", (buffer[0] << 8));
 	return (buffer[0] << 8) | buffer[1];
 }
-*/
+
 // Scripting functions
 
 void play_script()
