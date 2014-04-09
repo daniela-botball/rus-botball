@@ -8,18 +8,15 @@ void robot_setup();
 
 int main()
 {
-	//create_virtual_bump(200, BACKWARDS);
-	//return 0;
 	get_mode();
 	robot_setup();
 	press_a_to_continue();
 	// wait_for_light();
 	
 	while(!a_button()); // loop and msleep() simulate wait_for_light()
-	msleep(1000);
+	//msleep(1000);
 	
 	move_servo_slowly(BAR_SERVO, BAR_CLOSED_POSITION);
-	msleep(500);
 	drop_three_hangers();
 	score_cubes();
 
@@ -51,6 +48,8 @@ void robot_setup() {
 	int i;
 	create_connect();
 	create_full();
+	set_analog_pullup(1, 0);
+	set_analog_pullup(2, 0);
 	set_servo_position(BAR_SERVO, BAR_START_POSITION);
 	set_servo_position(CLAW_SERVO, CLAW_START_POSITION);
 	set_servo_position(GYRO_SERVO, GYRO_START_POSITION);

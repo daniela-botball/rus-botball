@@ -2,10 +2,14 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
-#define WINCH_MOTOR 1
+#define WINCH_MOTOR 0
+
 #define BAR_SERVO 0
 #define CLAW_SERVO 1
 #define GYRO_SERVO 3
+
+#define HIGH_SENSOR 1
+#define LOW_SENSOR 7
 #define BLACK_LINE_SENSOR 0
 
 #define UP 1
@@ -25,8 +29,8 @@
 #define WINCH_DUMPING_POSITION -1550
 #define WINCH_RELEASING_POSITION -525
 #define WINCH_SCORING_POSITION 25
-#define WINCH_TRAVEL_POSITION -2150
-#define WINCH_FIRST_CUBE_POSITION 550
+#define WINCH_TRAVEL_POSITION -2250
+#define WINCH_FIRST_CUBE_POSITION 550 // 550
 #define WINCH_SECOND_CUBE_POSITION -601
 
 #define GYRO_FIRST_CUBE_POSITION 2047
@@ -41,6 +45,7 @@
 
 #define SERVO_INCREMENT 15
 
+#define DESIRED_DISTANCE 450
 #define DESIRED_X_POSITION 57
 #define CENTER_OF_SCREEN_Y 60
 #define CUBE_CHANNEL 0
@@ -61,20 +66,21 @@ void pick_up_cubes();
 void drop_cubes();
 void get_mode();
 void drop_three_hangers();
-void center_on_cube();
+void center_on_cube(int port);
+void center_on_cube_with_camera();
 void move_servo_slowly(int port, int position);
 
 void drop_three_hangers() {
 	operate_winch(WINCH_SCORING_POSITION);
-	create_drive_distance(4, 15, BACKWARDS);
+	create_drive_distance(4, 40, BACKWARDS); //15
 	press_a_to_continue();
-	create_spin_degrees(90, 30, RIGHT);
+	create_spin_degrees(90, 50, RIGHT); //30
 	press_a_to_continue();
-	create_drive_distance(42, 15, FORWARDS);
+	create_drive_distance(42, 40, FORWARDS);// 15
 	press_a_to_continue();
-	create_spin_degrees(87, 30, LEFT);
+	create_spin_degrees(87, 30, LEFT);//30
 	press_a_to_continue();
-	create_drive_distance(86, 25, FORWARDS);
+	create_drive_distance(86, 25, FORWARDS);//25
 	press_a_to_continue();
 	create_spin_degrees(87, 50, RIGHT);
 	msleep(1000);
@@ -116,7 +122,6 @@ void score_cubes() {
 }
 
 void move_to_cubes() {
-	_mode = PRACTICE;
 	create_drive_distance(20, 10, BACKWARDS);			
 	press_a_to_continue();
 	create_spin_degrees(90, 90, RIGHT);				
@@ -143,22 +148,23 @@ void move_to_cubes() {
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
 	press_a_to_continue();
-	create_drive_distance(86, 20, FORWARDS);
+	create_drive_distance(73, 20, FORWARDS);
 }
 
 void pick_up_cubes() {
 	_mode = PRACTICE;
 	press_a_to_continue();
 	move_servo_slowly(GYRO_SERVO, GYRO_FIRST_CUBE_POSITION);
-	msleep(1000);
+	msleep(500);
 	operate_winch(WINCH_FIRST_CUBE_POSITION);
 	press_a_to_continue();
-	center_on_cube();
+	center_on_cube(HIGH_SENSOR);
 	press_a_to_continue();
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
 	operate_winch(WINCH_SECOND_CUBE_POSITION);
 	move_servo_slowly(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
-	create_drive_distance(6, 20, BACKWARDS); // This should be center on the second cube_left_edge
+	return;
+	center_on_cube(LOW_SENSOR);
 	press_a_to_continue();
 	move_servo_slowly(CLAW_SERVO, CLAW_OPEN_POSITION);
 	press_a_to_continue();
@@ -168,7 +174,7 @@ void pick_up_cubes() {
 	msleep(1000);
 	operate_winch(WINCH_FIRST_CUBE_POSITION);
 	press_a_to_continue();
-	center_on_cube();
+	center_on_cube(HIGH_SENSOR);
 	press_a_to_continue();
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
 	msleep(500);
@@ -244,7 +250,7 @@ void press_a_to_continue() {
 		while (a_button());
 		msleep(500);
 		} else {
-		msleep(500);
+		msleep(100);
 	}
 }
 
@@ -295,7 +301,7 @@ void move_servo_slowly(int port, int position) {
 }
 
 // PRECONDITION: Camera must already be open
-void center_on_cube() {
+void center_on_cube_with_camera() {
 	int cube_left_edge = 0;
 	int flag = 1;
 	create_drive(10, BACKWARDS);
@@ -316,6 +322,21 @@ void center_on_cube() {
 			flag = 0;
 		}
 	}
+}
+
+void center_on_cube(int port) {
+	int actual_distance;
+	create_drive(10, BACKWARDS);
+	while (1) {
+		actual_distance = analog10(port);
+		display_printf(0, 0, "%4i", actual_distance);
+		if (actual_distance > DESIRED_DISTANCE) {
+			break;
+		}
+	}
+	create_stop();
+	msleep(1000);
+	create_drive_distance(2, 10, BACKWARDS);
 }
 
 void create_virtual_bump(int speed, int direction) {
