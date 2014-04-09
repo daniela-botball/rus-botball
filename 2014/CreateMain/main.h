@@ -54,7 +54,19 @@
 #define THRESHOLD 770
 #define CREATE_THRESHOLD 1000
 #define CURRENT_THRESHOLD 64680
+
+#define SLEEP_MSECONDS_IN_TOURNAMENT_MODE 100
+#define SLOW_CREATE_LINEAR_SPEED 20
+#define SLOW_CREATE_ANGULAR_SPEED 20
+
 int _mode = TOURNAMENT;
+
+void adjust();
+void adjust_movement();
+void set_buttons_for_movement();
+int adjust_servos();
+void set_buttons_for_movement();
+void set_buttons_for_servos();
 
 void create_virtual_bump(int speed, int direction) ;
 void move_until_line();
@@ -62,6 +74,7 @@ void move_until_line_old();
 void move_until_bump(int speed, int direction, int port);
 void raise_winch();
 void operate_winch(int position);
+void press_a_to_continue_old();
 void press_a_to_continue();
 void pick_up_first_doubler();
 void score_cubes();
@@ -262,7 +275,7 @@ void raise_winch() {
 	freeze(WINCH_MOTOR);
 }
 
-void press_a_to_continue() {
+void press_a_to_continue_old() {
 	if (_mode == PRACTICE) {
 		printf("Press 'a' to continue\n");
 		while (!a_button());
@@ -375,5 +388,148 @@ void create_virtual_bump(int speed, int direction) {
 	}
 	create_stop();
 }
+
+void press_a_to_continue() {
+	if (_mode == PRACTICE) {
+		printf("Press 'a' to continue, 'c' to adjust.\n");
+		while (1) {
+			if (a_button()) {
+				while (a_button());
+				msleep(500);
+				break;
+			}
+			if (c_button()) {
+				while (c_button());
+				msleep(500);
+				adjust();
+				break;
+			}
+		}
+	} else {
+		msleep(SLEEP_MSECONDS_IN_TOURNAMENT_MODE);
+	}
+}
+
+void adjust() {
+	extra_buttons_show();
+	adjust_movement();
+	extra_buttons_hide();
+}
+
+void adjust_movement() {
+	int is_exit_time;
+	set_buttons_for_movement();
+	while (1) {
+		if (a_button()) {
+			while (a_button());
+			msleep(500);
+			return;
+		}
+		if (b_button()) {
+			set_create_distance(0);
+			create_drive_straight(SLOW_CREATE_LINEAR_SPEED);
+			while (b_button());
+			create_stop();
+			printf("%4i mm (forward)\n", get_create_distance());
+		}
+		if (c_button()) {
+			set_create_distance(0);
+			create_drive_straight(-SLOW_CREATE_LINEAR_SPEED);
+			while (c_button());
+			create_stop();
+			printf("%4i mm (backwards)\n", get_create_distance());
+		}
+		if (y_button()) {
+			set_create_total_angle(0);
+			create_spin_CCW(SLOW_CREATE_ANGULAR_SPEED);
+			while (y_button());
+			create_stop();
+			printf("%4i (spin left - CCW)\n",
+			    get_create_total_angle());
+		}
+		if (z_button()) {
+			set_create_total_angle(0);
+			create_spin_CW(SLOW_CREATE_ANGULAR_SPEED);
+			while (z_button());
+			create_stop();
+			printf("%4i (spin right - CW)\n",
+			    get_create_total_angle());
+		}
+		if (x_button()) {
+			while (x_button());
+			is_exit_time = adjust_servos();
+			if (is_exit_time) return;
+			set_buttons_for_servos();
+		}
+	}
+}
+
+int adjust_servos() {
+	int is_exit_time;
+	
+	set_buttons_for_movement();
+	while (1) {
+		if (a_button()) {
+			while (a_button());
+			msleep(500);
+			return 1;
+		}
+		if (b_button()) {
+			set_create_distance(0);
+			create_drive_straight(SLOW_CREATE_LINEAR_SPEED);
+			while (b_button());
+			create_stop();
+			printf("%4i mm (forward)\n", get_create_distance());
+		}
+		if (c_button()) {
+			set_create_distance(0);
+			create_drive_straight(-SLOW_CREATE_LINEAR_SPEED);
+			while (c_button());
+			create_stop();
+			printf("%4i mm (backwards)\n", get_create_distance());
+		}
+		if (y_button()) {
+			set_create_total_angle(0);
+			create_spin_CCW(SLOW_CREATE_ANGULAR_SPEED);
+			while (y_button());
+			create_stop();
+			printf("%4i (spin left - CCW)\n",
+			    get_create_total_angle());
+		}
+		if (z_button()) {
+			set_create_total_angle(0);
+			create_spin_CW(SLOW_CREATE_ANGULAR_SPEED);
+			while (z_button());
+			create_stop();
+			printf("%4i (spin right - CW)\n",
+			    get_create_total_angle());
+		}
+		if (x_button()) {
+			while (x_button());
+			is_exit_time = adjust_servos();
+			if (is_exit_time) return 1;
+			set_buttons_for_servos();
+		}
+	}
+}
+
+void set_buttons_for_movement() {
+	set_a_button_text("Press to exit (and continue run)");
+	set_b_button_text("Go forward until released");
+	set_c_button_text("Go backward until released");
+	set_x_button_text("Switch to motor/servo menu");
+	set_y_button_text("Spin left until released");
+	set_z_button_text("Spin right until released");
+}
+
+void set_buttons_for_servos() {
+	set_a_button_text("Press to exit (and continue run)");
+	set_b_button_text("Go forward until released");
+	set_c_button_text("Go backward until released");
+	set_x_button_text("Switch back to movement menu");
+	set_y_button_text("Spin left until released");
+	set_z_button_text("Spin right until released");
+}
+
 #endif
 
