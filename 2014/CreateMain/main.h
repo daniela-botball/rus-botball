@@ -30,10 +30,10 @@
 #define WINCH_RELEASING_POSITION -525
 #define WINCH_SCORING_POSITION 25
 #define WINCH_TRAVEL_POSITION -2250
-#define WINCH_FIRST_CUBE_POSITION 435 // 550
+#define WINCH_FIRST_CUBE_POSITION 500 // 550
 #define WINCH_SECOND_CUBE_POSITION -601
 
-#define GYRO_FIRST_CUBE_POSITION 1850
+#define GYRO_FIRST_CUBE_POSITION 1925
 #define GYRO_SECOND_CUBE_POSITION 1770
 #define GYRO_START_POSITION 0
 #define CLAW_CLOSED_POSITION 100
@@ -151,11 +151,11 @@ void move_to_cubes() {
 	create_virtual_bump(200, BACKWARDS);
 	msleep(500);
 	press_a_to_continue();
-	create_drive_distance(77, 20, FORWARDS);
+	create_drive_distance(80, 20, FORWARDS);
 }
 
 void pick_up_cubes() {
-	_mode = PRACTICE;
+	//_mode = PRACTICE;
 	press_a_to_continue();
 	move_servo_slowly(GYRO_SERVO, GYRO_FIRST_CUBE_POSITION);
 	msleep(500);
@@ -330,18 +330,16 @@ void center_on_cube_with_camera() {
 void center_on_cube(int port) {
 	int actual_distance;
 	display_clear();
-	//create_drive(10, BACKWARDS);
+	create_drive(10, BACKWARDS);
 	while (!a_button()) {
-		actual_distance = analog10(port);
+		actual_distance = analog_et(port);
 		display_printf(0, 0, "%4i", actual_distance);
 		if (actual_distance > DESIRED_DISTANCE) {
-			//break;
 			display_printf(0, 1, "Centered");
-			msleep(1000);
-			display_clear();
+			break;
 		}
 	}
-	//create_stop();
+	create_stop();
 	press_a_to_continue();
 	create_drive_distance(5, 10, BACKWARDS);
 }

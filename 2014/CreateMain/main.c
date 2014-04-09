@@ -5,9 +5,10 @@
 void test();
 void test_1();
 void robot_setup();
+void test_ET();
 
 int main()
-{
+{	
 	get_mode();
 	robot_setup();
 	press_a_to_continue();
@@ -62,4 +63,14 @@ void robot_setup() {
 	}
 	operate_winch(WINCH_START_POSITION);
 	create_drive_distance(16.5, 20, FORWARDS);
+}
+
+void test_ET() {	
+	set_analog_pullup(0, 0);
+	msleep(200);
+	// set_each_analog_state(0, 1, 0, 0, 0, 0, 0, 0);  // DOES NOT COMPILE
+	while (!a_button()) {
+		display_printf(0, 0, "%4i", analog_et(0));
+		//msleep(200)0
+	}
 }
