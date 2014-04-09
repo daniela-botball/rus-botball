@@ -26,7 +26,7 @@
 #define DOUBLER_PICK_UP_POSITION 400
 
 #define WINCH_START_POSITION -1440 //-1550
-#define WINCH_DUMPING_POSITION -1425
+#define WINCH_DUMPING_POSITION -1000 //1425
 #define WINCH_RELEASING_POSITION -425
 #define WINCH_SCORING_POSITION 25
 #define WINCH_TRAVEL_POSITION -2250
@@ -35,7 +35,7 @@
 
 #define GYRO_FIRST_CUBE_POSITION 1925
 #define GYRO_SECOND_CUBE_POSITION 1770
-#define GYRO_DROP_POSITION 190
+#define GYRO_DROP_POSITION 100
 #define GYRO_START_POSITION 0
 #define CLAW_CLOSED_POSITION 100
 #define CLAW_OPEN_POSITION 1550
@@ -160,10 +160,9 @@ void move_to_cubes() {
 	create_spin_degrees(90, 50, RIGHT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
-	_mode = PRACTICE;
 	msleep(200);
 	press_a_to_continue();
-	create_drive_distance(3, 20, FORWARDS);
+	create_drive_distance(2, 20, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, LEFT);
 	press_a_to_continue();
@@ -171,11 +170,11 @@ void move_to_cubes() {
 	msleep(500);
 	press_a_to_continue();
 	center_on_cube(LOW_SENSOR, FORWARDS);
-	create_drive_distance(4, 20, FORWARDS);
+	create_drive_distance(5, 20, FORWARDS);
 }
 
 void pick_up_cubes() {
-	//_mode = PRACTICE;
+	_mode = PRACTICE;
 	press_a_to_continue();
 	move_servo_slowly(GYRO_SERVO, GYRO_FIRST_CUBE_POSITION);
 	msleep(500);
@@ -367,7 +366,7 @@ void center_on_cube_with_camera() {
 void center_on_cube(int port, int direction) {
 	int actual_distance;
 	display_clear();
-	create_drive(10, direction);
+	create_drive(100, direction);
 	while (!a_button()) {
 		actual_distance = analog_et(port);
 		display_printf(0, 0, "%4i", actual_distance);
@@ -378,7 +377,7 @@ void center_on_cube(int port, int direction) {
 	}
 	create_stop();
 	press_a_to_continue();
-	create_drive_distance(5, 10, direction);
+	create_drive_distance(7, 20, direction);
 }
 
 void create_virtual_bump(int speed, int direction) {
