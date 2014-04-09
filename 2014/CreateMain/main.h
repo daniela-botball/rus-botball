@@ -30,13 +30,13 @@
 #define WINCH_RELEASING_POSITION -525
 #define WINCH_SCORING_POSITION 25
 #define WINCH_TRAVEL_POSITION -2250
-#define WINCH_FIRST_CUBE_POSITION 550 // 550
+#define WINCH_FIRST_CUBE_POSITION 435 // 550
 #define WINCH_SECOND_CUBE_POSITION -601
 
-#define GYRO_FIRST_CUBE_POSITION 2047
+#define GYRO_FIRST_CUBE_POSITION 1850
 #define GYRO_SECOND_CUBE_POSITION 1770
 #define GYRO_START_POSITION 0
-#define CLAW_CLOSED_POSITION 260
+#define CLAW_CLOSED_POSITION 100
 #define CLAW_OPEN_POSITION 1550
 #define CLAW_START_POSITION 260
 #define BAR_START_POSITION 420
@@ -83,7 +83,7 @@ void drop_three_hangers() {
 	create_drive_distance(86, 25, FORWARDS);//25
 	press_a_to_continue();
 	create_spin_degrees(87, 50, RIGHT);
-	msleep(1000);
+	msleep(500);
 	press_a_to_continue();
 	move_until_line();
 	press_a_to_continue();
@@ -122,33 +122,36 @@ void score_cubes() {
 }
 
 void move_to_cubes() {
-	create_drive_distance(20, 10, BACKWARDS);			
+	create_drive_distance(10, 40, BACKWARDS);			
 	press_a_to_continue();
 	create_spin_degrees(90, 90, RIGHT);				
 	press_a_to_continue();
 	operate_winch(WINCH_TRAVEL_POSITION);
 	msleep(500);
 	set_servo_position(BAR_SERVO, BAR_CLOSED_POSITION);
-	msleep(1500);
+	msleep(1000);
 	set_servo_position(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
-	msleep(2000);
+	msleep(1000);
 	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
+	msleep(500);
 	press_a_to_continue();
 	create_drive_distance(5, 20, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, RIGHT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
+	msleep(500);
 	press_a_to_continue();
 	create_drive_distance(3, 20, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, LEFT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
+	msleep(500);
 	press_a_to_continue();
-	create_drive_distance(73, 20, FORWARDS);
+	create_drive_distance(77, 20, FORWARDS);
 }
 
 void pick_up_cubes() {
@@ -326,17 +329,21 @@ void center_on_cube_with_camera() {
 
 void center_on_cube(int port) {
 	int actual_distance;
-	create_drive(10, BACKWARDS);
-	while (1) {
+	display_clear();
+	//create_drive(10, BACKWARDS);
+	while (!a_button()) {
 		actual_distance = analog10(port);
 		display_printf(0, 0, "%4i", actual_distance);
 		if (actual_distance > DESIRED_DISTANCE) {
-			break;
+			//break;
+			display_printf(0, 1, "Centered");
+			msleep(1000);
+			display_clear();
 		}
 	}
-	create_stop();
-	msleep(1000);
-	create_drive_distance(2, 10, BACKWARDS);
+	//create_stop();
+	press_a_to_continue();
+	create_drive_distance(5, 10, BACKWARDS);
 }
 
 void create_virtual_bump(int speed, int direction) {
