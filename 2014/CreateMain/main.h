@@ -26,7 +26,7 @@
 #define DOUBLER_PICK_UP_POSITION 400
 
 #define WINCH_START_POSITION -1440 //-1550
-#define WINCH_DUMPING_POSITION -1550
+#define WINCH_DUMPING_POSITION -1425
 #define WINCH_RELEASING_POSITION -525
 #define WINCH_SCORING_POSITION 25
 #define WINCH_TRAVEL_POSITION -2250
@@ -35,10 +35,12 @@
 
 #define GYRO_FIRST_CUBE_POSITION 1925
 #define GYRO_SECOND_CUBE_POSITION 1770
+#define GYRO_DROP_POSITION 230
 #define GYRO_START_POSITION 0
 #define CLAW_CLOSED_POSITION 100
 #define CLAW_OPEN_POSITION 1550
 #define CLAW_START_POSITION 260
+#define CLAW_RELEASE_POSITION 275
 #define BAR_START_POSITION 420
 #define BAR_OPEN_POSITION 100
 #define BAR_CLOSED_POSITION 1050
@@ -187,7 +189,7 @@ void pick_up_cubes() {
 void drop_cubes() {
 	create_virtual_bump(200, BACKWARDS);
 	press_a_to_continue();
-	create_drive_distance(7, 20, FORWARDS);
+	create_drive_distance(4, 20, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 40, RIGHT);
 	press_a_to_continue();
@@ -195,10 +197,15 @@ void drop_cubes() {
 	press_a_to_continue();
 	operate_winch(WINCH_DUMPING_POSITION);
 	press_a_to_continue();
-	create_spin_degrees(180, 40, LEFT);
+	create_drive_distance(15, 20, FORWARDS);
+	press_a_to_continue();
+	create_spin_degrees(173, 40, LEFT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
 	press_a_to_continue();
+	create_spin_degrees(7, 40, RIGHT);
+	move_servo_slowly(GYRO_SERVO, GYRO_DROP_POSITION);
+	move_servo_slowly(CLAW_SERVO, CLAW_RELEASE_POSITION);
 }
 
 void operate_winch(int position) {
