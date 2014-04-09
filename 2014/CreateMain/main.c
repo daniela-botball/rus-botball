@@ -12,7 +12,7 @@ int main()
 	get_mode();
 	robot_setup();
 	press_a_to_continue();
-	// wait_for_light();
+	//wait_for_light();
 	
 	while(!a_button()); // loop and msleep() simulate wait_for_light()
 	//msleep(1000);
@@ -62,7 +62,7 @@ void robot_setup() {
 		msleep(100);
 	}
 	operate_winch(WINCH_START_POSITION);
-	create_drive_distance(16.5, 20, FORWARDS);
+	create_drive_distance(15.5, 20, FORWARDS);
 }
 
 void test_ET() {	

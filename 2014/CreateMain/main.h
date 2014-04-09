@@ -8,8 +8,8 @@
 #define CLAW_SERVO 1
 #define GYRO_SERVO 3
 
-#define HIGH_SENSOR 1
-#define LOW_SENSOR 7
+#define HIGH_SENSOR 2
+#define LOW_SENSOR 1
 #define BLACK_LINE_SENSOR 0
 
 #define UP 1
@@ -27,7 +27,7 @@
 
 #define WINCH_START_POSITION -1440 //-1550
 #define WINCH_DUMPING_POSITION -1425
-#define WINCH_RELEASING_POSITION -525
+#define WINCH_RELEASING_POSITION -425
 #define WINCH_SCORING_POSITION 25
 #define WINCH_TRAVEL_POSITION -2250
 #define WINCH_FIRST_CUBE_POSITION 500 // 550
@@ -35,12 +35,12 @@
 
 #define GYRO_FIRST_CUBE_POSITION 1925
 #define GYRO_SECOND_CUBE_POSITION 1770
-#define GYRO_DROP_POSITION 230
+#define GYRO_DROP_POSITION 190
 #define GYRO_START_POSITION 0
 #define CLAW_CLOSED_POSITION 100
 #define CLAW_OPEN_POSITION 1550
 #define CLAW_START_POSITION 260
-#define CLAW_RELEASE_POSITION 200
+#define CLAW_RELEASE_POSITION 165
 #define BAR_START_POSITION 420
 #define BAR_OPEN_POSITION 100
 #define BAR_CLOSED_POSITION 1050
@@ -52,11 +52,13 @@
 #define CENTER_OF_SCREEN_Y 60
 #define CUBE_CHANNEL 0
 #define THRESHOLD 770
+#define CREATE_THRESHOLD 1000
 #define CURRENT_THRESHOLD 64680
 int _mode = TOURNAMENT;
 
 void create_virtual_bump(int speed, int direction) ;
 void move_until_line();
+void move_until_line_old();
 void move_until_bump(int speed, int direction, int port);
 void raise_winch();
 void operate_winch(int position);
@@ -88,6 +90,7 @@ void drop_three_hangers() {
 	msleep(500);
 	press_a_to_continue();
 	move_until_line();
+	create_drive_distance(15.5, 20, FORWARDS);
 	press_a_to_continue();
 	operate_winch(WINCH_RELEASING_POSITION);
 	press_a_to_continue();
@@ -168,7 +171,7 @@ void pick_up_cubes() {
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
 	operate_winch(WINCH_SECOND_CUBE_POSITION);
 	move_servo_slowly(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
-	return;
+	_mode = PRACTICE;
 	center_on_cube(LOW_SENSOR);
 	press_a_to_continue();
 	move_servo_slowly(CLAW_SERVO, CLAW_OPEN_POSITION);
@@ -199,11 +202,11 @@ void drop_cubes() {
 	press_a_to_continue();
 	create_drive_distance(15, 20, FORWARDS);
 	press_a_to_continue();
-	create_spin_degrees(173, 40, LEFT);
+	create_spin_degrees(175, 40, LEFT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
 	create_drive(100, BACKWARDS);
-	msleep(500);
+	msleep(1000);
 	create_stop();
 	press_a_to_continue();
 	create_spin_degrees(15, 40, LEFT);
@@ -285,6 +288,14 @@ void get_mode() {
 }
 
 void move_until_line() {
+	create_drive(100, FORWARDS);
+	while (get_create_rfcliff_amt() > CREATE_THRESHOLD) {
+		display_printf(0, 0, "%4i", get_create_rfcliff_amt());
+	}
+	create_stop();
+}
+
+void move_until_line_old() {
 	create_drive(100, FORWARDS);
 	while (analog10(BLACK_LINE_SENSOR) < THRESHOLD);
 	create_stop();
