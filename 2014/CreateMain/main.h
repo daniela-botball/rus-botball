@@ -40,7 +40,7 @@
 #define CLAW_CLOSED_POSITION 100
 #define CLAW_OPEN_POSITION 1550
 #define CLAW_START_POSITION 260
-#define CLAW_RELEASE_POSITION 275
+#define CLAW_RELEASE_POSITION 200
 #define BAR_START_POSITION 420
 #define BAR_OPEN_POSITION 100
 #define BAR_CLOSED_POSITION 1050
@@ -131,20 +131,20 @@ void move_to_cubes() {
 	operate_winch(WINCH_TRAVEL_POSITION);
 	msleep(500);
 	set_servo_position(BAR_SERVO, BAR_CLOSED_POSITION);
-	msleep(1000);
+	msleep(200);
 	set_servo_position(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
-	msleep(1000);
+	msleep(500);
 	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
-	msleep(500);
+	msleep(200);
 	press_a_to_continue();
 	create_drive_distance(5, 20, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, RIGHT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
-	msleep(500);
+	msleep(200);
 	press_a_to_continue();
 	create_drive_distance(3, 20, FORWARDS);
 	press_a_to_continue();
@@ -202,8 +202,11 @@ void drop_cubes() {
 	create_spin_degrees(173, 40, LEFT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
+	create_drive(100, BACKWARDS);
+	msleep(500);
+	create_stop();
 	press_a_to_continue();
-	create_spin_degrees(7, 40, RIGHT);
+	create_spin_degrees(15, 40, LEFT);
 	move_servo_slowly(GYRO_SERVO, GYRO_DROP_POSITION);
 	move_servo_slowly(CLAW_SERVO, CLAW_RELEASE_POSITION);
 }
@@ -235,7 +238,7 @@ void operate_winch(int position) {
 		direction = -1;
 	}
 	raise_winch();
-	msleep(2000);
+	msleep(200);
 	clear_motor_position_counter(WINCH_MOTOR);
 	printf("Motor position after clearing: %i\n", get_motor_position_counter(WINCH_MOTOR));
 	printf("Given position: %i\n", position);
@@ -282,7 +285,7 @@ void get_mode() {
 }
 
 void move_until_line() {
-	create_drive(60, FORWARDS);
+	create_drive(100, FORWARDS);
 	while (analog10(BLACK_LINE_SENSOR) < THRESHOLD);
 	create_stop();
 }
