@@ -156,12 +156,20 @@ void move_to_cubes() {
 	create_virtual_bump(200, BACKWARDS);
 	msleep(500);
 	press_a_to_continue();
-	create_drive_distance(80, 20, FORWARDS);
+	//create_drive_distance(80, 20, FORWARDS);
 }
 
 void pick_up_cubes() {
 	//_mode = PRACTICE;
+	
+	operate_winch(WINCH_SECOND_CUBE_POSITION);
+	move_servo_slowly(GYRO_SERVO, GYRO_FIRST_CUBE_POSITION);
+	msleep(500);
+	operate_winch(WINCH_FIRST_CUBE_POSITION);
+	move_servo_slowly(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
+	
 	press_a_to_continue();
+	create_drive_distance(35, 20, FORWARDS);
 	move_servo_slowly(GYRO_SERVO, GYRO_FIRST_CUBE_POSITION);
 	msleep(500);
 	operate_winch(WINCH_FIRST_CUBE_POSITION);
@@ -171,6 +179,7 @@ void pick_up_cubes() {
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
 	operate_winch(WINCH_SECOND_CUBE_POSITION);
 	move_servo_slowly(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
+	return;
 	_mode = PRACTICE;
 	center_on_cube(LOW_SENSOR);
 	press_a_to_continue();
