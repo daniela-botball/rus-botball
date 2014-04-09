@@ -70,7 +70,7 @@ void pick_up_cubes();
 void drop_cubes();
 void get_mode();
 void drop_three_hangers();
-void center_on_cube(int port);
+void center_on_cube(int port, int direction);
 void center_on_cube_with_camera();
 void move_servo_slowly(int port, int position);
 
@@ -147,6 +147,7 @@ void move_to_cubes() {
 	create_spin_degrees(90, 50, RIGHT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
+	_mode = PRACTICE;
 	msleep(200);
 	press_a_to_continue();
 	create_drive_distance(3, 20, FORWARDS);
@@ -156,7 +157,8 @@ void move_to_cubes() {
 	create_virtual_bump(200, BACKWARDS);
 	msleep(500);
 	press_a_to_continue();
-	create_drive_distance(80, 20, FORWARDS);
+	center_on_cube(LOW_SENSOR, FORWARDS);
+	create_drive_distance(4, 20, FORWARDS);
 }
 
 void pick_up_cubes() {
@@ -166,13 +168,14 @@ void pick_up_cubes() {
 	msleep(500);
 	operate_winch(WINCH_FIRST_CUBE_POSITION);
 	press_a_to_continue();
-	center_on_cube(HIGH_SENSOR);
+	center_on_cube(HIGH_SENSOR, BACKWARDS);
 	press_a_to_continue();
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
 	operate_winch(WINCH_SECOND_CUBE_POSITION);
 	move_servo_slowly(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
+	return;
 	_mode = PRACTICE;
-	center_on_cube(LOW_SENSOR);
+	center_on_cube(LOW_SENSOR, BACKWARDS);
 	press_a_to_continue();
 	move_servo_slowly(CLAW_SERVO, CLAW_OPEN_POSITION);
 	press_a_to_continue();
@@ -182,7 +185,7 @@ void pick_up_cubes() {
 	msleep(1000);
 	operate_winch(WINCH_FIRST_CUBE_POSITION);
 	press_a_to_continue();
-	center_on_cube(HIGH_SENSOR);
+	center_on_cube(HIGH_SENSOR, BACKWARDS);
 	press_a_to_continue();
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
 	msleep(500);
@@ -348,10 +351,10 @@ void center_on_cube_with_camera() {
 	}
 }
 
-void center_on_cube(int port) {
+void center_on_cube(int port, int direction) {
 	int actual_distance;
 	display_clear();
-	create_drive(10, BACKWARDS);
+	create_drive(10, direction);
 	while (!a_button()) {
 		actual_distance = analog_et(port);
 		display_printf(0, 0, "%4i", actual_distance);
@@ -362,7 +365,7 @@ void center_on_cube(int port) {
 	}
 	create_stop();
 	press_a_to_continue();
-	create_drive_distance(5, 10, BACKWARDS);
+	create_drive_distance(5, 10, direction);
 }
 
 void create_virtual_bump(int speed, int direction) {
