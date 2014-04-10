@@ -26,22 +26,33 @@
 #define DOUBLER_PICK_UP_POSITION 400
 
 #define WINCH_START_POSITION -1440 //-1550
-#define WINCH_DUMPING_POSITION -1050 //1425
+#define WINCH_DUMPING_POSITION -760 //1425 DCM was -1050
 #define WINCH_RELEASING_POSITION -425
 #define WINCH_SCORING_POSITION 25
 #define WINCH_TRAVEL_POSITION -2250
-#define WINCH_FIRST_CUBE_POSITION 500 // 550
+#define WINCH_FIRST_CUBE_POSITION 527 // DCM was 500
 #define WINCH_SECOND_CUBE_POSITION -601
+
+// DONE: 68 less, 10 degrees less, 9 more foearward, 3 degrees more
+// DONE: small amount less forward off wall, 27 higher when going for cube
+// DONE: claw start at 130.  eliminate backward.  15 degrees less after backup
+// DONE:  still less out from wall, spin less, little farther after seeing cube
+// DONE: press_a_to_continue in dropping
+// DONE: adjust drop numbers, turn a bit more
+// press_a_to_continue has to repeat message.
+// message saying that create not connected
+// checklists
+// fix all wires
 
 #define GYRO_FIRST_CUBE_POSITION 1940
 #define GYRO_SECOND_CUBE_POSITION 1777
-#define GYRO_DROP_POSITION 575
+#define GYRO_DROP_POSITION 485 // DCM was 575
 #define GYRO_START_POSITION 0
 #define CLAW_CLOSED_POSITION 100
 #define CLAW_OPEN_POSITION 1550
-#define CLAW_START_POSITION 260
+#define CLAW_START_POSITION 130 // was 260
 #define CLAW_RELEASE_POSITION 1000
-#define BAR_START_POSITION 420
+#define BAR_START_POSITION 620 // DCM was 420
 #define BAR_OPEN_POSITION 100
 #define BAR_CLOSED_POSITION 1050
 
@@ -56,17 +67,27 @@
 #define CURRENT_THRESHOLD 64680
 
 #define SLEEP_MSECONDS_IN_TOURNAMENT_MODE 100
-#define SLOW_CREATE_LINEAR_SPEED 20
+#define SLOW_CREATE_LINEAR_SPEED 30
 #define SLOW_CREATE_ANGULAR_SPEED 20
+#define SPEED_FOR_TIGHTENING_WINCH 75
+#define SPEED_FOR_RELEASING_WINCH 20
+#define GYRO_SERVO_ADJUSTMENT_AMOUNT 10
+#define GYRO_SERVO_ADJUSTMENT_MSECONDS 200
+#define CLAW_SERVO_ADJUSTMENT_AMOUNT 10
+#define CLAW_SERVO_ADJUSTMENT_MSECONDS 200
+#define BAR_SERVO_ADJUSTMENT_AMOUNT 10
+#define BAR_SERVO_ADJUSTMENT_MSECONDS 200
 
 int _mode = TOURNAMENT;
 
 void adjust();
+void adjust_winch_or_gyro();
 void adjust_movement();
+int adjust_claw_or_bar();
+void set_buttons_for_winch_and_gyro();
 void set_buttons_for_movement();
-int adjust_servos();
-void set_buttons_for_movement();
-void set_buttons_for_servos();
+void set_buttons_for_claw_and_bar();
+void set_buttons_to_abc();
 
 void create_virtual_bump(int speed, int direction) ;
 void move_until_line();
@@ -90,22 +111,22 @@ void move_servo_slowly(int port, int position);
 
 void drop_three_hangers() {
 	operate_winch(WINCH_SCORING_POSITION);
-	create_drive_distance(4, 40, BACKWARDS); //15
-	press_a_to_continue();
+	// create_drive_distance(4, 40, BACKWARDS); //15  DCM removed this
+	//press_a_to_continue();
 	create_spin_degrees(90, 50, RIGHT); //30
 	press_a_to_continue();
-	create_drive_distance(42, 40, FORWARDS);// 15
+	create_drive_distance(42, 40, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(87, 30, LEFT);//30
 	press_a_to_continue();
-	create_drive_distance(86, 25, FORWARDS);//25
+	create_drive_distance(75, 25, FORWARDS);//DCM was 86
 	press_a_to_continue();
-	create_spin_degrees(87, 50, RIGHT);
+	create_spin_degrees(77, 50, RIGHT); // DCM was 87
 	msleep(500);
 	create_drive_distance(5, 30, BACKWARDS);
 	press_a_to_continue();
 	move_until_line();
-	create_drive_distance(15.5, 20, FORWARDS);
+	create_drive_distance(16.5, 20, FORWARDS); // DCM was 1.5.
 	press_a_to_continue();
 	operate_winch(WINCH_RELEASING_POSITION);
 	press_a_to_continue();
@@ -145,9 +166,9 @@ void score_cubes() {
 }
 
 void move_to_cubes() {
-	create_drive_distance(10, 40, BACKWARDS);			
+	create_drive_distance(10, 40, BACKWARDS); 		
 	press_a_to_continue();
-	create_spin_degrees(90, 90, RIGHT);				
+	create_spin_degrees(95, 90, RIGHT);	// DCM was 90		
 	press_a_to_continue();
 	operate_winch(WINCH_TRAVEL_POSITION);
 	msleep(500);
@@ -160,9 +181,9 @@ void move_to_cubes() {
 	create_virtual_bump(200, BACKWARDS);
 	msleep(200);
 	press_a_to_continue();
-	create_drive_distance(5, 20, FORWARDS);
+	create_drive_distance(2, 20, FORWARDS); // DCM was 5
 	press_a_to_continue();
-	create_spin_degrees(90, 50, RIGHT);
+	create_spin_degrees(84, 50, RIGHT); // DCM was 90
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
 	msleep(200);
@@ -229,10 +250,13 @@ void drop_cube() {
 	msleep(1000);
 	create_stop();
 	press_a_to_continue();
-	create_spin_degrees(15, 40, LEFT);
+	create_spin_degrees(20, 40, LEFT); // DCM was 15
+	press_a_to_continue();
 	move_servo_slowly(GYRO_SERVO, GYRO_DROP_POSITION);
 	msleep(200);
+	press_a_to_continue();
 	set_servo_position(CLAW_SERVO, CLAW_RELEASE_POSITION);
+	press_a_to_continue();
 }
 
 void move_to_second_cube() {
@@ -441,12 +465,60 @@ void press_a_to_continue() {
 
 void adjust() {
 	extra_buttons_show();
-	adjust_movement();
+	adjust_winch_or_gyro();
 	extra_buttons_hide();
+	set_buttons_to_abc();
+}
+
+void adjust_winch_or_gyro() {	
+	set_buttons_for_winch_and_gyro();
+	
+	while (1) {
+		if (a_button()) {
+			while (a_button());
+			msleep(500);
+			return;
+		}
+		if (b_button()) {
+			clear_motor_position_counter(WINCH_MOTOR);
+			motor(WINCH_MOTOR, SPEED_FOR_TIGHTENING_WINCH);
+			while(b_button());
+			freeze(WINCH_MOTOR);
+			printf("%4i winch ticks (tightening)\n", get_motor_position_counter(WINCH_MOTOR));	
+		}
+		if (c_button()) {
+			clear_motor_position_counter(WINCH_MOTOR);
+			motor(WINCH_MOTOR, -SPEED_FOR_RELEASING_WINCH);
+			while(c_button());
+			freeze(WINCH_MOTOR);
+			printf("%4i winch ticks (releasing)\n", get_motor_position_counter(WINCH_MOTOR));	
+		}
+		if (y_button()) {
+			while (y_button()) {
+				set_servo_position(GYRO_SERVO, get_servo_position(GYRO_SERVO) - GYRO_SERVO_ADJUSTMENT_AMOUNT);
+				msleep(GYRO_SERVO_ADJUSTMENT_MSECONDS);
+			}
+			printf("%4i = position GYRO tightened to\n", get_servo_position(GYRO_SERVO));
+		}
+		if (z_button()) {
+			while (z_button()) {
+				set_servo_position(GYRO_SERVO, get_servo_position(GYRO_SERVO) + GYRO_SERVO_ADJUSTMENT_AMOUNT);
+				msleep(GYRO_SERVO_ADJUSTMENT_MSECONDS);
+			}
+			printf("%4i = position GYRO released to\n", get_servo_position(GYRO_SERVO));
+		}
+		if (x_button()) {
+			while (x_button());
+			msleep(500);
+			adjust_movement();
+			set_buttons_for_winch_and_gyro();
+		}
+	}
 }
 
 void adjust_movement() {
-	int is_exit_time;
+	int exit_to_winch_gyro;
+	
 	set_buttons_for_movement();
 	while (1) {
 		if (a_button()) {
@@ -473,7 +545,7 @@ void adjust_movement() {
 			create_spin_CCW(SLOW_CREATE_ANGULAR_SPEED);
 			while (y_button());
 			create_stop();
-			printf("%4i (spin left - CCW)\n",
+			printf("%4i degrees (spin left - CCW)\n",
 			    get_create_total_angle());
 		}
 		if (z_button()) {
@@ -481,83 +553,96 @@ void adjust_movement() {
 			create_spin_CW(SLOW_CREATE_ANGULAR_SPEED);
 			while (z_button());
 			create_stop();
-			printf("%4i (spin right - CW)\n",
+			printf("%4i degrees (spin right - CW)\n",
 			    get_create_total_angle());
 		}
 		if (x_button()) {
 			while (x_button());
-			is_exit_time = adjust_servos();
-			if (is_exit_time) return;
-			set_buttons_for_servos();
+			exit_to_winch_gyro = adjust_claw_or_bar();
+			if (exit_to_winch_gyro) {
+				return;
+			}
+			set_buttons_for_movement();
 		}
 	}
 }
 
-int adjust_servos() {
-	int is_exit_time;
+int adjust_claw_or_bar() {	
+	set_buttons_for_claw_and_bar();
 	
-	set_buttons_for_movement();
 	while (1) {
 		if (a_button()) {
 			while (a_button());
 			msleep(500);
-			return 1;
+			return 0;
 		}
 		if (b_button()) {
-			set_create_distance(0);
-			create_drive_straight(SLOW_CREATE_LINEAR_SPEED);
-			while (b_button());
-			create_stop();
-			printf("%4i mm (forward)\n", get_create_distance());
+			while (b_button()) {
+				set_servo_position(CLAW_SERVO, get_servo_position(CLAW_SERVO) - CLAW_SERVO_ADJUSTMENT_AMOUNT);
+				msleep(CLAW_SERVO_ADJUSTMENT_MSECONDS);
+			}
+			printf("%4i = position CLAW closed to\n", get_servo_position(CLAW_SERVO));
 		}
 		if (c_button()) {
-			set_create_distance(0);
-			create_drive_straight(-SLOW_CREATE_LINEAR_SPEED);
-			while (c_button());
-			create_stop();
-			printf("%4i mm (backwards)\n", get_create_distance());
+			while (c_button()) {
+				set_servo_position(CLAW_SERVO, get_servo_position(CLAW_SERVO) + CLAW_SERVO_ADJUSTMENT_AMOUNT);
+				msleep(CLAW_SERVO_ADJUSTMENT_MSECONDS);
+			}
+			printf("%4i = position CLAW opened to\n", get_servo_position(CLAW_SERVO));	
 		}
 		if (y_button()) {
-			set_create_total_angle(0);
-			create_spin_CCW(SLOW_CREATE_ANGULAR_SPEED);
-			while (y_button());
-			create_stop();
-			printf("%4i (spin left - CCW)\n",
-			    get_create_total_angle());
+			while (y_button()) {
+				set_servo_position(BAR_SERVO, get_servo_position(BAR_SERVO) + BAR_SERVO_ADJUSTMENT_AMOUNT);
+				msleep(BAR_SERVO_ADJUSTMENT_MSECONDS);
+			}
+			printf("%4i = position BAR closed to\n", get_servo_position(BAR_SERVO));
 		}
 		if (z_button()) {
-			set_create_total_angle(0);
-			create_spin_CW(SLOW_CREATE_ANGULAR_SPEED);
-			while (z_button());
-			create_stop();
-			printf("%4i (spin right - CW)\n",
-			    get_create_total_angle());
+			while (z_button()) {
+				set_servo_position(BAR_SERVO, get_servo_position(BAR_SERVO) - BAR_SERVO_ADJUSTMENT_AMOUNT);
+				msleep(BAR_SERVO_ADJUSTMENT_MSECONDS);
+			}
+			printf("%4i = position BAR opened to\n", get_servo_position(BAR_SERVO));
 		}
 		if (x_button()) {
 			while (x_button());
-			is_exit_time = adjust_servos();
-			if (is_exit_time) return 1;
-			set_buttons_for_servos();
+			msleep(500);
+			return 1;
 		}
 	}
 }
 
-void set_buttons_for_movement() {
-	set_a_button_text("Press to exit (and continue run)");
-	set_b_button_text("Go forward until released");
-	set_c_button_text("Go backward until released");
-	set_x_button_text("Switch to motor/servo menu");
-	set_y_button_text("Spin left until released");
-	set_z_button_text("Spin right until released");
+void set_buttons_for_winch_and_gyro() {
+	set_a_button_text("Exit, continue run");
+	set_b_button_text("Tighten winch");
+	set_c_button_text("Release winch");
+	set_x_button_text("More choices");
+	set_y_button_text("Gyro up");
+	set_z_button_text("Gyro down");
 }
 
-void set_buttons_for_servos() {
-	set_a_button_text("Press to exit (and continue run)");
-	set_b_button_text("Go forward until released");
-	set_c_button_text("Go backward until released");
-	set_x_button_text("Switch back to movement menu");
-	set_y_button_text("Spin left until released");
-	set_z_button_text("Spin right until released");
+void set_buttons_for_movement() {
+	set_a_button_text("Winch/gyro menu");
+	set_b_button_text("Go forward");
+	set_c_button_text("Go backward");
+	set_x_button_text("Claw/bar menu");
+	set_y_button_text("Spin left");
+	set_z_button_text("Spin right");
+}
+
+void set_buttons_for_claw_and_bar() {
+	set_a_button_text("Movement menu");
+	set_b_button_text("Close claw");
+	set_c_button_text("Open claw");
+	set_x_button_text("Winch/gyro menu");
+	set_y_button_text("Close bar");
+	set_z_button_text("Open bar");
+}
+
+void set_buttons_to_abc() {
+	set_a_button_text("A");
+	set_b_button_text("B");
+	set_c_button_text("C");
 }
 
 #endif
