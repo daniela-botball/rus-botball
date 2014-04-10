@@ -26,16 +26,16 @@
 #define DOUBLER_PICK_UP_POSITION 400
 
 #define WINCH_START_POSITION -1440 //-1550
-#define WINCH_DUMPING_POSITION -1000 //1425
+#define WINCH_DUMPING_POSITION -900 //1425
 #define WINCH_RELEASING_POSITION -425
 #define WINCH_SCORING_POSITION 25
 #define WINCH_TRAVEL_POSITION -2250
 #define WINCH_FIRST_CUBE_POSITION 500 // 550
 #define WINCH_SECOND_CUBE_POSITION -601
 
-#define GYRO_FIRST_CUBE_POSITION 1925
-#define GYRO_SECOND_CUBE_POSITION 1770
-#define GYRO_DROP_POSITION 100
+#define GYRO_FIRST_CUBE_POSITION 1940
+#define GYRO_SECOND_CUBE_POSITION 1777
+#define GYRO_DROP_POSITION 575
 #define GYRO_START_POSITION 0
 #define CLAW_CLOSED_POSITION 100
 #define CLAW_OPEN_POSITION 1550
@@ -79,8 +79,9 @@ void press_a_to_continue();
 void pick_up_first_doubler();
 void score_cubes();
 void move_to_cubes();
-void pick_up_cubes();
-void drop_cubes();
+void move_to_second_cube();
+void pick_up_cube();
+void drop_cube();
 void get_mode();
 void drop_three_hangers();
 void center_on_cube(int port, int direction);
@@ -101,6 +102,7 @@ void drop_three_hangers() {
 	press_a_to_continue();
 	create_spin_degrees(87, 50, RIGHT);
 	msleep(500);
+	create_drive_distance(5, 30, BACKWARDS);
 	press_a_to_continue();
 	move_until_line();
 	create_drive_distance(15.5, 20, FORWARDS);
@@ -135,8 +137,12 @@ void pick_up_first_doubler() {
 
 void score_cubes() {
 	move_to_cubes();
-	pick_up_cubes();
-	drop_cubes();
+	pick_up_cube();
+	drop_cube();
+	_mode = PRACTICE;
+	move_to_second_cube();
+	pick_up_cube();
+	drop_cube();
 }
 
 void move_to_cubes() {
@@ -170,11 +176,11 @@ void move_to_cubes() {
 	msleep(500);
 	press_a_to_continue();
 	center_on_cube(LOW_SENSOR, FORWARDS);
-	create_drive_distance(5, 20, FORWARDS);
+	create_drive_distance(11, 20, FORWARDS);
 }
 
-void pick_up_cubes() {
-	_mode = PRACTICE;
+void pick_up_cube() {
+	//_mode = PRACTICE;
 	press_a_to_continue();
 	move_servo_slowly(GYRO_SERVO, GYRO_FIRST_CUBE_POSITION);
 	msleep(500);
@@ -204,7 +210,7 @@ void pick_up_cubes() {
 	operate_winch(WINCH_SECOND_CUBE_POSITION);
 }
 
-void drop_cubes() {
+void drop_cube() {
 	create_virtual_bump(200, BACKWARDS);
 	press_a_to_continue();
 	create_drive_distance(4, 20, FORWARDS);
@@ -226,7 +232,32 @@ void drop_cubes() {
 	press_a_to_continue();
 	create_spin_degrees(15, 40, LEFT);
 	move_servo_slowly(GYRO_SERVO, GYRO_DROP_POSITION);
-	move_servo_slowly(CLAW_SERVO, CLAW_RELEASE_POSITION);
+	msleep(200);
+	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
+}
+
+void move_to_second_cube() {
+	create_drive(200, BACKWARDS);
+	msleep(500);
+	create_stop();
+	create_drive_distance(20, 30, FORWARDS);
+	operate_winch(WINCH_TRAVEL_POSITION);
+	msleep(500);
+	set_servo_position(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
+	msleep(500);
+	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
+	create_spin_degrees(180, 50, LEFT);
+	press_a_to_continue();
+	create_virtual_bump(400, BACKWARDS);
+	press_a_to_continue();
+	create_spin_degrees(90, 50, LEFT);
+	press_a_to_continue();
+	create_virtual_bump(400, BACKWARDS);
+	press_a_to_continue();
+	center_on_cube(LOW_SENSOR, FORWARDS);
+	press_a_to_continue();
+	create_drive_distance(11, 20, FORWARDS);
+	press_a_to_continue();
 }
 
 void operate_winch(int position) {
@@ -377,7 +408,7 @@ void center_on_cube(int port, int direction) {
 	}
 	create_stop();
 	press_a_to_continue();
-	create_drive_distance(7, 20, direction);
+	//create_drive_distance(4, 20, direction);
 }
 
 void create_virtual_bump(int speed, int direction) {
