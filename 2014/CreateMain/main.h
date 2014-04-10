@@ -26,7 +26,7 @@
 #define DOUBLER_PICK_UP_POSITION 400
 
 #define WINCH_START_POSITION -1440 //-1550
-#define WINCH_DUMPING_POSITION -900 //1425
+#define WINCH_DUMPING_POSITION -1050 //1425
 #define WINCH_RELEASING_POSITION -425
 #define WINCH_SCORING_POSITION 25
 #define WINCH_TRAVEL_POSITION -2250
@@ -40,7 +40,7 @@
 #define CLAW_CLOSED_POSITION 100
 #define CLAW_OPEN_POSITION 1550
 #define CLAW_START_POSITION 260
-#define CLAW_RELEASE_POSITION 165
+#define CLAW_RELEASE_POSITION 1000
 #define BAR_START_POSITION 420
 #define BAR_OPEN_POSITION 100
 #define BAR_CLOSED_POSITION 1050
@@ -139,7 +139,6 @@ void score_cubes() {
 	move_to_cubes();
 	pick_up_cube();
 	drop_cube();
-	_mode = PRACTICE;
 	move_to_second_cube();
 	pick_up_cube();
 	drop_cube();
@@ -168,8 +167,8 @@ void move_to_cubes() {
 	create_virtual_bump(200, BACKWARDS);
 	msleep(200);
 	press_a_to_continue();
-	create_drive_distance(2, 20, FORWARDS);
-	press_a_to_continue();
+	//create_drive_distance(2, 20, FORWARDS);
+	//press_a_to_continue();
 	create_spin_degrees(90, 50, LEFT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
@@ -233,7 +232,7 @@ void drop_cube() {
 	create_spin_degrees(15, 40, LEFT);
 	move_servo_slowly(GYRO_SERVO, GYRO_DROP_POSITION);
 	msleep(200);
-	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
+	set_servo_position(CLAW_SERVO, CLAW_RELEASE_POSITION);
 }
 
 void move_to_second_cube() {
@@ -248,7 +247,7 @@ void move_to_second_cube() {
 	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
 	create_spin_degrees(180, 50, LEFT);
 	press_a_to_continue();
-	create_virtual_bump(400, BACKWARDS);
+	create_virtual_bump(200, BACKWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, LEFT);
 	press_a_to_continue();
