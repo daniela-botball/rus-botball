@@ -1,0 +1,14 @@
+Mechanical Changes:
+ -Link needs to be remounted to allow all wires to be plugged in
+ -Extra sensor extender needs to be removed (see above)
+ -All wires need to be zip-tied to the robot
+
+Software:
+ -Dropping the cube numbers needs to be adjusted (could be done at Rose-Hulman)
+
+Overall:
+ -Robot needs to be timed in tournament mode to make sure it runs in under 2 minutes
+ -Both robots need to be coordinated for both double elim and seeding
+ -Make checklists
+ -Prepare Onsite
+ -Prepare foam board/paper template
