@@ -8,9 +8,10 @@
 #define CLAW_SERVO 1
 #define GYRO_SERVO 3
 
-#define HIGH_SENSOR 2
-#define LOW_SENSOR 1
-#define BLACK_LINE_SENSOR 0
+#define HIGH_SENSOR 1
+#define LOW_SENSOR 0
+
+#define BLACK_LINE_SENSOR 0 //UNUSED
 
 #define UP 1
 #define DOWN -1
@@ -26,12 +27,12 @@
 #define DOUBLER_PICK_UP_POSITION 400
 
 #define WINCH_START_POSITION -1440 //-1550
-#define WINCH_DUMPING_POSITION -760 //1425 DCM was -1050
-#define WINCH_RELEASING_POSITION -425
+#define WINCH_DUMPING_POSITION -1095 //1425 DCM was -1050
+#define WINCH_RELEASING_POSITION -434 // -425
 #define WINCH_SCORING_POSITION 25
 #define WINCH_TRAVEL_POSITION -2250
 #define WINCH_FIRST_CUBE_POSITION 527 // DCM was 500
-#define WINCH_SECOND_CUBE_POSITION -601
+#define WINCH_SECOND_CUBE_POSITION -570 //601
 
 // DONE: 68 less, 10 degrees less, 9 more foearward, 3 degrees more
 // DONE: small amount less forward off wall, 27 higher when going for cube
@@ -46,7 +47,7 @@
 
 #define GYRO_FIRST_CUBE_POSITION 1940
 #define GYRO_SECOND_CUBE_POSITION 1777
-#define GYRO_DROP_POSITION 485 // DCM was 575
+#define GYRO_DROP_POSITION 325 // DCM was 575
 #define GYRO_START_POSITION 0
 #define CLAW_CLOSED_POSITION 100
 #define CLAW_OPEN_POSITION 1550
@@ -113,15 +114,15 @@ void drop_three_hangers() {
 	operate_winch(WINCH_SCORING_POSITION);
 	// create_drive_distance(4, 40, BACKWARDS); //15  DCM removed this
 	//press_a_to_continue();
-	create_spin_degrees(90, 50, RIGHT); //30
+	create_spin_degrees(90, 40, RIGHT); //30
 	press_a_to_continue();
-	create_drive_distance(42, 40, FORWARDS);
+	create_drive_distance(42, 20, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(87, 30, LEFT);//30
 	press_a_to_continue();
 	create_drive_distance(75, 25, FORWARDS);//DCM was 86
 	press_a_to_continue();
-	create_spin_degrees(77, 50, RIGHT); // DCM was 87
+	create_spin_degrees(77, 40, RIGHT); // DCM was 87
 	msleep(500);
 	create_drive_distance(5, 30, BACKWARDS);
 	press_a_to_continue();
@@ -139,11 +140,11 @@ void drop_three_hangers() {
 void pick_up_first_doubler() {
 	create_drive_distance(20, 10, BACKWARDS);
 	press_a_to_continue();
-	create_spin_degrees(90, 50, LEFT);
+	create_spin_degrees(90, 40, LEFT);
 	press_a_to_continue();
 	create_drive_distance(26, 40, FORWARDS);
 	press_a_to_continue();
-	create_spin_degrees(90, 50, RIGHT);
+	create_spin_degrees(90, 40, RIGHT);
 	press_a_to_continue();
 	operate_winch(DOUBLER_POSITION);
 	press_a_to_continue();
@@ -166,9 +167,9 @@ void score_cubes() {
 }
 
 void move_to_cubes() {
-	create_drive_distance(10, 40, BACKWARDS); 		
+	create_drive_distance(10, 20, BACKWARDS); 		
 	press_a_to_continue();
-	create_spin_degrees(95, 90, RIGHT);	// DCM was 90		
+	create_spin_degrees(95, 40, RIGHT);	// DCM was 90		
 	press_a_to_continue();
 	operate_winch(WINCH_TRAVEL_POSITION);
 	msleep(500);
@@ -183,20 +184,20 @@ void move_to_cubes() {
 	press_a_to_continue();
 	create_drive_distance(2, 20, FORWARDS); // DCM was 5
 	press_a_to_continue();
-	create_spin_degrees(84, 50, RIGHT); // DCM was 90
+	create_spin_degrees(84, 40, RIGHT); // DCM was 90
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
 	msleep(200);
 	press_a_to_continue();
 	//create_drive_distance(2, 20, FORWARDS);
 	//press_a_to_continue();
-	create_spin_degrees(90, 50, LEFT);
+	create_spin_degrees(90, 40, LEFT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
 	msleep(500);
 	press_a_to_continue();
 	center_on_cube(LOW_SENSOR, FORWARDS);
-	create_drive_distance(11, 20, FORWARDS);
+	create_drive_distance(10, 40, FORWARDS);
 }
 
 void pick_up_cube() {
@@ -246,8 +247,8 @@ void drop_cube() {
 	create_spin_degrees(175, 40, LEFT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
-	create_drive(100, BACKWARDS);
-	msleep(1000);
+	create_drive(500, BACKWARDS);
+	msleep(700);
 	create_stop();
 	press_a_to_continue();
 	create_spin_degrees(20, 40, LEFT); // DCM was 15
@@ -260,26 +261,26 @@ void drop_cube() {
 }
 
 void move_to_second_cube() {
-	create_drive(200, BACKWARDS);
+	create_drive(500, BACKWARDS);
 	msleep(500);
 	create_stop();
-	create_drive_distance(20, 30, FORWARDS);
+	create_drive_distance(20, 50, FORWARDS);
 	operate_winch(WINCH_TRAVEL_POSITION);
 	msleep(500);
 	set_servo_position(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
 	msleep(500);
 	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
-	create_spin_degrees(180, 50, LEFT);
+	create_spin_degrees(185, 50, RIGHT);
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, LEFT);
 	press_a_to_continue();
-	create_virtual_bump(400, BACKWARDS);
+	create_virtual_bump(200, BACKWARDS);
 	press_a_to_continue();
 	center_on_cube(LOW_SENSOR, FORWARDS);
 	press_a_to_continue();
-	create_drive_distance(11, 20, FORWARDS);
+	create_drive_distance(11, 35, FORWARDS);
 	press_a_to_continue();
 }
 
