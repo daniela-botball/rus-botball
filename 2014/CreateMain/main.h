@@ -27,12 +27,12 @@
 #define DOUBLER_PICK_UP_POSITION 400
 
 #define WINCH_START_POSITION -1440 //-1550
-#define WINCH_DUMPING_POSITION -1095 //1425 DCM was -1050
+#define WINCH_DUMPING_POSITION -1295 // DCM was -1050
 #define WINCH_RELEASING_POSITION -434 // -425
-#define WINCH_SCORING_POSITION 25
+#define WINCH_SCORING_POSITION -115 // DCM was 25
 #define WINCH_TRAVEL_POSITION -2250
 #define WINCH_FIRST_CUBE_POSITION 527 // DCM was 500
-#define WINCH_SECOND_CUBE_POSITION -570 //601
+#define WINCH_SECOND_CUBE_POSITION -600 //DCM was -570
 
 // DONE: 68 less, 10 degrees less, 9 more foearward, 3 degrees more
 // DONE: small amount less forward off wall, 27 higher when going for cube
@@ -47,7 +47,7 @@
 
 #define GYRO_FIRST_CUBE_POSITION 1940
 #define GYRO_SECOND_CUBE_POSITION 1777
-#define GYRO_DROP_POSITION 325 // DCM was 575
+#define GYRO_DROP_POSITION 245 // DCM was 325
 #define GYRO_START_POSITION 0
 #define CLAW_CLOSED_POSITION 100
 #define CLAW_OPEN_POSITION 1550
@@ -79,6 +79,9 @@
 #define BAR_SERVO_ADJUSTMENT_AMOUNT 10
 #define BAR_SERVO_ADJUSTMENT_MSECONDS 200
 
+#define NUMBER_ERRORS_ALLOWED 3 // DCM
+#define AMOUNT_ERROR_ALLOWED 100 // DCM
+
 int _mode = TOURNAMENT;
 
 void adjust();
@@ -89,6 +92,8 @@ void set_buttons_for_winch_and_gyro();
 void set_buttons_for_movement();
 void set_buttons_for_claw_and_bar();
 void set_buttons_to_abc();
+
+int int_abs(int x);
 
 void create_virtual_bump(int speed, int direction) ;
 void move_until_line();
@@ -197,7 +202,7 @@ void move_to_cubes() {
 	msleep(500);
 	press_a_to_continue();
 	center_on_cube(LOW_SENSOR, FORWARDS);
-	create_drive_distance(10, 40, FORWARDS);
+	create_drive_distance(11, 40, FORWARDS); // DCM was 10
 }
 
 void pick_up_cube() {
@@ -212,7 +217,10 @@ void pick_up_cube() {
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
 	operate_winch(WINCH_SECOND_CUBE_POSITION);
 	move_servo_slowly(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
+	
 	return;
+	
+	// REST OF THIS FUNCTION IS HISTORY.
 	_mode = PRACTICE;
 	center_on_cube(LOW_SENSOR, BACKWARDS);
 	press_a_to_continue();
@@ -251,7 +259,7 @@ void drop_cube() {
 	msleep(700);
 	create_stop();
 	press_a_to_continue();
-	create_spin_degrees(20, 40, LEFT); // DCM was 15
+	create_spin_degrees(15, 40, LEFT); // DCM was 20
 	press_a_to_continue();
 	move_servo_slowly(GYRO_SERVO, GYRO_DROP_POSITION);
 	msleep(200);
@@ -261,10 +269,10 @@ void drop_cube() {
 }
 
 void move_to_second_cube() {
-	create_drive(500, BACKWARDS);
+	create_drive(500, BACKWARDS);  // DCM FIX ME
 	msleep(500);
 	create_stop();
-	create_drive_distance(20, 50, FORWARDS);
+	create_drive_distance(25, 50, FORWARDS);  // DCM was 20
 	operate_winch(WINCH_TRAVEL_POSITION);
 	msleep(500);
 	set_servo_position(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
@@ -286,22 +294,24 @@ void move_to_second_cube() {
 
 void operate_winch(int position) {
 	int direction;
+	int k;
+	
 	if (position == DOUBLER_PICK_UP_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
 		motor(WINCH_MOTOR, 60);
-		while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(DOUBLER_PICK_UP_POSITION));
+		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(DOUBLER_PICK_UP_POSITION));
 		freeze(WINCH_MOTOR);
 		return;
 	} else if (position == WINCH_FIRST_CUBE_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
 		motor(WINCH_MOTOR, 60);
-		while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(WINCH_FIRST_CUBE_POSITION));
+		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(WINCH_FIRST_CUBE_POSITION));
 		freeze(WINCH_MOTOR);
 		return;
 	} else if (position == WINCH_SECOND_CUBE_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
 		motor(WINCH_MOTOR, -60);
-		while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(WINCH_SECOND_CUBE_POSITION));
+		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(WINCH_SECOND_CUBE_POSITION));
 		freeze(WINCH_MOTOR);
 		return;
 	}
@@ -314,13 +324,21 @@ void operate_winch(int position) {
 	msleep(200);
 	clear_motor_position_counter(WINCH_MOTOR);
 	printf("Motor position after clearing: %i\n", get_motor_position_counter(WINCH_MOTOR));
-	printf("Given position: %i\n", position);
-	motor(WINCH_MOTOR, 60 * direction);
-	while(abs(get_motor_position_counter(WINCH_MOTOR)) < abs(position)) {
-		printf("%i\n", get_motor_position_counter(WINCH_MOTOR));
+	printf("Given position: %i, start wind\n", position);
+	for (k = 0; k < NUMBER_ERRORS_ALLOWED; ++k) {
+		motor(WINCH_MOTOR, 60 * direction);
+		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(position)) {
+			printf("%i\n", get_motor_position_counter(WINCH_MOTOR));
+		}
+		freeze(WINCH_MOTOR);
+		printf("Motor position is %i, wants %i\n",
+		       get_motor_position_counter(WINCH_MOTOR), position);
+		if (int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(position) + AMOUNT_ERROR_ALLOWED) {
+			break;
+		}
+		sleep(2000); // WINCH DID NOT GO CORRECTLY, SLEEP SO CAN SEE IT.
+		printf("ERROR - WINCH FAILED\n");
 	}
-	freeze(WINCH_MOTOR);
-	printf("Motor position - %i\n", get_motor_position_counter(WINCH_MOTOR));
 }
 
 void raise_winch() {
@@ -644,6 +662,11 @@ void set_buttons_to_abc() {
 	set_a_button_text("A");
 	set_b_button_text("B");
 	set_c_button_text("C");
+}
+
+int int_abs(int x) {
+	if (x < 0) x = -x;
+	return x;
 }
 
 #endif

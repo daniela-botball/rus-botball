@@ -47,6 +47,8 @@ void test_1() {
 
 void robot_setup() {
 	int i;
+	printf("Connecting to the Create.\n");
+	printf("It it stops here, turn on the Create.\n");
 	create_connect();
 	create_full();
 	set_analog_pullup(1, 0);
