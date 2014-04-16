@@ -47,6 +47,7 @@ void test_1() {
 
 void robot_setup() {
 	int i;
+	#define _ROBOT CREATE
 	printf("Connecting to the Create.\n");
 	printf("It it stops here, turn on the Create.\n");
 	create_connect();

@@ -19,9 +19,14 @@ void move_calibration(float distance, float speed, int direction)
 
 void move_calibration(float distance, float speed, int direction) {
 	float new_distance = distance;
+	FILE *fp;
+	char message[25];
+    fp = fopen("MOVEMENTS.TXT","a");
+    strcpy(message,"move_distance(");
 	
 	robot_drive(distance, speed, direction);
 	
+	#if _MODE == PRACTICE
 	extra_buttons_show();
 	set_a_button_text("Continue");
 	set_b_button_text("Fwds %i cm", SMALL_INCREMENT);
@@ -36,7 +41,10 @@ void move_calibration(float distance, float speed, int direction) {
 			display_clear();
 			display_printf(0, 0, "given distance: %f cm", distance);
 			display_printf(0, 1, "new distance: %f cm", new_distance);
-			return;
+			display_printf(0, 2, "press 'a' to continue");
+			while (!a_button());
+			msleep(500);
+			break;
 		}
 		if (b_button()) {
 			while (b_button());
@@ -51,23 +59,24 @@ void move_calibration(float distance, float speed, int direction) {
 			new_distance += LARGE_INCREMENT;
 		}
 		if (y_button()) {
-			while (b_button());
+			while (y_button());
 			msleep(500);
 			robot_drive_distance(SMALL_INCREMENT, CALIBRATION_SPEED, BACKWARDS);
 			new_distance -= SMALL_INCREMENT;
 		}
 		if (z_button()) {
-			while (c_button());
+			while (z_button());
 			msleep(500);
 			robot_drive_distance(LARGE_INCREMENT, CALIBRATION_SPEED, BACKWARDS);
 			new_distance -= LARGE_INCREMENT;
 		}
-		
-		
 	}
-	
+	#endif
+	display_clear();
+	display_printf(0, 0, "New distance: %f cm", new_distance);
+	fprintf(fp,"%s%f, %f, %i)\n", stuff, new_distance, speed, direction);
+	fclose(fp);
 }
-
 
 void robot_drive(float distance, float speed, int direction) {
 	#if _ROBOT == CREATE
