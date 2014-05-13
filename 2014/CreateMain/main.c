@@ -1,6 +1,8 @@
 // Created on Wed March 12 2014
 #include "createMovement.h"
 #include "main.h"
+#include "timing.h"
+#include "moveCalibration.h"
 
 void test();
 void test_1();
@@ -9,6 +11,10 @@ void test_ET();
 
 int main()
 {	
+	create_connect();
+	move_calibration(10, 10, FORWARDS);
+	create_disconnect();
+	return 0;
 	get_mode();
 	robot_setup();
 	press_a_to_continue();
@@ -48,9 +54,9 @@ void test_1() {
 void robot_setup() {
 	int i;
 	#define _ROBOT CREATE
-	printf("Connecting to the Create.\n");
-	printf("It it stops here, turn on the Create.\n");
+	printf("Connecting to the Create...\n");
 	create_connect();
+	printf("Create connected!");
 	create_full();
 	set_analog_pullup(1, 0);
 	set_analog_pullup(2, 0);
