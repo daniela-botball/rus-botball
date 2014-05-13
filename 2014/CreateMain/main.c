@@ -1,16 +1,15 @@
 // Created on Wed March 12 2014
-#include "createMovement.h"
-#include "main.h"
-#include "timing.h"
-#include "moveCalibration.h"
+//#include "createMovement.h"
+//#include "tournamentFunctions.h"
+//#include "timing.h"
+//#include "moveCalibration.h"
 
-void test();
-void test_1();
 void robot_setup();
-void test_ET();
 
 int main()
 {	
+	get_robot();
+	return 0;
 	create_connect();
 	move_calibration(10, 10, FORWARDS);
 	create_disconnect();
@@ -32,26 +31,9 @@ int main()
 	return 0;
 }
 
-void test()
-{
-	create_connect();
-	raise_winch();
-	create_drive_distance(100, 25, FORWARDS);
-}
-
-void test_1() {
-	_mode = PRACTICE;
-	int k = 0;
-	while (k <= 1000) {
-		operate_winch(-1900);
-		press_a_to_continue();
-		operate_winch(-1000 + k);
-		press_a_to_continue();
-		k += 100;
-	}
-}
-
 void robot_setup() {
+	
+	msleep(100);
 	int i;
 	#define _ROBOT CREATE
 	printf("Connecting to the Create...\n");
@@ -74,12 +56,53 @@ void robot_setup() {
 	create_drive_distance(15.5, 20, FORWARDS);
 }
 
-void test_ET() {	
-	set_analog_pullup(0, 0);
-	msleep(200);
-	// set_each_analog_state(0, 1, 0, 0, 0, 0, 0, 0);  // DOES NOT COMPILE
-	while (!a_button()) {
-		display_printf(0, 0, "%4i", analog_et(0));
-		//msleep(200)0
+void get_robot() {
+	display_clear();
+	display_printf(0, 0, "Select robot running");
+	set_a_button_text("LEGO");
+	set_b_button_text("CREATE");
+	while (1) {
+		if (a_button()) {
+			#define _ROBOT LEGO
+			display_printf(0, 0, "The LEGO robot has been selected");
+			if (confirm_selection(1)) {
+				break;
+			} else {
+				#undefine _ROBOT
+				continue;
+			}
+			break;
+		}
+		if (b_button()) {
+			#define _ROBOT CREATE
+			display_printf(0, 0, "The CREATE robot has been selected");
+			if (confirm_selection(1)) {
+				break;
+			} else {
+				#undefine _ROBOT
+				continue;
+			}
+			break;
+		}
+	}
+}
+
+int confirm_selection(int message_line_number) {
+	set_a_button_text("Yes");
+	set_b_button_text("No");
+	display_printf(0, message_line_number, "Please confirm your selection");
+	while (1) {
+		if (a_button()) {
+			while (a_button());
+			display_printf(0, message_line_number + 1, "Selection confirmed");
+			msleep(100);
+			return 1;
+		}
+		if (b_button()) {
+			while (b_button());
+			display_printf(0, message_line_number + 1, "Selection canceled");
+			msleep(100);
+			return 0;
+		}
 	}
 }
