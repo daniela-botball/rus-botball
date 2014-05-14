@@ -27,7 +27,7 @@ void get_mode() {
 	set_b_button_text("TOURNAMENT");
 	while (1) {
 		if (a_button()) {
-			msleep(100);
+			msleep(200);
 			set_mode(PRACTICE);
 			if (confirm_selection(1)) {
 				break;
@@ -41,7 +41,7 @@ void get_mode() {
 			}
 		}
 		if (b_button()) {
-			msleep(100);
+			msleep(200);
 			set_mode(TOURNAMENT);
 			if (confirm_selection(1)) {
 				break;
@@ -65,7 +65,7 @@ void get_robot() {
 	while (1) {
 		if (a_button()) {
 			while(a_button());
-			msleep(100);
+			msleep(200);
 			#define _ROBOT LEGO
 			display_printf(0, 0, "The LEGO robot has been selected");
 			if (confirm_selection(1)) {
@@ -82,7 +82,7 @@ void get_robot() {
 		}
 		if (b_button()) {
 			while(b_button());
-			msleep(100);
+			msleep(200);
 			#define _ROBOT CREATE
 			display_printf(0, 0, "The CREATE robot has been selected");
 			if (confirm_selection(1)) {
