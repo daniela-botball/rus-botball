@@ -1,5 +1,8 @@
 #include "tournamentFunctions.h"
 #include "createMovement.h"
+#include "movement.h"
+#include "ui.h"
+
 void drop_three_hangers() {
 	operate_winch(WINCH_SCORING_POSITION);
 	// create_drive_distance(4, 40, BACKWARDS); //15  DCM removed this
@@ -91,7 +94,7 @@ void move_to_cubes() {
 }
 
 void pick_up_cube() {
-	//_mode = PRACTICE;
+	//set_mode(PRACTICE);
 	press_a_to_continue();
 	move_servo_slowly(GYRO_SERVO, GYRO_FIRST_CUBE_POSITION);
 	msleep(500);
@@ -106,7 +109,7 @@ void pick_up_cube() {
 	return;
 	
 	// REST OF THIS FUNCTION IS HISTORY.
-	_mode = PRACTICE;
+	set_mode(PRACTICE);
 	center_on_cube(LOW_SENSOR, BACKWARDS);
 	press_a_to_continue();
 	move_servo_slowly(CLAW_SERVO, CLAW_OPEN_POSITION);
@@ -232,54 +235,6 @@ void raise_winch() {
 	freeze(WINCH_MOTOR);
 }
 
-void press_a_to_continue_old() {
-	if (_mode == PRACTICE) {
-		printf("Press 'a' to continue\n");
-		while (!a_button());
-		while (a_button());
-		msleep(500);
-		} else {
-		msleep(100);
-	}
-}
-
-void get_mode() {
-	printf("Press 'a' for practice mode\n");
-	printf("Press 'b' for tournament mode\n");
-	while (1) {
-		if (a_button()) {
-			while (a_button());
-			_mode = PRACTICE;
-			msleep(500);
-			break;
-			} else if (b_button()) {
-			_mode = TOURNAMENT;
-			msleep(500);
-			break;
-		}
-	}
-}
-
-void move_until_line() {
-	create_drive(100, FORWARDS);
-	while (get_create_rfcliff_amt() > CREATE_THRESHOLD) {
-		display_printf(0, 0, "%4i", get_create_rfcliff_amt());
-	}
-	create_stop();
-}
-
-void move_until_line_old() {
-	create_drive(100, FORWARDS);
-	while (analog10(BLACK_LINE_SENSOR) < THRESHOLD);
-	create_stop();
-}
-
-void move_until_bump(int speed, int direction, int port) {
-	create_drive(speed, direction);
-	while (!digital(port));
-	create_stop();
-}
-
 void move_servo_slowly(int port, int position) {
 	int i;
 	if (get_servo_position(port) < position) {
@@ -338,34 +293,7 @@ void center_on_cube(int port, int direction) {
 	//create_drive_distance(4, 20, direction);
 }
 
-void create_virtual_bump(int speed, int direction) {
-	create_drive(speed, direction);
-	while (create_get_sensor(CURRENT) > CURRENT_THRESHOLD) {
-		//msleep(20);
-	}
-	create_stop();
-}
 
-void press_a_to_continue() {
-	if (_mode == PRACTICE) {
-		printf("Press 'a' to continue, 'c' to adjust.\n");
-		while (1) {
-			if (a_button()) {
-				while (a_button());
-				msleep(500);
-				break;
-			}
-			if (c_button()) {
-				while (c_button());
-				msleep(500);
-				adjust();
-				break;
-			}
-		}
-	} else {
-		msleep(SLEEP_MSECONDS_IN_TOURNAMENT_MODE);
-	}
-}
 
 void adjust() {
 	extra_buttons_show();

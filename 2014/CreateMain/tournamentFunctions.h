@@ -11,17 +11,8 @@
 #define HIGH_SENSOR 1
 #define LOW_SENSOR 0
 
-#define BLACK_LINE_SENSOR 0 //UNUSED
-
 #define UP 1
 #define DOWN -1
-#define FORWARDS 1
-#define BACKWARDS -1
-#define LEFT 1
-#define RIGHT -1
-
-#define TOURNAMENT 0
-#define PRACTICE 1
 
 #define DOUBLER_POSITION -2050
 #define DOUBLER_PICK_UP_POSITION 400
@@ -52,11 +43,7 @@
 #define DESIRED_X_POSITION 57
 #define CENTER_OF_SCREEN_Y 60
 #define CUBE_CHANNEL 0
-#define THRESHOLD 770
-#define CREATE_THRESHOLD 1000
-#define CURRENT_THRESHOLD 64680
 
-#define SLEEP_MSECONDS_IN_TOURNAMENT_MODE 100
 #define SLOW_CREATE_LINEAR_SPEED 30
 #define SLOW_CREATE_ANGULAR_SPEED 20
 #define SPEED_FOR_TIGHTENING_WINCH 75
@@ -71,8 +58,6 @@
 #define NUMBER_ERRORS_ALLOWED 3 // DCM
 #define AMOUNT_ERROR_ALLOWED 100 // DCM
 
-int _mode = TOURNAMENT;
-
 void adjust();
 void adjust_winch_or_gyro();
 void adjust_movement();
@@ -84,21 +69,14 @@ void set_buttons_to_abc();
 
 int int_abs(int x);
 
-void create_virtual_bump(int speed, int direction) ;
-void move_until_line();
-void move_until_line_old();
-void move_until_bump(int speed, int direction, int port);
 void raise_winch();
 void operate_winch(int position);
-void press_a_to_continue_old();
-void press_a_to_continue();
 void pick_up_first_doubler();
 void score_cubes();
 void move_to_cubes();
 void move_to_second_cube();
 void pick_up_cube();
 void drop_cube();
-void get_mode();
 void drop_three_hangers();
 void center_on_cube(int port, int direction);
 void center_on_cube_with_camera();

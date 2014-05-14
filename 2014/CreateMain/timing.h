@@ -8,6 +8,4 @@ void start_timer(int timer);
 void end_timer(int timer);
 void reset_timer(int timer);
 
-float timers[10] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
-
 #endif

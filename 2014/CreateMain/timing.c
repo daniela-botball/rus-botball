@@ -1,5 +1,8 @@
 #include "timing.h"
 
+float timers[10] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+
+
 void start_timer(int timer) {
 	if (timers[timer] == -1) {
 		timers[timer] = seconds();

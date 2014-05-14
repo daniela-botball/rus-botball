@@ -1,4 +1,6 @@
 #include "tests.h"
+#include "movement.h"
+#include "ui.h"
 
 void test_ET() {	
 	set_analog_pullup(0, 0);
@@ -19,7 +21,7 @@ void test()
 }
 
 void test_1() {
-	_mode = PRACTICE;
+	set_mode(PRACTICE);
 	int k = 0;
 	while (k <= 1000) {
 		operate_winch(-1900);

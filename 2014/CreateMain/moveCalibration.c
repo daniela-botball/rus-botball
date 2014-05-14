@@ -1,7 +1,6 @@
 #include "moveCalibration.h"
 #include <string.h>
-#include "tournamentFunctions.h"
-
+#include "movement.h"
 void move_calibration(float distance, float speed, int direction) {
 	float new_distance = distance;
 	
@@ -71,10 +70,4 @@ void move_calibration(float distance, float speed, int direction) {
 	display_printf(0, 0, "New distance: %f cm", new_distance);
 }
 
-void robot_drive_distance(float distance, float speed, int direction) {
-	#if _ROBOT == CREATE
-	create_drive_distance(distance, speed, direction);
-	#elif _ROBOT == LEGO
-	lego_drive_distance();
-	#endif
-}
+
