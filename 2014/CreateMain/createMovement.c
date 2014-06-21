@@ -131,12 +131,17 @@ void create_drive_until_line(int speed, int direction)
 
 int create_get_sensor(int packet_number)
 {
+	int data_bytes = 2;
 	char buffer[4];
 	write_byte(OI_SENSORS);
 	write_byte(packet_number);
-	while (create_read_block(buffer, 2) == -1);
-	printf("buffer 1, buffer 2 - %i, %i\n", buffer[0], buffer[1]);
-	printf("%i\n", (buffer[0] << 8));
+	if (packet_number == 17) { data_bytes = 1;}
+	while (create_read_block(buffer, data_bytes) == 0);
+	//printf("buffer 1, buffer 2 - %i, %i\n", buffer[0], buffer[1]);
+	if (data_bytes == 1) {
+		return buffer[0];
+	}
+	//printf("%i\n", (buffer[0] << 8));
 	return (buffer[0] << 8) | buffer[1];
 }
 

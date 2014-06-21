@@ -5,12 +5,40 @@
 #include "moveCalibration.h"
 #include "movement.h"
 #include "ui.h"
+#include "teleoperation.h"
 
 void robot_setup();
 
 int main()
 {	
+	create_connect();
+	drive_distance(20, 35, FORWARDS);
+	spin_degrees(90, 50, LEFT);
+	drive_distance(14, 35, FORWARDS);
+	create_disconnect();
+}
+	
+	/*create_connect();
+	teleoperate();
+	return 0;
+	printf("connecting to create\n");
+	int k = create_connect();
+	printf("%i\n", k);
+	int i;
+	while (1) {
+		i = create_get_sensor(17);
+		if (i != 255) {
+		printf("%i\n", i);
+		msleep(100);
+		}
+	}
+	return 0;*/
+	//#define _ROBOT CREATE
+	//#define _MODE PRACTICE
+	//create_connect();
 	robot_setup();
+	//return 0;
+	move_calibration(10, 10, FORWARDS);
 	return 0;
 	create_connect();
 	move_calibration(10, 10, FORWARDS);
@@ -62,7 +90,3 @@ void robot_setup() {
 	operate_winch(WINCH_START_POSITION);
 	create_drive_distance(15.5, 20, FORWARDS);
 }
-
-
-
-
