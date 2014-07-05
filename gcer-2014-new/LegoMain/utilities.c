@@ -1,0 +1,66 @@
+#include "score_8_plus_8.h"
+#include "utilities.h"
+
+// FIXME: Talk with Aaron re why these are VARIABLEs and use of EXTERN elsewhere.
+//        And why they are defined here and not in a .h file.
+
+int _ROBOT;
+int _MODE;
+char _STRATEGY[1024]; // WARNING: If the strategy string exceeds this size, bad things happen!
+int _OUR_COLOR;
+int _THEIR_COLOR;
+
+void setup() {
+	// FIXME: Work with Aaron to make this use _STRATEGY and hence be robot-neutral.
+	setup_score_8_plus_8_poms_in_upper_storage();
+}
+
+void run() {
+	// FIXME: Work with Aaron to make this use _STRATEGY and hence be robot-neutral.
+	score_8_plus_8_poms_in_upper_storage();
+}
+
+void teardown() {
+	// FIXME: Work with Aaron to make this use _STRATEGY and hence be robot-neutral.
+}
+
+
+
+int map(int n, int old_min, int old_max, int new_min, int new_max) {
+	float old_range = (float) (old_max - old_min);
+	float new_range = (float) (new_max - new_min);
+	return ((int) (((float) n / old_range) * new_range)) + new_min;
+}
+
+int compare(int n_one, int n_two, int comparator) {
+	int larger;
+	int smaller;
+	if (n_one > n_two) {
+		larger = n_one;
+		smaller = n_two;
+	} else if (n_one == n_two) {
+		smaller = n_one;
+		larger = n_one;
+	} else {
+		larger = n_two;
+		smaller = n_one;
+	}
+	switch (comparator) {
+		case LARGER: 
+			return larger;
+		case SMALLER:
+			return smaller;
+		default:
+			return smaller;
+	}
+}
+
+
+void press_A_to_continue() {
+	printf("Press A to continue.\n");
+	while (! a_button()) ;
+	while (a_button());
+	msleep(500);
+}
+
+
