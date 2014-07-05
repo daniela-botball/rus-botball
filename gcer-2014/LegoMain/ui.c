@@ -6,13 +6,13 @@ int confirm_selection(int message_line_number) {
 	display_printf(0, message_line_number, "Please confirm your selection");
 	while (1) {
 		if (a_button()) {
-			while (a_button());
+			while (a_button()) msleep(10);
 			display_printf(0, message_line_number + 1, "Selection confirmed");
 			msleep(100);
 			return 1;
 		}
 		if (b_button()) {
-			while (b_button());
+			while (b_button()) msleep(10);
 			display_printf(0, message_line_number + 1, "Selection canceled");
 			msleep(100);
 			return 0;
@@ -64,7 +64,7 @@ void get_robot() {
 	set_b_button_text("CREATE");
 	while (1) {
 		if (a_button()) {
-			while(a_button());
+			while(a_button())msleep(10);
 			msleep(200);
 			#define _ROBOT LEGO
 			display_printf(0, 0, "The LEGO robot has been selected");
@@ -81,7 +81,7 @@ void get_robot() {
 			break;
 		}
 		if (b_button()) {
-			while(b_button());
+			while(b_button()) msleep(10);
 			msleep(200);
 			#define _ROBOT CREATE
 			display_printf(0, 0, "The CREATE robot has been selected");
@@ -107,12 +107,12 @@ void press_a_to_continue() {
 		printf("Press 'a' to continue, 'c' to adjust.\n");
 		while (1) {
 			if (a_button()) {
-				while (a_button());
+				while (a_button()) msleep(10);
 				msleep(500);
 				break;
 			}
 			if (c_button()) {
-				while (c_button());
+				while (c_button()) msleep(10);
 				msleep(500);
 				adjust();
 				break;
@@ -125,6 +125,7 @@ void press_a_to_continue() {
 }
 
 void set_mode(int mode) {
+	// WTF is THIS??? everything with # is executed bevore compilation - in both cases nothing happens
 	#ifdef _MODE
 	#undef _MODE
 	#define _MODE mode

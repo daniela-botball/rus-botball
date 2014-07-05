@@ -23,12 +23,13 @@ int main()
 
 void pick_up_poms() {
 	thread movement;
-	movement = thread_create(lego_drive_distance(20, 50, FORWARDS);
+	movement = thread_create(lego_drive_distance(20, 50, FORWARDS)); 
 	drive_to_poms(70);
 	lego_spin_degrees(20, 50, LEFT);
 	track_on();
-	thread_run(movement);
+	thread_run(movement); // correct-functions: thread_start
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
+	thread_wait(movement); // wait for movement to finish
 	lego_drive_distance(200, 50, FORWARDS);
 	ao();
 }
