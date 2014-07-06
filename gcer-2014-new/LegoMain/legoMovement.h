@@ -6,10 +6,16 @@
 #define LEFT_MOTOR 0
 #define RIGHT_MOTOR 2
 
-#define TICKS_PER_DEGREE 10 // FIXME
-#define TICKS_PER_CENTIMETER 52.0 //should be correct
-#define RIGHT_MOTOR_TICKS_PER_ROTATION 940
-#define LEFT_MOTOR_TICKS_PER_ROTATION 900
+
+#define RIGHT_MOTOR_TICKS_PER_ROTATION 864 // was 940
+#define LEFT_MOTOR_TICKS_PER_ROTATION 851 // was 900
+#define TICKS_PER_DEGREE 8.5 // FIXME
+// Calculate the following by:
+//    ticks per centimeter = ticks per rotation / circumference of wheel
+//                         = ticks per rotation / (diameter of wheel * pi)
+#define RIGHT_MOTOR_TICKS_PER_CENTIMETER 48.123 // was 52.0, COMPUTE BY HAND
+#define LEFT_MOTOR_TICKS_PER_CENTIMETER 49.0 // computed suggests 47.398
+#define TICKS_PER_CENTIMETER LEFT_MOTOR_TICKS_PER_CENTIMETER
 
 typedef struct {
 	int left_power;

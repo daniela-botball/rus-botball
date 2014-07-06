@@ -1,6 +1,8 @@
 #include "ui.h"
 #include "utilities.h"
 
+extern int _MODE;
+
 int confirm_selection(int message_line_number) {
 	set_a_button_text("Yes");
 	set_b_button_text("No");
@@ -103,8 +105,7 @@ void get_robot() {
 }
 
 void press_a_to_continue() {
-	#ifdef _MODE
-	#if _MODE == PRACTICE
+	if (_MODE == PRACTICE) {
 		printf("Press 'a' to continue, 'c' to adjust.\n");
 		while (1) {
 			if (a_button()) {
@@ -115,21 +116,20 @@ void press_a_to_continue() {
 			if (c_button()) {
 				while (c_button());
 				msleep(500);
-				adjust();
+				//adjust();
 				break;
 			}
 		}
-	#else
+	} else {
 		msleep(SLEEP_MSECONDS_IN_TOURNAMENT_MODE);
-	#endif
-	#endif
+	}
 }
 
 void set_mode(int mode) {
-	#ifdef _MODE
-	#undef _MODE
-	#define _MODE mode
+	#ifdef __MODE
+	#undef __MODE
+	#define __MODE mode
 	#else
-	#define _MODE mode
+	#define __MODE mode
 	#endif
 }

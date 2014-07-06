@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 void move_servo_at_speed(int port, int desired_position, int ticks_per_second) {
-	// FIXME: Needs to be tested!!!
+	// FIXME: Change units to degrees per second
 	int i;
 	int initial_position;
 	int distance;

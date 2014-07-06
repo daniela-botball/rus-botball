@@ -1,5 +1,6 @@
 #include "camera_rus.h"
 #include "utilities.h"
+#include "ui.h"
 #include "tournamentFunctions.h"
 
 // Using the following variable because camera_close does not work correctly.
@@ -15,17 +16,20 @@ void initialize_camera() {
 	printf("Intializing camera.  If this hangs,\n");
 	printf("check that the camera is plugged in.\n");
 	
+	printf("%i\n", LOW_RES);
 	if (! _CAMERA_IS_OPEN) {
 		_CAMERA_IS_OPEN = TRUE;
 		while (camera_open() == 0) {} // Keep trying until it succeeds.void go_to_pom_pile()
 	}
-
+	
 	for (i = 0; i < number_of_times_to_update; i++) {
 		result = camera_update();
-		printf("Result of update %3i is %i\n", result);
+		printf("Result of update %3i is %i\n", i, result);
 	}
 	
-	while (camera_update() == 0) {} // Keep trying until it succeeds.
+	while (camera_update() == 0) { // Keep trying until it succeeds.
+		printf("Initializing: camera update fails.\n");
+	}
 }
 
 int has_big_enough_blob(int colors[], int minimum_sizes[], int number_of_colors_to_check) {
@@ -43,14 +47,14 @@ int has_big_enough_blob(int colors[], int minimum_sizes[], int number_of_colors_
 		printf("%1i", k);
 		if (get_object_count(colors[k]) <= 0) {
 			printf("  No %i object\n", k);
-		} else {
+			} else {
 			area = get_object_area(colors[k], 0);
 			bbox = transform_bbox1(get_object_bbox(colors[k], 0));
 			printf(" %5i %3i %3i %3i %3i", area, bbox.ulx, bbox.uly, bbox.ulx + bbox.width, bbox.uly + bbox.height);
-				
+			
 			if (area < minimum_sizes[k]) {
 				printf(" TOO SMALL\n");
-			} else {
+				} else {
 				printf(" FOUND big enough %i!\n", colors[k]);
 				return colors[k];
 			}
@@ -64,22 +68,29 @@ void show_blobs(int colors[], int number_of_colors_to_show) {
 	// Does as many blobs (starting with the biggest) as the screen permits (roughly).
 	int line;
 	int j, k;
-	int lines_to_use = 9; // FIXME: Is this what the link has (+ one for header)?
-	
+	int lines_to_use = DISPLAY_PRINTF_LINES_ON_LINK - 1; // One for header.
+	float s;
 	initialize_camera();
 	
 	display_clear();
-	// FIXME: Line up the following.
 	display_printf(0, 0, "Col Center Ctroid Area Conf UL_x_y LR_x_y");
+	
+	// FIXME: Add code that allows one to pause/change the refresh rate.
+	// FIXME: Use ALL lines if ALL blobs will fit (avoiding multiple "no blobs").
+	// FIXME: Show something meaningful if a requested color model does not exist.
+	s = seconds();
 	while (1) {
-		line = 1;
-		for (k = 0; k < number_of_colors_to_show; ++k) {
-			for (j = 0; j < lines_to_use / number_of_colors_to_show; ++j) {
-				show_blob_numbers(colors[k], j, line);
-				++ line;
+		camera_update();
+		if (seconds() - s >= SECONDS_PER_DISPLAY) {
+			s = seconds();
+			line = 1;
+			for (k = 0; k < number_of_colors_to_show; ++k) {
+				for (j = 0; j <  lines_to_use / number_of_colors_to_show; ++j) {
+					show_blob_numbers(colors[k], j, line);
+					++ line;
+				}
 			}
 		}
-		msleep(MSECONDS_PER_DISPLAY);
 	}
 }
 
@@ -88,20 +99,20 @@ void show_blobs(int colors[], int number_of_colors_to_show) {
 // Displays the data at the given line number.
 void show_blob_numbers(int color_model, int blob, int line) {
 	if (get_object_count(color_model) < blob + 1) {
-		display_printf(0, line, "%1i %-40s", blob, "No more blobs");
-	} else {
+		display_printf(0, line, "%1i %-40s", color_model, "No more blobs...........................");
+		} else {
 		display_printf(0, line, "%1i %3i %3i %3i %3i %4i %3.1f %3i %3i %3i %3i",
-			blob,
-			get_object_center(color_model, blob).x,
-			get_object_center(color_model, blob).y,
-			get_object_centroid(color_model, blob).x,
-			get_object_centroid(color_model, blob).y,
-			get_object_area(color_model, blob),
-			get_object_confidence(color_model, blob),
-			get_object_bbox(color_model, blob).ulx,
-			get_object_bbox(color_model, blob).uly,
-			get_object_bbox(color_model, blob).ulx + get_object_bbox(color_model, blob).width,
-			get_object_bbox(color_model, blob).uly + get_object_bbox(color_model, blob).height);
+		color_model,
+		get_object_center(color_model, blob).x,
+		get_object_center(color_model, blob).y,
+		get_object_centroid(color_model, blob).x,
+		get_object_centroid(color_model, blob).y,
+		get_object_area(color_model, blob),
+		get_object_confidence(color_model, blob),
+		get_object_bbox(color_model, blob).ulx,
+		get_object_bbox(color_model, blob).uly,
+		get_object_bbox(color_model, blob).ulx + get_object_bbox(color_model, blob).width,
+		get_object_bbox(color_model, blob).uly + get_object_bbox(color_model, blob).height);
 	}
 }
 
@@ -120,53 +131,53 @@ rectangle get_pile_bbox(int colors[], int number_of_colors_to_check) {
 	//        3. Repeat step 2 until no blobs are added at that step.
 	
 	int k, j;
+	int old = 0;
+	int count;
 	int still_adding_boxes;
 	rectangle pile_bbox, this_bbox;
+	BLOB blob;
 	
-	pile_bbox = biggest_blob(colors, number_of_colors_to_check);
+	blob = biggest_blob(colors, number_of_colors_to_check);
+	pile_bbox = get_object_bbox(blob.color, blob.index);
+	printf("(%3i, %3i), %3i, %3i\n", pile_bbox.ulx, pile_bbox.uly, pile_bbox.width, pile_bbox.height);
+	//press_a_to_continue();
 	while (1) {
-		still_adding_boxes = FALSE;
+		count = 0;
 		for (k = 0; k < number_of_colors_to_check; ++k) {
 			for (j = 0; j < get_object_count(colors[k]); ++j) {
 				this_bbox = get_object_bbox(colors[k], j);
 				if (almost_intersects(this_bbox, pile_bbox, NEARLY_TOUCHING)) {
+					printf("Adding box - j,k: %i, %i\n", j, k);
 					pile_bbox = box_containing(pile_bbox, this_bbox);
-					still_adding_boxes = TRUE;
+					count++;
 				}
 			}
 		}
-		
-		if (! still_adding_boxes) {
+		//press_a_to_continue();
+		if (old == count) {
 			break;
+		} else {
+			old = count;
 		}
 	}
-	
+	printf("(%3i, %3i), %3i, %3i\n", pile_bbox.ulx, pile_bbox.uly, pile_bbox.width, pile_bbox.height);
 	return pile_bbox;	
 }
 
-rectangle biggest_blob(int colors[], int number_of_colors_to_check) {
-	// Returns the biggest blob among all the given colors.
-	// Precondition: There is at least one blob among all the given colors.
+BLOB biggest_blob(int colors[], int number_of_colors_to_check) {
+	// Returns the biggest blob among all the given colors. Color of -1 means no blob
 	int k;
-	int biggest_area;
-	rectangle biggest_rectangle;
-	
-	// Initialize biggest to a blob.  (This code breaks if none exists.)
-	for (k = 0; k < number_of_colors_to_check; ++k) {
-		if (get_object_count(colors[k]) > 0) {
-			biggest_area = get_object_area(colors[k], 0);
-			biggest_rectangle = get_object_bbox(colors[k], 0);
-		}
-	}
+	int biggest_area = -1;
+	BLOB biggest_blob = {-1, 0};
 	
 	for (k = 0; k < number_of_colors_to_check; ++k) {
 		if (get_object_count(colors[k]) > 0 && get_object_area(colors[k], 0) > biggest_area) {
 			biggest_area = get_object_area(colors[k], 0);
-			biggest_rectangle = get_object_bbox(colors[k], 0);
+			biggest_blob.color = k;
 		}
 	}
 	
-	return biggest_rectangle;
+	return biggest_blob;
 }
 
 int almost_intersects(rectangle r1, rectangle r2, int nearly_touching) {
@@ -251,6 +262,6 @@ rectangle transform_bbox2(rectangle bbox) {
 	new_bbox.width = bbox.height;
 	new_bbox.uly = bbox.ulx;
 	new_bbox.ulx = bbox.uly;
-
+	
 	return new_bbox;
 }

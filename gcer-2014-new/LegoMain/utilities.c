@@ -1,18 +1,20 @@
-#include "score_8_plus_8.h"
 #include "utilities.h"
+#include "ui.h"
+#include "score_8_plus_8.h"
 
 // FIXME: Talk with Aaron re why these are VARIABLEs and use of EXTERN elsewhere.
 //        And why they are defined here and not in a .h file.
 
 int _ROBOT;
 int _MODE;
-char _STRATEGY[1024]; // WARNING: If the strategy string exceeds this size, bad things happen!
+char _STRATEGY[100]; // WARNING: If the strategy string exceeds this size, bad things happen!
 int _OUR_COLOR;
 int _THEIR_COLOR;
 
 void setup() {
 	// FIXME: Work with Aaron to make this use _STRATEGY and hence be robot-neutral.
 	setup_score_8_plus_8_poms_in_upper_storage();
+	press_a_to_continue();
 }
 
 void run() {
@@ -53,14 +55,6 @@ int compare(int n_one, int n_two, int comparator) {
 		default:
 			return smaller;
 	}
-}
-
-
-void press_A_to_continue() {
-	printf("Press A to continue.\n");
-	while (! a_button()) ;
-	while (a_button());
-	msleep(500);
 }
 
 

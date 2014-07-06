@@ -38,25 +38,25 @@ void setup_score_8_plus_8_poms_in_upper_storage() {
 	initialize_servos(); // FIXME: Make this take an argument to be robot-neutral.
 	
 	// FIXME: Must ask for these at run-time.
-	_OUR_COLOR = PINK_CHANNEL;
-	_THEIR_COLOR = GREEN_CHANNEL;
+	_OUR_COLOR = PINK;
+	_THEIR_COLOR = GREEN;
 }
 
 void score_8_plus_8_poms_in_upper_storage() {
 	
 	// 1. Get and sort 4 poms closest to start box.
-	go_close_to_first_pom_pile();
+	// go_close_to_first_pom_pile(); // FIXME
 	eat_poms();
 	
 	turn_to_second_pom_pile();
-	sort_while_moving(); // FIXME: Add DISTANCE parameter.
+	sort_while_moving(7); // FIXME: Add DISTANCE parameter.
 	
 	//  2. Get and sort other 4 poms on our side.
 	go_close_to_second_pom_pile();
 	eat_poms();
 	
 	turn_to_first_dump();
-	sort_while_moving(); // FIXME: Add DISTANCE parameter.
+	sort_while_moving(7); // FIXME: Add DISTANCE parameter.
 	
 	// 3. Dump 4 poms into our upper bin.
 	go_close_to_our_upper_storage();
@@ -71,14 +71,14 @@ void score_8_plus_8_poms_in_upper_storage() {
 	eat_poms();
 	
 	turn_to_third_pom_pile();
-	sort_while_moving(); // FIXME: Add DISTANCE parameter.
+	sort_while_moving(7); // FIXME: Add DISTANCE parameter.
 
     // 6. Get and sort other 4 poms on opponent's side.
 	go_close_to_fourth_pom_pile();
 	eat_poms();
 	
 	turn_to_third_dump();
-	sort_while_moving(); // FIXME: Add DISTANCE parameter.
+	sort_while_moving(7); // FIXME: Add DISTANCE parameter.
 	
     // 7. Dump 4 poms into opponent's upper bin.
 	go_close_to_opponents_upper_storage_again();
@@ -90,13 +90,13 @@ void score_8_plus_8_poms_in_upper_storage() {
 }
 
 	/*turn_until_poms_in_sight();
-	press_A_to_continue();
+	press_a_to_continue();
 	
 	pom_drive(110); // Turn 110 degrees when eating poms.
-	press_A_to_continue();
+	press_a_to_continue();
 	
 	turn_until_poms_in_sight();
-	press_A_to_continue();
+	press_a_to_continue();
 	
 	drive_to_poms();
 	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
@@ -108,7 +108,7 @@ void score_8_plus_8_poms_in_upper_storage() {
 	motor(0, 100);
 	lego_spin(100, LEFT);
 	msleep(1600);
-	lego_stop();press_A_to_continue();
+	lego_stop();press_a_to_continue();
 	
 	lego_drive(100, FORWARDS);
 	for (k = 0; k < 6; k++) {

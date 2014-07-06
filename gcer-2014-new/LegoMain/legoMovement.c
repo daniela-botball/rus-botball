@@ -38,11 +38,12 @@ WHEELS_MOTOR_POWER lego_drive_powers(float speed, int direction) {
 	// FIXME: Not tuned at all!
 	WHEELS_MOTOR_POWER power;
 	
-	power.left_power = speed;
-	power.right_power = 0.95 * speed;
+	power.left_power = (int) (ADJUST_LEFT * speed);
+	power.right_power = (int) (ADJUST_RIGHT * speed);
 	
 	return power;
 }
+
 WHEELS_MOTOR_POWER lego_spin_powers(float speed, int direction) {
 	// Set the powers to use to achieve the given motion.
 	// Adjust for the motor/port/robot differences that cause the robot to veer, etc.
@@ -61,7 +62,7 @@ void lego_drive_distance(float distance, float speed, int direction) {
 	lego_drive(speed, direction);
 	int ticks = distance * TICKS_PER_CENTIMETER;
 	while (abs(get_motor_position_counter(LEFT_MOTOR)) < ticks);
-	lego_stop();
+	lego_freeze();
 }
 
 void lego_spin_degrees(int degrees, int speed, int direction) {
@@ -69,5 +70,5 @@ void lego_spin_degrees(int degrees, int speed, int direction) {
 	lego_spin(speed, direction);
 	int ticks = degrees * TICKS_PER_DEGREE;
 	while (abs(get_motor_position_counter(LEFT_MOTOR)) < ticks);
-	lego_stop();
+	lego_freeze();
 }
