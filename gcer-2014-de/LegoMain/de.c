@@ -19,7 +19,7 @@ void block_botguy() {
 			lspeed += 2;
 			display_printf(0, 0, "Turning right!     ");
 		} else if (center_of_botguy < 60 - CAMERA_DELTA) {
-			rspeed += 2;
+			rspeed += 3;
 			display_printf(0, 0, "Turning left!     ");
 		} else if (center_of_botguy >= 60 - CAMERA_DELTA && center_of_botguy <= 60 + CAMERA_DELTA) {
 			lspeed = base_speed;
@@ -34,6 +34,8 @@ void block_botguy() {
 		motor(LEFT_MOTOR, lspeed);
 		motor(RIGHT_MOTOR, rspeed);
 	}
+	ao();
+	set_servo_position(0, 1250);
 }
 
 void block_small_cubes() {}

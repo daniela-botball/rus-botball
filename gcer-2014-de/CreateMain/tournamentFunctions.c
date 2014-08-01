@@ -39,7 +39,7 @@ void drive_to_hanger_racks() {
 	press_a_to_continue();
 	create_spin_degrees(87, 20, LEFT);
 	press_a_to_continue();
-	create_drive_distance(85, 10, FORWARDS);
+	create_drive_distance(90, 10, FORWARDS); // 85
 	press_a_to_continue();
 	create_spin_degrees(90, 20, LEFT);
 	msleep(500);

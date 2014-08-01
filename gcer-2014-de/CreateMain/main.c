@@ -11,12 +11,34 @@ void robot_setup();
 
 int main()
 {	
+	int strategy;
 	robot_setup();
 	freeze(WINCH_MOTOR);
+	printf("Select strategy\n");
+	set_a_button_text("Seeding");
+	set_b_button_text("DE");
+	while (1) {
+		if (a_button()) {
+			while(a_button());
+			msleep(500);
+			printf("Seeding strategy\n");
+			strategy = 1;
+			break;
+		}
+		if (b_button()) {
+			while(b_button());
+			msleep(500);
+			printf("DE strategy\n");
+			strategy = 1;
+			break;
+		}
+	}
 	//press_a_to_continue();
 	wait_for_light(0);
 	shut_down_in(110);
-	msleep(10000); // FIXME: needs tuning
+	if (strategy == 1) {
+		msleep(10000); // FIXME: needs tuning
+	}
 	
 	//while(!a_button()); // loop and msleep() simulate wait_for_light()
 	create_spin_degrees(10, 20, LEFT);
