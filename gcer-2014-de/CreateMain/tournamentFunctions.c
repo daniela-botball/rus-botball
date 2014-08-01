@@ -1,123 +1,101 @@
-// Created on Thu March 13 2014
-#ifndef _MAIN_H_
-#define _MAIN_H_
+#include "tournamentFunctions.h"
+#include "createMovement.h"
+#include "movement.h"
+#include "ui.h"
 
-#define WINCH_MOTOR 0
+thread hold_thread;
 
-#define BAR_SERVO 0
-#define CLAW_SERVO 1
-#define GYRO_SERVO 3
+void freeze_motor() {
+	while (1) {
+		if (!digital(15)) {
+			motor(WINCH_MOTOR, 70);
+		}
+	}
+}
+void lock_winch_new() {
+	hold_thread = thread_create(freeze_motor);
+	thread_start(hold_thread);
+}
 
-#define HIGH_SENSOR 1
-#define LOW_SENSOR 0
+void unlock_winch_new() {
+	freeze(WINCH_MOTOR);
+	thread_destroy(hold_thread);
+}
 
-#define BLACK_LINE_SENSOR 0 //UNUSED
+void drop_three_hangers_on_third_rack() {
+	drive_to_hanger_racks();
+	drop_hangers();
+	//get_first_doubler();
+}
 
-#define UP 1
-#define DOWN -1
-#define FORWARDS 1
-#define BACKWARDS -1
-#define LEFT 1
-#define RIGHT -1
+void drive_to_hanger_racks() {
+	extend_arm();
+	msleep(1000);
+	raise_winch();
+	lock_winch_new();
+	create_spin_degrees(90, 20, RIGHT);
+	press_a_to_continue();
+	create_drive_distance(40, 10, FORWARDS);
+	press_a_to_continue();
+	create_spin_degrees(87, 20, LEFT);
+	press_a_to_continue();
+	create_drive_distance(85, 10, FORWARDS);
+	press_a_to_continue();
+	create_spin_degrees(90, 20, LEFT);
+	msleep(500);
+	create_drive_distance(10, 10, FORWARDS);
+	create_spin_degrees(180, 20, LEFT);
+	move_until_line();
+}
 
-#define TOURNAMENT 0
-#define PRACTICE 1
+void drop_hangers() {
+	create_drive_distance(14, 10, FORWARDS);
+	unlock_winch_new();
+	operate_winch(WINCH_DROP_DISTANCE);
+	//msleep(8000);
+	create_drive_distance(3, 10, BACKWARDS);
+	press_a_to_continue();
+	create_spin_degrees(10, 20, RIGHT);
+	press_a_to_continue();
+	create_drive_distance(20, 20, BACKWARDS);
+	press_a_to_continue();
+	press_a_to_continue();
+}
 
-#define DOUBLER_POSITION -2050
-#define DOUBLER_PICK_UP_POSITION 400
+void get_first_doubler() {
+	create_drive_distance(10, 20, BACKWARDS);
+	create_spin_degrees(10, 20, LEFT);
+	create_virtual_bump(150, BACKWARDS);
+	create_drive_distance(3, 20, FORWARDS);
+	create_spin_degrees(90, 20, LEFT);
+	create_virtual_bump(150, BACKWARDS);
+	create_drive_distance(6, 20, FORWARDS);
+	press_a_to_continue();
+	create_spin_degrees(90, 20, RIGHT);
+	create_virtual_bump(150, BACKWARDS);
+	unlock_winch();
+	operate_winch(DOUBLER_PICK_UP_POSITION);
+	press_a_to_continue();
+	create_drive_distance(20, 20, FORWARDS);	
+}
 
-#define WINCH_START_POSITION -1440 //-1550
-#define WINCH_DUMPING_POSITION -1295 // AMM was -1050
-#define WINCH_RELEASING_POSITION -434 // -425
-#define WINCH_SCORING_POSITION -115 // AMM was 25
-#define WINCH_TRAVEL_POSITION -2170
-#define WINCH_FIRST_CUBE_POSITION 680 // AMM was 527
-#define WINCH_SECOND_CUBE_POSITION -600 //AMM was -570
+void lock_winch() {
+	set_servo_position(LOCK_SERVO, LOCKED_POSITION);
+}
+void unlock_winch() {
+	set_servo_position(LOCK_SERVO, UNLOCKED_POSITION);
+}
 
-// DONE: 68 less, 10 degrees less, 9 more foearward, 3 degrees more
-// DONE: small amount less forward off wall, 27 higher when going for cube
-// DONE: claw start at 130.  eliminate backward.  15 degrees less after backup
-// DONE:  still less out from wall, spin less, little farther after seeing cube
-// DONE: press_a_to_continue in dropping
-// DONE: adjust drop numbers, turn a bit more
-// press_a_to_continue has to repeat message.
-// message saying that create not connected
-// checklists
-// fix all wires
-
-#define GYRO_FIRST_CUBE_POSITION 2008 // 1940
-#define GYRO_SECOND_CUBE_POSITION 1777
-#define GYRO_DROP_POSITION 245 // AMM was 325
-#define GYRO_START_POSITION 0
-#define CLAW_CLOSED_POSITION 50  // AMM was 100
-#define CLAW_OPEN_POSITION 1550
-#define CLAW_START_POSITION 130 // was 260
-#define CLAW_RELEASE_POSITION 1000
-#define BAR_START_POSITION 620 // AMM was 420
-#define BAR_OPEN_POSITION 100
-#define BAR_CLOSED_POSITION 1050
-
-#define SERVO_INCREMENT 15
-
-#define DESIRED_DISTANCE 450
-#define DESIRED_X_POSITION 57
-#define CENTER_OF_SCREEN_Y 60
-#define CUBE_CHANNEL 0
-#define THRESHOLD 770
-#define CREATE_THRESHOLD 1000
-#define CURRENT_THRESHOLD 64680
-
-#define SLEEP_MSECONDS_IN_TOURNAMENT_MODE 100
-#define SLOW_CREATE_LINEAR_SPEED 30
-#define SLOW_CREATE_ANGULAR_SPEED 20
-#define SPEED_FOR_TIGHTENING_WINCH 75
-#define SPEED_FOR_RELEASING_WINCH 20
-#define GYRO_SERVO_ADJUSTMENT_AMOUNT 10
-#define GYRO_SERVO_ADJUSTMENT_MSECONDS 200
-#define CLAW_SERVO_ADJUSTMENT_AMOUNT 10
-#define CLAW_SERVO_ADJUSTMENT_MSECONDS 200
-#define BAR_SERVO_ADJUSTMENT_AMOUNT 10
-#define BAR_SERVO_ADJUSTMENT_MSECONDS 200
-
-#define NUMBER_ERRORS_ALLOWED 3 // AMM
-#define AMOUNT_ERROR_ALLOWED 100 // AMM
-
-int _mode = TOURNAMENT;
-
-void adjust();
-void adjust_winch_or_gyro();
-void adjust_movement();
-int adjust_claw_or_bar();
-void set_buttons_for_winch_and_gyro();
-void set_buttons_for_movement();
-void set_buttons_for_claw_and_bar();
-void set_buttons_to_abc();
-
-int int_abs(int x);
-
-void create_virtual_bump(int speed, int direction) ;
-void move_until_line();
-void move_until_line_old();
-void move_until_bump(int speed, int direction, int port);
-void raise_winch();
-void operate_winch(int position);
-void press_a_to_continue_old();
-void press_a_to_continue();
-void pick_up_first_doubler();
-void score_cubes();
-void move_to_cubes();
-void move_to_second_cube();
-void pick_up_cube();
-void drop_cube();
-void get_mode();
-void drop_three_hangers();
-void center_on_cube(int port, int direction);
-void center_on_cube_with_camera();
-void move_servo_slowly(int port, int position);
+void extend_arm() {
+	clear_motor_position_counter(EXTENDER_MOTOR);
+	motor(EXTENDER_MOTOR, 100);
+	while (get_motor_position_counter(EXTENDER_MOTOR) < EXTENSION_DISTANCE);
+	freeze(EXTENDER_MOTOR);
+}
 
 void drop_three_hangers() {
 	operate_winch(WINCH_SCORING_POSITION);
-	// create_drive_distance(4, 40, BACKWARDS); //15  AMM removed this
+	// create_drive_distance(4, 40, BACKWARDS); //15  DCM removed this
 	//press_a_to_continue();
 	create_spin_degrees(90, 40, RIGHT); //30
 	press_a_to_continue();
@@ -125,14 +103,14 @@ void drop_three_hangers() {
 	press_a_to_continue();
 	create_spin_degrees(87, 30, LEFT);//30
 	press_a_to_continue();
-	create_drive_distance(75, 25, FORWARDS);//AMM was 86
+	create_drive_distance(75, 25, FORWARDS);//DCM was 86
 	press_a_to_continue();
-	create_spin_degrees(77, 40, RIGHT); // AMM was \87
+	create_spin_degrees(77, 40, RIGHT); // DCM was 87
 	msleep(500);
 	create_drive_distance(5, 30, BACKWARDS);
 	press_a_to_continue();
 	move_until_line();
-	create_drive_distance(16.5, 20, FORWARDS); // AMM was 1.5.
+	create_drive_distance(16.5, 20, FORWARDS); // DCM was 1.5.
 	press_a_to_continue();
 	operate_winch(WINCH_RELEASING_POSITION);
 	press_a_to_continue();
@@ -166,7 +144,6 @@ void score_cubes() {
 	move_to_cubes();
 	pick_up_cube();
 	drop_cube();
-	return;
 	move_to_second_cube();
 	pick_up_cube();
 	drop_cube();
@@ -175,7 +152,7 @@ void score_cubes() {
 void move_to_cubes() {
 	create_drive_distance(10, 20, BACKWARDS); 		
 	press_a_to_continue();
-	create_spin_degrees(95, 40, RIGHT);	// AMM was 90		
+	create_spin_degrees(95, 40, RIGHT);	// DCM was 90		
 	press_a_to_continue();
 	operate_winch(WINCH_TRAVEL_POSITION);
 	msleep(500);
@@ -188,9 +165,9 @@ void move_to_cubes() {
 	create_virtual_bump(200, BACKWARDS);
 	msleep(200);
 	press_a_to_continue();
-	create_drive_distance(2, 20, FORWARDS); // AMM was 5
+	create_drive_distance(2, 20, FORWARDS); // DCM was 5
 	press_a_to_continue();
-	create_spin_degrees(84, 40, RIGHT); // AMM was 90
+	create_spin_degrees(84, 40, RIGHT); // DCM was 90
 	press_a_to_continue();
 	create_virtual_bump(200, BACKWARDS);
 	msleep(200);
@@ -203,10 +180,11 @@ void move_to_cubes() {
 	msleep(500);
 	press_a_to_continue();
 	center_on_cube(LOW_SENSOR, FORWARDS);
-	create_drive_distance(11, 40, FORWARDS); // AMM was 10
+	create_drive_distance(11, 40, FORWARDS); // DCM was 10
 }
 
 void pick_up_cube() {
+	//set_mode(PRACTICE);
 	press_a_to_continue();
 	move_servo_slowly(GYRO_SERVO, GYRO_FIRST_CUBE_POSITION);
 	msleep(500);
@@ -217,10 +195,11 @@ void pick_up_cube() {
 	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
 	operate_winch(WINCH_SECOND_CUBE_POSITION);
 	move_servo_slowly(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
+	
 	return;
 	
 	// REST OF THIS FUNCTION IS HISTORY.
-	_mode = PRACTICE;
+	set_mode(PRACTICE);
 	center_on_cube(LOW_SENSOR, BACKWARDS);
 	press_a_to_continue();
 	move_servo_slowly(CLAW_SERVO, CLAW_OPEN_POSITION);
@@ -258,7 +237,7 @@ void drop_cube() {
 	msleep(700);
 	create_stop();
 	press_a_to_continue();
-	create_spin_degrees(31, 40, LEFT); //was 20 //27
+	create_spin_degrees(20, 40, LEFT);
 	press_a_to_continue();
 	move_servo_slowly(GYRO_SERVO, GYRO_DROP_POSITION);
 	msleep(200);
@@ -268,10 +247,10 @@ void drop_cube() {
 }
 
 void move_to_second_cube() {
-	create_drive(500, BACKWARDS);  // AMM FIX ME
+	create_drive(500, BACKWARDS);  // DCM FIX ME
 	msleep(500);
 	create_stop();
-	create_drive_distance(25, 50, FORWARDS);  // AMM was 20
+	create_drive_distance(25, 50, FORWARDS);  // DCM was 20
 	operate_winch(WINCH_TRAVEL_POSITION);
 	msleep(500);
 	set_servo_position(GYRO_SERVO, GYRO_SECOND_CUBE_POSITION);
@@ -294,10 +273,19 @@ void move_to_second_cube() {
 void operate_winch(int position) {
 	int direction;
 	int k;
-	
+	if (position == WINCH_DROP_DISTANCE) {
+		clear_motor_position_counter(WINCH_MOTOR);
+		motor(WINCH_MOTOR, -60);
+		while (get_motor_position_counter(WINCH_MOTOR) > -WINCH_DROP_DISTANCE);
+		freeze(WINCH_MOTOR);
+		return;
+	}
 	if (position == DOUBLER_PICK_UP_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, 60);
+		motor(WINCH_MOTOR, -60);
+		while (!digital(12));
+		freeze(WINCH_MOTOR);
+		return;
 		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(DOUBLER_PICK_UP_POSITION));
 		freeze(WINCH_MOTOR);
 		return;
@@ -340,58 +328,16 @@ void operate_winch(int position) {
 	}
 }
 
-void raise_winch() {
+void raise_winch_old() {
 	motor(WINCH_MOTOR, 100);
-	while (!digital(15) && !digital(14));
+	while (!digital(15));// && !digital(14));
 	freeze(WINCH_MOTOR);
 }
 
-void press_a_to_continue_old() {
-	if (_mode == PRACTICE) {
-		printf("Press 'a' to continue\n");
-		while (!a_button());
-		while (a_button());
-		msleep(500);
-		} else {
-		msleep(100);
-	}
-}
-
-void get_mode() {
-	printf("Press 'a' for practice mode\n");
-	printf("Press 'b' for tournament mode\n");
-	while (1) {
-		if (a_button()) {
-			while (a_button());
-			_mode = PRACTICE;
-			msleep(500);
-			break;
-			} else if (b_button()) {
-			_mode = TOURNAMENT;
-			msleep(500);
-			break;
-		}
-	}
-}
-
-void move_until_line() {
-	create_drive(100, FORWARDS);
-	while (get_create_rfcliff_amt() > CREATE_THRESHOLD) {
-		display_printf(0, 0, "%4i", get_create_rfcliff_amt());
-	}
-	create_stop();
-}
-
-void move_until_line_old() {
-	create_drive(100, FORWARDS);
-	while (analog10(BLACK_LINE_SENSOR) < THRESHOLD);
-	create_stop();
-}
-
-void move_until_bump(int speed, int direction, int port) {
-	create_drive(speed, direction);
-	while (!digital(port));
-	create_stop();
+void raise_winch() {
+	motor(WINCH_MOTOR, 100);
+	while (!digital(15));
+	freeze(WINCH_MOTOR);
 }
 
 void move_servo_slowly(int port, int position) {
@@ -449,37 +395,10 @@ void center_on_cube(int port, int direction) {
 	}
 	create_stop();
 	press_a_to_continue();
-	//create_drive_distance(5, 20, direction);
+	//create_drive_distance(4, 20, direction);
 }
 
-void create_virtual_bump(int speed, int direction) {
-	create_drive(speed, direction);
-	while (create_get_sensor(CURRENT) > CURRENT_THRESHOLD) {
-		//msleep(20);
-	}
-	create_stop();
-}
 
-void press_a_to_continue() {
-	if (_mode == PRACTICE) {
-		printf("Press 'a' to continue, 'c' to adjust.\n");
-		while (1) {
-			if (a_button()) {
-				while (a_button());
-				msleep(500);
-				break;
-			}
-			if (c_button()) {
-				while (c_button());
-				msleep(500);
-				adjust();
-				break;
-			}
-		}
-	} else {
-		msleep(SLEEP_MSECONDS_IN_TOURNAMENT_MODE);
-	}
-}
 
 void adjust() {
 	extra_buttons_show();
@@ -667,6 +586,3 @@ int int_abs(int x) {
 	if (x < 0) x = -x;
 	return x;
 }
-
-#endif
-
