@@ -16,7 +16,7 @@ int main()
 	//press_a_to_continue();
 	wait_for_light(0);
 	shut_down_in(110);
-	msleep(10000);
+	msleep(10000); // FIXME: needs tuning
 	
 	//while(!a_button()); // loop and msleep() simulate wait_for_light()
 	create_spin_degrees(10, 20, LEFT);
