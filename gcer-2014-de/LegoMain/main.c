@@ -13,7 +13,7 @@ int main() {
 	_ROBOT = LEGO;
 	_MODE = PRACTICE;
 	strcpy(_STRATEGY, "score_8_plus_8_poms_in_upper_storage");
-	set_servo_position(0, 650);
+	set_servo_position(0, 5);
 	enable_servos();
 	//test();
 	//return 0;
@@ -25,7 +25,7 @@ int main() {
 	}
 	int strategy = select_strategy();
 	wait_for_light(0);
-	move_servo_at_speed(0, 1650, 800);
+	move_servo_at_speed(0, 600, 800);
 	msleep(700);
 	if (strategy == 0) {
 		set_servo_position(0, 780);

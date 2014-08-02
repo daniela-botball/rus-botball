@@ -36,12 +36,12 @@ void block_botguy() {
 		motor(RIGHT_MOTOR, rspeed);
 	}
 	ao();
-	set_servo_position(0, 2040);
-	lego_drive_distance(10, 100, BACKWARDS);
+	set_servo_position(0, 1000);
+	lego_drive_distance(20, 100, BACKWARDS);
 	lego_spin_degrees(160, 100, LEFT);
+	set_servo_position(0, 5);
+	lego_drive_distance(20, 100, BACKWARDS);
 	set_servo_position(0, 600);
-	lego_drive_distance(10, 100, BACKWARDS);
-	set_servo_position(0, 780);
 	lego_drive_distance(40, 100, BACKWARDS);
 	lego_spin_degrees(900, 100, LEFT);
 }

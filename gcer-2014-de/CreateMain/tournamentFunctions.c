@@ -57,9 +57,10 @@ void drop_hangers() {
 	press_a_to_continue();
 	create_spin_degrees(10, 20, RIGHT);
 	press_a_to_continue();
-	create_drive_distance(20, 20, BACKWARDS);
+	create_drive_distance(40, 20, BACKWARDS);
 	press_a_to_continue();
-	press_a_to_continue();
+	create_spin_degrees(70, 30, LEFT);
+	
 }
 
 void get_first_doubler() {
