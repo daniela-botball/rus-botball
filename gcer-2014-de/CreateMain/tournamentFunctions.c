@@ -44,12 +44,12 @@ void drive_to_hanger_racks() {
 	create_spin_degrees(90, 20, LEFT);
 	msleep(500);
 	create_drive_distance(10, 10, FORWARDS);
-	create_spin_degrees(180, 20, LEFT);
+	create_spin_degrees(182, 20, LEFT); // 180
 	move_until_line();
 }
 
 void drop_hangers() {
-	create_drive_distance(14, 10, FORWARDS);
+	create_drive_distance(18, 10, FORWARDS); //14
 	unlock_winch_new();
 	operate_winch(WINCH_DROP_DISTANCE);
 	//msleep(8000);

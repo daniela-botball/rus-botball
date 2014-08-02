@@ -5,6 +5,7 @@
 
 void block_botguy() {
 	int base_speed = 90;
+	int center_of_screen = 65;
 	int lspeed = base_speed;
 	int rspeed = base_speed;
 	int center_of_botguy;
@@ -15,13 +16,13 @@ void block_botguy() {
 		display_clear();
 		if (center_of_botguy == -1) {
 			display_printf(0, 0, "Botguy not visible!\n");
-		} else if (center_of_botguy > 60 + CAMERA_DELTA) {
+		} else if (center_of_botguy > center_of_screen + CAMERA_DELTA) {
 			lspeed += 2;
 			display_printf(0, 0, "Turning right!     ");
-		} else if (center_of_botguy < 60 - CAMERA_DELTA) {
+		} else if (center_of_botguy < center_of_screen - CAMERA_DELTA) {
 			rspeed += 3;
 			display_printf(0, 0, "Turning left!     ");
-		} else if (center_of_botguy >= 60 - CAMERA_DELTA && center_of_botguy <= 60 + CAMERA_DELTA) {
+		} else if (center_of_botguy >= center_of_screen - CAMERA_DELTA && center_of_botguy <= center_of_screen + CAMERA_DELTA) {
 			lspeed = base_speed;
 			rspeed = base_speed;
 			display_printf(0, 0, "Going straight!     ");
@@ -35,7 +36,14 @@ void block_botguy() {
 		motor(RIGHT_MOTOR, rspeed);
 	}
 	ao();
-	set_servo_position(0, 1250);
+	set_servo_position(0, 2040);
+	lego_drive_distance(10, 100, BACKWARDS);
+	lego_spin_degrees(160, 100, LEFT);
+	set_servo_position(0, 600);
+	lego_drive_distance(10, 100, BACKWARDS);
+	set_servo_position(0, 780);
+	lego_drive_distance(40, 100, BACKWARDS);
+	lego_spin_degrees(900, 100, LEFT);
 }
 
 void block_small_cubes() {}

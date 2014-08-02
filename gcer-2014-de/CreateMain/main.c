@@ -22,7 +22,7 @@ int main()
 			while(a_button());
 			msleep(500);
 			printf("Seeding strategy\n");
-			strategy = 1;
+			strategy = 0;
 			break;
 		}
 		if (b_button()) {
@@ -35,13 +35,16 @@ int main()
 	}
 	//press_a_to_continue();
 	wait_for_light(0);
+	motor(WINCH_MOTOR, 100);
+	msleep(250);
+	freeze(WINCH_MOTOR);
 	shut_down_in(110);
 	if (strategy == 1) {
 		msleep(10000); // FIXME: needs tuning
 	}
 	
 	//while(!a_button()); // loop and msleep() simulate wait_for_light()
-	create_spin_degrees(10, 20, LEFT);
+	create_spin_degrees(15, 20, LEFT);
 	create_drive_distance(5.5, 20, FORWARDS);
 	drop_three_hangers_on_third_rack();
 	create_disconnect();
@@ -60,10 +63,8 @@ void robot_setup() {
 	create_connect();
 	printf("Create connected!");
 	create_full();
-	set_servo_position(LOCK_SERVO, 2000);
-	enable_servos();
 	//#endif
 	//operate_winch(WINCH_START_POSITION);
 	create_drive_distance(10, 20, FORWARDS);
-	create_spin_degrees(10, 20, RIGHT);
+	create_spin_degrees(15, 20, RIGHT);
 }
