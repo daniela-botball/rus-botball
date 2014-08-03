@@ -301,30 +301,30 @@ void operate_winch(int position) {
 	int k;
 	if (position == WINCH_DROP_DISTANCE) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, -60);
-		while (get_motor_position_counter(WINCH_MOTOR) > -WINCH_DROP_DISTANCE);
+		mav(WINCH_MOTOR, -600);
+		while (get_motor_position_counter(WINCH_MOTOR) > -WINCH_DROP_DISTANCE){msleep(40);}
 		freeze(WINCH_MOTOR);
 		return;
 	}
 	if (position == DOUBLER_PICK_UP_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, -60);
-		while (!digital(12));
+		mav(WINCH_MOTOR, -600);
+		while (!digital(12)){msleep(40);}
 		freeze(WINCH_MOTOR);
 		return;
-		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(DOUBLER_PICK_UP_POSITION));
+		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(DOUBLER_PICK_UP_POSITION)){msleep(40);}
 		freeze(WINCH_MOTOR);
 		return;
 	} else if (position == WINCH_FIRST_CUBE_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, 60);
-		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(WINCH_FIRST_CUBE_POSITION));
+		mav(WINCH_MOTOR, 600);
+		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(WINCH_FIRST_CUBE_POSITION)){msleep(40);}
 		freeze(WINCH_MOTOR);
 		return;
 	} else if (position == WINCH_SECOND_CUBE_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, -60);
-		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(WINCH_SECOND_CUBE_POSITION));
+		mav(WINCH_MOTOR, -600);
+		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(WINCH_SECOND_CUBE_POSITION)){msleep(40);}
 		freeze(WINCH_MOTOR);
 		return;
 	}
@@ -336,17 +336,18 @@ void operate_winch(int position) {
 	raise_winch();
 	msleep(200);
 	clear_motor_position_counter(WINCH_MOTOR);
-	printf("Motor position after clearing: %i\n", get_motor_position_counter(WINCH_MOTOR));
+	int _temp;
+	printf("Motor position after clearing: %i\n", _temp = get_motor_position_counter(WINCH_MOTOR));
 	printf("Given position: %i, start wind\n", position);
 	for (k = 0; k < NUMBER_ERRORS_ALLOWED; ++k) {
-		motor(WINCH_MOTOR, 60 * direction);
-		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(position)) {
-			printf("%i\n", get_motor_position_counter(WINCH_MOTOR));
+		mav(WINCH_MOTOR, 60 * direction);
+		while(int_abs(_temp = get_motor_position_counter(WINCH_MOTOR)) < int_abs(position)) {
+			printf("%i\n",_temp);
+			msleep(40);
 		}
 		freeze(WINCH_MOTOR);
-		printf("Motor position is %i, wants %i\n",
-		       get_motor_position_counter(WINCH_MOTOR), position);
-		if (int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(position) + AMOUNT_ERROR_ALLOWED) {
+		printf("Motor position is %i, wants %i\n",_temp, position);
+		if (int_abs(_temp = get_motor_position_counter(WINCH_MOTOR)) < int_abs(position) + AMOUNT_ERROR_ALLOWED) {
 			break;
 		}
 		msleep(2000); // WINCH DID NOT GO CORRECTLY, SLEEP SO CAN SEE IT.
