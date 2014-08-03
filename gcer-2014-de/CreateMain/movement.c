@@ -31,10 +31,14 @@ void move_until_bump(int speed, int direction, int port) {
 	create_stop();
 }
 
-void create_virtual_bump(int speed, int direction) {
+void create_virtual_bump(int speed, int direction, float maxTime) {
+	start_timer(0);
 	create_drive(speed, direction);
 	while (create_get_sensor(CURRENT) > CURRENT_THRESHOLD) {
-		//msleep(20);
+		if (check_timer(0) < maxTime) {
+			break;
+		}
+		msleep(50);
 	}
 	create_stop();
 }

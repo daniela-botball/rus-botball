@@ -19,7 +19,7 @@ void create_drive_until_bump(int speed);
 void move_until_line();
 void move_until_line_old();
 void move_until_bump(int speed, int direction, int port);
-void create_virtual_bump(int speed, int direction);
+void create_virtual_bump(int speed, int direction, float maxTime);
 void robot_drive_distance(float distance, float speed, int direction);
 
 #endif

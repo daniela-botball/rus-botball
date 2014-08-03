@@ -38,7 +38,7 @@ void drive_to_hanger_racks(int strategy) {
 	create_spin_degrees(90, 20, RIGHT);
 	press_a_to_continue();
 	msleep(1000);
-	create_virtual_bump(50, BACKWARDS);
+	create_virtual_bump(50, BACKWARDS, 8);
 	msleep(1000);
 	create_drive_distance(41, 10, FORWARDS);
 	press_a_to_continue();
@@ -53,24 +53,20 @@ void drive_to_hanger_racks(int strategy) {
 	create_drive_distance(5, 10, BACKWARDS);
 	create_spin_degrees(90, 20, RIGHT); // 180
 	msleep(1000);
-	create_virtual_bump(50, BACKWARDS);
+	create_virtual_bump(50, BACKWARDS,0);
 	msleep(1000);
 	create_drive_distance(7, 5, FORWARDS);
 	msleep(1000);
 	create_spin_degrees(90, 20, RIGHT);
 	msleep(1000);
-	create_virtual_bump(50, BACKWARDS);
+	create_virtual_bump(50, BACKWARDS,0);
 	//msleep(36000);
 	int i;
 	for (i = 0; i < 36; i++) {
 		printf("Waiting\a\n");
 		msleep(1000);
 	}
-	create_drive_distance(37, 10, FORWARDS);
-	motor(WINCH_MOTOR, -40);
-	msleep(500);
-	freeze(WINCH_MOTOR);
-	create_drive_distance(20, 10, FORWARDS);
+	create_drive_distance(56, 10, FORWARDS);
 	create_spin_degrees(4, 5, LEFT);	
 }
 
@@ -78,10 +74,9 @@ void drop_hangers(int strategy) {
 	if (strategy == 0) {
 		create_drive_distance(18, 10, FORWARDS); //14
 	}
-	unlock_winch_new();
-	operate_winch(WINCH_DROP_DISTANCE);
+	//operate_winch(WINCH_DROP_DISTANCE);
 	ao();
-	create_drive_distance(3, 10, BACKWARDS);
+	create_drive_distance(2, 10, BACKWARDS);
 	//off(WINCH_MOTOR);
 	//freeze(WINCH_MOTOR);
 	
@@ -99,14 +94,14 @@ void drop_hangers(int strategy) {
 void get_first_doubler() {
 	create_drive_distance(10, 20, BACKWARDS);
 	create_spin_degrees(10, 20, LEFT);
-	create_virtual_bump(150, BACKWARDS);
+	create_virtual_bump(150, BACKWARDS, 5.0);
 	create_drive_distance(3, 20, FORWARDS);
 	create_spin_degrees(90, 20, LEFT);
-	create_virtual_bump(150, BACKWARDS);
+	create_virtual_bump(150, BACKWARDS, 8);
 	create_drive_distance(6, 20, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(90, 20, RIGHT);
-	create_virtual_bump(150, BACKWARDS);
+	create_virtual_bump(150, BACKWARDS, 12);
 	unlock_winch();
 	operate_winch(DOUBLER_PICK_UP_POSITION);
 	press_a_to_continue();
@@ -196,21 +191,21 @@ void move_to_cubes() {
 	msleep(500);
 	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
 	press_a_to_continue();
-	create_virtual_bump(200, BACKWARDS);
+	create_virtual_bump(200, BACKWARDS,0);
 	msleep(200);
 	press_a_to_continue();
 	create_drive_distance(2, 20, FORWARDS); // DCM was 5
 	press_a_to_continue();
 	create_spin_degrees(84, 40, RIGHT); // DCM was 90
 	press_a_to_continue();
-	create_virtual_bump(200, BACKWARDS);
+	create_virtual_bump(200, BACKWARDS, 0);
 	msleep(200);
 	press_a_to_continue();
 	//create_drive_distance(2, 20, FORWARDS);
 	//press_a_to_continue();
 	create_spin_degrees(90, 40, LEFT);
 	press_a_to_continue();
-	create_virtual_bump(200, BACKWARDS);
+	create_virtual_bump(200, BACKWARDS,0);
 	msleep(500);
 	press_a_to_continue();
 	center_on_cube(LOW_SENSOR, FORWARDS);
@@ -252,7 +247,7 @@ void pick_up_cube() {
 }
 
 void drop_cube() {
-	create_virtual_bump(200, BACKWARDS);
+	create_virtual_bump(200, BACKWARDS, 0);
 	press_a_to_continue();
 	create_drive_distance(4, 20, FORWARDS);
 	press_a_to_continue();
@@ -266,7 +261,7 @@ void drop_cube() {
 	press_a_to_continue();
 	create_spin_degrees(175, 40, LEFT);
 	press_a_to_continue();
-	create_virtual_bump(200, BACKWARDS);
+	create_virtual_bump(200, BACKWARDS, 0);
 	create_drive(500, BACKWARDS);
 	msleep(700);
 	create_stop();
@@ -292,11 +287,11 @@ void move_to_second_cube() {
 	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
 	create_spin_degrees(185, 50, RIGHT);
 	press_a_to_continue();
-	create_virtual_bump(200, BACKWARDS);
+	create_virtual_bump(200, BACKWARDS, 0);
 	press_a_to_continue();
 	create_spin_degrees(90, 50, LEFT);
 	press_a_to_continue();
-	create_virtual_bump(200, BACKWARDS);
+	create_virtual_bump(200, BACKWARDS, 0);
 	press_a_to_continue();
 	center_on_cube(LOW_SENSOR, FORWARDS);
 	press_a_to_continue();
