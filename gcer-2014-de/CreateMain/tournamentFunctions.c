@@ -65,13 +65,18 @@ void drop_hangers() {
 	operate_winch(WINCH_DROP_DISTANCE);
 	//msleep(8000);
 	create_drive_distance(3, 10, BACKWARDS);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_spin_degrees(10, 20, RIGHT);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_drive_distance(40, 20, BACKWARDS);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_spin_degrees(70, 30, LEFT);
-	
 }
 
 void get_first_doubler() {
