@@ -1,5 +1,10 @@
 #define waitForButton
 
+#define bool int
+#define false 0
+#define true 1
+
+
 #include "kovan/kovan.h"
 #include "createMovement.h"
 #include "tournamentFunctions.h"
@@ -8,10 +13,6 @@
 #include "movement.h"
 #include "ui.h"
 #include "teleoperation.h"
-
-#define bool int
-#define false 0
-#define true 1
 
 void robot_setup() {
 	display_clear();
@@ -54,17 +55,18 @@ int main()
 	freeze(WINCH_MOTOR);
 	printf("Select strategy\n");
 	bool strategy  = isDoubleStrategy();
-	//press_a_to_continue();
 	wait_for_light(0);
+	
 	motor(WINCH_MOTOR, 100);
 	msleep(250);
 	freeze(WINCH_MOTOR);
+	
 	shut_down_in(110);
-	if (strategy == 1) {
+	
+	if (strategy) {
 		msleep(10000); // FIXME: needs tuning
 	}
 	
-	//while(!a_button()); // loop and msleep() simulate wait_for_light()
 	create_spin_degrees(15, 20, LEFT);
 	create_drive_distance(5.5, 20, FORWARDS);
 	drop_three_hangers_on_third_rack();
