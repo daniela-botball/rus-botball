@@ -536,42 +536,38 @@ int adjust_claw_or_bar() {
 	
 	while (1) {
 		if (a_button()) {
-			while (a_button());
+			while (a_button()){msleep(40);}
 			msleep(500);
 			return 0;
-		}
-		if (b_button()) {
+		}else if (b_button()) {
 			while (b_button()) {
 				set_servo_position(CLAW_SERVO, get_servo_position(CLAW_SERVO) - CLAW_SERVO_ADJUSTMENT_AMOUNT);
 				msleep(CLAW_SERVO_ADJUSTMENT_MSECONDS);
 			}
 			printf("%4i = position CLAW closed to\n", get_servo_position(CLAW_SERVO));
-		}
-		if (c_button()) {
+		}else if (c_button()) {
 			while (c_button()) {
 				set_servo_position(CLAW_SERVO, get_servo_position(CLAW_SERVO) + CLAW_SERVO_ADJUSTMENT_AMOUNT);
 				msleep(CLAW_SERVO_ADJUSTMENT_MSECONDS);
 			}
 			printf("%4i = position CLAW opened to\n", get_servo_position(CLAW_SERVO));	
-		}
-		if (y_button()) {
+		}else if (y_button()) {
 			while (y_button()) {
 				set_servo_position(BAR_SERVO, get_servo_position(BAR_SERVO) + BAR_SERVO_ADJUSTMENT_AMOUNT);
 				msleep(BAR_SERVO_ADJUSTMENT_MSECONDS);
 			}
 			printf("%4i = position BAR closed to\n", get_servo_position(BAR_SERVO));
-		}
-		if (z_button()) {
+		}else if (z_button()) {
 			while (z_button()) {
 				set_servo_position(BAR_SERVO, get_servo_position(BAR_SERVO) - BAR_SERVO_ADJUSTMENT_AMOUNT);
 				msleep(BAR_SERVO_ADJUSTMENT_MSECONDS);
 			}
 			printf("%4i = position BAR opened to\n", get_servo_position(BAR_SERVO));
-		}
-		if (x_button()) {
-			while (x_button());
-			msleep(500);
+		}else if (x_button()) {
+			while (x_button()){msleep(50);}
 			return 1;
+		}else{
+			msleep(50);
 		}
 	}
 }
@@ -607,6 +603,9 @@ void set_buttons_to_abc() {
 	set_a_button_text("A");
 	set_b_button_text("B");
 	set_c_button_text("C");
+	set_x_button_text("X");
+	set_y_button_text("Y");
+	set_z_button_text("Z");
 }
 
 int int_abs(int x) {
