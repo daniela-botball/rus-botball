@@ -15,6 +15,16 @@ void move_until_line_old() {
 	create_stop();
 }
 
+void create_drive_until_bump(int speed) {
+	create_drive(speed, FORWARDS);
+	write_byte(158);
+	write_byte(5);
+	create_stop();
+	while (get_create_mode(0.1) > 5) {
+		msleep(1);
+	}
+}
+
 void move_until_bump(int speed, int direction, int port) {
 	create_drive(speed, direction);
 	while (!digital(port));

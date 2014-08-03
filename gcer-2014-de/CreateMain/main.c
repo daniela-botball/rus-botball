@@ -15,20 +15,20 @@ int main()
 	robot_setup();
 	freeze(WINCH_MOTOR);
 	printf("Select strategy\n");
-	set_a_button_text("Seeding");
-	set_b_button_text("DE");
+	set_a_button_text("Top Rack");
+	set_b_button_text("Second Rack");
 	while (1) {
 		if (a_button()) {
 			while(a_button());
 			msleep(500);
-			printf("Seeding strategy\n");
+			printf("Top Rack\n");
 			strategy = 0;
 			break;
 		}
 		if (b_button()) {
 			while(b_button());
 			msleep(500);
-			printf("DE strategy\n");
+			printf("Second Rack\n");
 			strategy = 1;
 			break;
 		}
@@ -38,21 +38,17 @@ int main()
 	motor(WINCH_MOTOR, 100);
 	msleep(250);
 	freeze(WINCH_MOTOR);
-	shut_down_in(110);
-	if (strategy == 1) {
-		msleep(10000); // FIXME: needs tuning
-	}
-	
+	shut_down_in(110);	
 	//while(!a_button()); // loop and msleep() simulate wait_for_light()
 	create_spin_degrees(15, 20, LEFT);
 	create_drive_distance(5.5, 20, FORWARDS);
-	drop_three_hangers_on_third_rack();
+	drop_three_hangers_on_third_rack(strategy);
 	create_disconnect();
 	return 0;
 }
 
 void robot_setup() {
-	int i;
+	//int i;
 	//#define _ROBOT CREATE
 	//#define _MODE TOURNAMENT
 	//get_robot();

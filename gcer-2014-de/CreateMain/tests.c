@@ -1,9 +1,10 @@
 #include "tests.h"
 #include "movement.h"
 #include "ui.h"
-
+#include "tournamentFunctions.h"
+#include "createMovement.h"
 void test_ET() {	
-	set_analog_pullup(0, 0);
+	//set_analog_pullup(0, 0);
 	msleep(200);
 	// set_each_analog_state(0, 1, 0, 0, 0, 0, 0, 0);  // DOES NOT COMPILE
 	while (!a_button()) {

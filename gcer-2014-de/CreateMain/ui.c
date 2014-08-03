@@ -104,24 +104,6 @@ void get_robot() {
 void press_a_to_continue() {
 	msleep(500);
 	return;
-	//#if _MODE == PRACTICE
-		printf("Press 'a' to continue, 'c' to adjust.\n");
-		while (1) {
-			if (a_button()) {
-				while (a_button());
-				msleep(500);
-				break;
-			}
-			if (c_button()) {
-				while (c_button());
-				msleep(500);
-				adjust();
-				break;
-			}
-		}
-	//#else
-		//msleep(SLEEP_MSECONDS_IN_TOURNAMENT_MODE);
-	//#endif
 }
 
 void set_mode(int mode) {

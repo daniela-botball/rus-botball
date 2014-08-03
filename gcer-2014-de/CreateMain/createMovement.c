@@ -1,7 +1,6 @@
 #include "createMovement.h"
 #include <stdint.h>
 #include <kovan/create_codes.h>
-
 /* SIMPLE MOVE FUNCTIONS */
 
 void create_drive(int speed, int direction)

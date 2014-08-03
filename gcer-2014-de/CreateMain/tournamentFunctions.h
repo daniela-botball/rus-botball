@@ -101,9 +101,9 @@ void center_on_cube(int port, int direction);
 void center_on_cube_with_camera();
 void move_servo_slowly(int port, int position);
 
-void drop_three_hangers_on_third_rack();
-void drive_to_hanger_racks();
-void drop_hangers();
+void drop_three_hangers_on_third_rack(int strategy);
+void drive_to_hanger_racks(int strategy);
+void drop_hangers(int strategy);
 void extend_arm();
 #endif
 

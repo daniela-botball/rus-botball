@@ -22,20 +22,25 @@ void unlock_winch_new() {
 	thread_destroy(hold_thread);
 }
 
-void drop_three_hangers_on_third_rack() {
-	drive_to_hanger_racks();
-	drop_hangers();
+void drop_three_hangers_on_third_rack(int strategy) {
+	drive_to_hanger_racks(strategy);
+	drop_hangers(strategy);
 	//get_first_doubler();
 }
 
-void drive_to_hanger_racks() {
-	extend_arm();
-	msleep(1000);
+void drive_to_hanger_racks(int strategy) {
+	if (strategy == 0) {
+		extend_arm();
+		msleep(1000);
+	}
 	raise_winch();
 	lock_winch_new();
 	create_spin_degrees(90, 20, RIGHT);
 	press_a_to_continue();
-	create_drive_distance(40, 10, FORWARDS);
+	msleep(1000);
+	create_virtual_bump(50, BACKWARDS);
+	msleep(1000);
+	create_drive_distance(41, 10, FORWARDS);
 	press_a_to_continue();
 	create_spin_degrees(87, 20, LEFT);
 	press_a_to_continue();
@@ -43,13 +48,27 @@ void drive_to_hanger_racks() {
 	press_a_to_continue();
 	create_spin_degrees(90, 20, LEFT);
 	msleep(500);
-	create_drive_distance(10, 10, FORWARDS);
-	create_spin_degrees(182, 20, LEFT); // 180
-	move_until_line();
+	create_drive_until_bump(150);
+	msleep(1000);
+	create_drive_distance(5, 10, BACKWARDS);
+	create_spin_degrees(90, 20, RIGHT); // 180
+	msleep(1000);
+	create_virtual_bump(50, BACKWARDS);
+	msleep(1000);
+	create_drive_distance(7, 5, FORWARDS);
+	msleep(1000);
+	create_spin_degrees(90, 20, RIGHT);
+	msleep(1000);
+	create_virtual_bump(50, BACKWARDS);
+	msleep(1000);
+	create_drive_distance(53, 10, FORWARDS);
+	create_spin_degrees(4, 5, LEFT);
 }
 
-void drop_hangers() {
-	create_drive_distance(18, 10, FORWARDS); //14
+void drop_hangers(int strategy) {
+	if (strategy == 0) {
+		create_drive_distance(18, 10, FORWARDS); //14
+	}
 	unlock_winch_new();
 	operate_winch(WINCH_DROP_DISTANCE);
 	//msleep(8000);
@@ -324,7 +343,7 @@ void operate_winch(int position) {
 		if (int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(position) + AMOUNT_ERROR_ALLOWED) {
 			break;
 		}
-		sleep(2000); // WINCH DID NOT GO CORRECTLY, SLEEP SO CAN SEE IT.
+		msleep(2000); // WINCH DID NOT GO CORRECTLY, SLEEP SO CAN SEE IT.
 		printf("ERROR - WINCH FAILED\n");
 	}
 }

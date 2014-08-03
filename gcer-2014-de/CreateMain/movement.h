@@ -15,6 +15,7 @@
 #define LEFT 1
 #define RIGHT -1
 
+void create_drive_until_bump(int speed);
 void move_until_line();
 void move_until_line_old();
 void move_until_bump(int speed, int direction, int port);
