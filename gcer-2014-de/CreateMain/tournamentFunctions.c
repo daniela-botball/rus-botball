@@ -34,13 +34,21 @@ void drive_to_hanger_racks() {
 	raise_winch();
 	lock_winch_new();
 	create_spin_degrees(90, 20, RIGHT);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_drive_distance(40, 10, FORWARDS);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_spin_degrees(87, 20, LEFT);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_drive_distance(90, 10, FORWARDS); // 85
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_spin_degrees(90, 20, LEFT);
 	msleep(500);
 	create_drive_distance(10, 10, FORWARDS);

@@ -1,3 +1,5 @@
+#define waitForButton
+
 #include "kovan/kovan.h"
 #include "createMovement.h"
 #include "tournamentFunctions.h"
