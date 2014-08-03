@@ -8,8 +8,11 @@ thread hold_thread;
 void freeze_motor() {
 	while (1) {
 		if (!digital(15)) {
-			motor(WINCH_MOTOR, 70);
+			mav(WINCH_MOTOR, 750);
+		}else{
+			freeze(WINCH_MOTOR);
 		}
+		msleep(40);
 	}
 }
 void lock_winch_new() {
@@ -34,13 +37,21 @@ void drive_to_hanger_racks() {
 	raise_winch();
 	lock_winch_new();
 	create_spin_degrees(90, 20, RIGHT);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_drive_distance(40, 10, FORWARDS);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_spin_degrees(87, 20, LEFT);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_drive_distance(90, 10, FORWARDS); // 85
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_spin_degrees(90, 20, LEFT);
 	msleep(500);
 	create_drive_distance(10, 10, FORWARDS);
@@ -54,13 +65,18 @@ void drop_hangers() {
 	operate_winch(WINCH_DROP_DISTANCE);
 	//msleep(8000);
 	create_drive_distance(3, 10, BACKWARDS);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_spin_degrees(10, 20, RIGHT);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_drive_distance(40, 20, BACKWARDS);
-	press_a_to_continue();
+	#ifdef waitForButton
+		press_a_to_continue();
+	#endif
 	create_spin_degrees(70, 30, LEFT);
-	
 }
 
 void get_first_doubler() {
@@ -87,11 +103,20 @@ void unlock_winch() {
 	set_servo_position(LOCK_SERVO, UNLOCKED_POSITION);
 }
 
+void moveMotorTicks(int ticks, int port){
+	int time = ticks > 0 ? ticks : (-1)*ticks;
+	mav(port, 1000);
+	msleep(time);
+	freeze(port);
+}
+
 void extend_arm() {
-	clear_motor_position_counter(EXTENDER_MOTOR);
-	motor(EXTENDER_MOTOR, 100);
-	while (get_motor_position_counter(EXTENDER_MOTOR) < EXTENSION_DISTANCE);
-	freeze(EXTENDER_MOTOR);
+	//clear_motor_position_counter(EXTENDER_MOTOR);
+	//motor(EXTENDER_MOTOR, 100);
+	//while (get_motor_position_counter(EXTENDER_MOTOR) < EXTENSION_DISTANCE){while(50);}
+	//freeze(EXTENDER_MOTOR);
+	
+	moveMotorTicks(EXTENDER_MOTOR,EXTENSION_DISTANCE);
 }
 
 void drop_three_hangers() {
@@ -276,30 +301,30 @@ void operate_winch(int position) {
 	int k;
 	if (position == WINCH_DROP_DISTANCE) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, -60);
-		while (get_motor_position_counter(WINCH_MOTOR) > -WINCH_DROP_DISTANCE);
+		mav(WINCH_MOTOR, -600);
+		while (get_motor_position_counter(WINCH_MOTOR) > -WINCH_DROP_DISTANCE){msleep(40);}
 		freeze(WINCH_MOTOR);
 		return;
 	}
 	if (position == DOUBLER_PICK_UP_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, -60);
-		while (!digital(12));
+		mav(WINCH_MOTOR, -600);
+		while (!digital(12)){msleep(40);}
 		freeze(WINCH_MOTOR);
 		return;
-		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(DOUBLER_PICK_UP_POSITION));
+		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(DOUBLER_PICK_UP_POSITION)){msleep(40);}
 		freeze(WINCH_MOTOR);
 		return;
 	} else if (position == WINCH_FIRST_CUBE_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, 60);
-		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(WINCH_FIRST_CUBE_POSITION));
+		mav(WINCH_MOTOR, 600);
+		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(WINCH_FIRST_CUBE_POSITION)){msleep(40);}
 		freeze(WINCH_MOTOR);
 		return;
 	} else if (position == WINCH_SECOND_CUBE_POSITION) {
 		clear_motor_position_counter(WINCH_MOTOR);
-		motor(WINCH_MOTOR, -60);
-		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(WINCH_SECOND_CUBE_POSITION));
+		mav(WINCH_MOTOR, -600);
+		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(WINCH_SECOND_CUBE_POSITION)){msleep(40);}
 		freeze(WINCH_MOTOR);
 		return;
 	}
@@ -311,20 +336,21 @@ void operate_winch(int position) {
 	raise_winch();
 	msleep(200);
 	clear_motor_position_counter(WINCH_MOTOR);
-	printf("Motor position after clearing: %i\n", get_motor_position_counter(WINCH_MOTOR));
+	int _temp;
+	printf("Motor position after clearing: %i\n", _temp = get_motor_position_counter(WINCH_MOTOR));
 	printf("Given position: %i, start wind\n", position);
 	for (k = 0; k < NUMBER_ERRORS_ALLOWED; ++k) {
-		motor(WINCH_MOTOR, 60 * direction);
-		while(int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(position)) {
-			printf("%i\n", get_motor_position_counter(WINCH_MOTOR));
+		mav(WINCH_MOTOR, 60 * direction);
+		while(int_abs(_temp = get_motor_position_counter(WINCH_MOTOR)) < int_abs(position)) {
+			printf("%i\n",_temp);
+			msleep(40);
 		}
 		freeze(WINCH_MOTOR);
-		printf("Motor position is %i, wants %i\n",
-		       get_motor_position_counter(WINCH_MOTOR), position);
-		if (int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(position) + AMOUNT_ERROR_ALLOWED) {
+		printf("Motor position is %i, wants %i\n",_temp, position);
+		if (int_abs(_temp = get_motor_position_counter(WINCH_MOTOR)) < int_abs(position) + AMOUNT_ERROR_ALLOWED) {
 			break;
 		}
-		sleep(2000); // WINCH DID NOT GO CORRECTLY, SLEEP SO CAN SEE IT.
+		msleep(2000); // WINCH DID NOT GO CORRECTLY, SLEEP SO CAN SEE IT.
 		printf("ERROR - WINCH FAILED\n");
 	}
 }
@@ -336,8 +362,8 @@ void raise_winch_old() {
 }
 
 void raise_winch() {
-	motor(WINCH_MOTOR, 100);
-	while (!digital(15));
+	mav(WINCH_MOTOR, 1000);
+	while (!digital(15)){msleep(50);}
 	freeze(WINCH_MOTOR);
 }
 
@@ -510,42 +536,38 @@ int adjust_claw_or_bar() {
 	
 	while (1) {
 		if (a_button()) {
-			while (a_button());
+			while (a_button()){msleep(40);}
 			msleep(500);
 			return 0;
-		}
-		if (b_button()) {
+		}else if (b_button()) {
 			while (b_button()) {
 				set_servo_position(CLAW_SERVO, get_servo_position(CLAW_SERVO) - CLAW_SERVO_ADJUSTMENT_AMOUNT);
 				msleep(CLAW_SERVO_ADJUSTMENT_MSECONDS);
 			}
 			printf("%4i = position CLAW closed to\n", get_servo_position(CLAW_SERVO));
-		}
-		if (c_button()) {
+		}else if (c_button()) {
 			while (c_button()) {
 				set_servo_position(CLAW_SERVO, get_servo_position(CLAW_SERVO) + CLAW_SERVO_ADJUSTMENT_AMOUNT);
 				msleep(CLAW_SERVO_ADJUSTMENT_MSECONDS);
 			}
 			printf("%4i = position CLAW opened to\n", get_servo_position(CLAW_SERVO));	
-		}
-		if (y_button()) {
+		}else if (y_button()) {
 			while (y_button()) {
 				set_servo_position(BAR_SERVO, get_servo_position(BAR_SERVO) + BAR_SERVO_ADJUSTMENT_AMOUNT);
 				msleep(BAR_SERVO_ADJUSTMENT_MSECONDS);
 			}
 			printf("%4i = position BAR closed to\n", get_servo_position(BAR_SERVO));
-		}
-		if (z_button()) {
+		}else if (z_button()) {
 			while (z_button()) {
 				set_servo_position(BAR_SERVO, get_servo_position(BAR_SERVO) - BAR_SERVO_ADJUSTMENT_AMOUNT);
 				msleep(BAR_SERVO_ADJUSTMENT_MSECONDS);
 			}
 			printf("%4i = position BAR opened to\n", get_servo_position(BAR_SERVO));
-		}
-		if (x_button()) {
-			while (x_button());
-			msleep(500);
+		}else if (x_button()) {
+			while (x_button()){msleep(50);}
 			return 1;
+		}else{
+			msleep(50);
 		}
 	}
 }
@@ -581,6 +603,9 @@ void set_buttons_to_abc() {
 	set_a_button_text("A");
 	set_b_button_text("B");
 	set_c_button_text("C");
+	set_x_button_text("X");
+	set_y_button_text("Y");
+	set_z_button_text("Z");
 }
 
 int int_abs(int x) {
