@@ -55,19 +55,11 @@ int main()
 }
 
 void robot_setup() {
-	int i;
-	//#define _ROBOT CREATE
-	//#define _MODE TOURNAMENT
-	//get_robot();
-	//get_mode();
 	display_clear();
-	//#if _ROBOT == CREATE
 	printf("Connecting to the Create...\n");
 	create_connect();
 	printf("Create connected!");
 	create_full();
-	//#endif
-	//operate_winch(WINCH_START_POSITION);
 	create_drive_distance(10, 20, FORWARDS);
 	create_spin_degrees(15, 20, RIGHT);
 }
