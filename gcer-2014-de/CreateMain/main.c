@@ -24,30 +24,34 @@ void robot_setup() {
 	create_spin_degrees(15, 20, RIGHT);
 }
 
+bool isDoubleStrategy(){
+	set_a_button_text("SEEDING");set_c_button_text("DOUBLE");
+	bool a = false, c = false;
+	do{
+		while(!a && !c){
+			a = a_button();
+			c = c_button();
+			msleep(100);
+		}
+	}while(a == c);
+	if(a){
+		printf("SEEDING\r\n");
+		while(a_button()){msleep(10);}
+	}
+	if(c){
+		printf("DOUBLE\r\n");
+		while(c_button()){msleep(10);}
+	}
+	set_a_button_text("A");set_c_button_text("C");
+	return a;
+}
+
 int main()
 {	
-	int strategy;
 	robot_setup();
 	freeze(WINCH_MOTOR);
 	printf("Select strategy\n");
-	set_a_button_text("Seeding");
-	set_b_button_text("DE");
-	while (1) {
-		if (a_button()) {
-			while(a_button());
-			msleep(500);
-			printf("Seeding strategy\n");
-			strategy = 0;
-			break;
-		}
-		if (b_button()) {
-			while(b_button());
-			msleep(500);
-			printf("DE strategy\n");
-			strategy = 1;
-			break;
-		}
-	}
+	bool strategy  = isDoubleStrategy();
 	//press_a_to_continue();
 	wait_for_light(0);
 	motor(WINCH_MOTOR, 100);
