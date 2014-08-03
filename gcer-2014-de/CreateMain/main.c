@@ -8,6 +8,9 @@
 #include "teleoperation.h"
 
 void robot_setup();
+#define bool int
+#define false 0
+#define true 1
 
 int main()
 {	
