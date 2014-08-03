@@ -1,6 +1,8 @@
 #include "tests.h"
 #include "movement.h"
 #include "ui.h"
+#include "tournamentFunctions.h"
+#include "createMovement.h"
 
 void test_ET() {	
 	while (!a_button()) {

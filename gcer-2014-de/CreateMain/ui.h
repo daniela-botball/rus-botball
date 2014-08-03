@@ -3,6 +3,8 @@
 #ifndef _UI_H_
 #define _UI_H_
 
+#include "tournamentFunctions.h"
+
 #define SLEEP_MSECONDS_IN_TOURNAMENT_MODE 100
 
 #define TOURNAMENT 0

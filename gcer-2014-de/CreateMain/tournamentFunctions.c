@@ -324,7 +324,7 @@ void operate_winch(int position) {
 		if (int_abs(get_motor_position_counter(WINCH_MOTOR)) < int_abs(position) + AMOUNT_ERROR_ALLOWED) {
 			break;
 		}
-		sleep(2000); // WINCH DID NOT GO CORRECTLY, SLEEP SO CAN SEE IT.
+		msleep(2000); // WINCH DID NOT GO CORRECTLY, SLEEP SO CAN SEE IT.
 		printf("ERROR - WINCH FAILED\n");
 	}
 }
