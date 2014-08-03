@@ -60,9 +60,15 @@ void drive_to_hanger_racks(int strategy) {
 	create_spin_degrees(90, 20, RIGHT);
 	msleep(1000);
 	create_virtual_bump(50, BACKWARDS);
-	msleep(1000);
-	create_drive_distance(53, 10, FORWARDS);
+	//msleep(36000);
+	int i;
+	for (i = 0; i < 36; i++) {
+		printf("Waiting\a\n");
+		msleep(1000);
+	}
+	create_drive_distance(58, 10, FORWARDS);
 	create_spin_degrees(4, 5, LEFT);
+	
 }
 
 void drop_hangers(int strategy) {
@@ -71,15 +77,18 @@ void drop_hangers(int strategy) {
 	}
 	unlock_winch_new();
 	operate_winch(WINCH_DROP_DISTANCE);
+	//off(WINCH_MOTOR);
+	freeze(WINCH_MOTOR);
+	
 	//msleep(8000);
-	create_drive_distance(3, 10, BACKWARDS);
+	/*create_drive_distance(3, 10, BACKWARDS);
 	press_a_to_continue();
 	create_spin_degrees(10, 20, RIGHT);
 	press_a_to_continue();
 	create_drive_distance(40, 20, BACKWARDS);
 	press_a_to_continue();
 	create_spin_degrees(70, 30, LEFT);
-	
+	*/
 }
 
 void get_first_doubler() {
