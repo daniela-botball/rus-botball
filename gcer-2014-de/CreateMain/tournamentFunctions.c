@@ -66,9 +66,12 @@ void drive_to_hanger_racks(int strategy) {
 		printf("Waiting\a\n");
 		msleep(1000);
 	}
-	create_drive_distance(58, 10, FORWARDS);
-	create_spin_degrees(4, 5, LEFT);
-	
+	create_drive_distance(37, 10, FORWARDS);
+	motor(WINCH_MOTOR, -40);
+	msleep(500);
+	freeze(WINCH_MOTOR);
+	create_drive_distance(20, 10, FORWARDS);
+	create_spin_degrees(4, 5, LEFT);	
 }
 
 void drop_hangers(int strategy) {
@@ -77,8 +80,10 @@ void drop_hangers(int strategy) {
 	}
 	unlock_winch_new();
 	operate_winch(WINCH_DROP_DISTANCE);
+	ao();
+	create_drive_distance(3, 10, BACKWARDS);
 	//off(WINCH_MOTOR);
-	freeze(WINCH_MOTOR);
+	//freeze(WINCH_MOTOR);
 	
 	//msleep(8000);
 	/*create_drive_distance(3, 10, BACKWARDS);
