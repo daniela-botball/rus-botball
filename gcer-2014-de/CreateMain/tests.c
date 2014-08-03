@@ -3,12 +3,9 @@
 #include "ui.h"
 
 void test_ET() {	
-	set_analog_pullup(0, 0);
-	msleep(200);
-	// set_each_analog_state(0, 1, 0, 0, 0, 0, 0, 0);  // DOES NOT COMPILE
 	while (!a_button()) {
 		display_printf(0, 0, "%4i", analog_et(0));
-		//msleep(200)0
+		msleep(50);
 	}
 }
 
