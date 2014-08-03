@@ -98,11 +98,20 @@ void unlock_winch() {
 	set_servo_position(LOCK_SERVO, UNLOCKED_POSITION);
 }
 
+void moveMotorTicks(int ticks, int port){
+	int time = ticks > 0 ? ticks : (-1)*ticks);
+	mav(port, 1000);
+	msleep(time);
+	freeze(port);
+}
+
 void extend_arm() {
-	clear_motor_position_counter(EXTENDER_MOTOR);
-	motor(EXTENDER_MOTOR, 100);
-	while (get_motor_position_counter(EXTENDER_MOTOR) < EXTENSION_DISTANCE);
-	freeze(EXTENDER_MOTOR);
+	//clear_motor_position_counter(EXTENDER_MOTOR);
+	//motor(EXTENDER_MOTOR, 100);
+	//while (get_motor_position_counter(EXTENDER_MOTOR) < EXTENSION_DISTANCE){while(50);}
+	//freeze(EXTENDER_MOTOR);
+	
+	moveMotorTicks(EXTENDER_MOTOR,EXTENSION_DISTANCE);
 }
 
 void drop_three_hangers() {
