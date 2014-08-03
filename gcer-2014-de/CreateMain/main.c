@@ -7,10 +7,22 @@
 #include "ui.h"
 #include "teleoperation.h"
 
-void robot_setup();
 #define bool int
 #define false 0
 #define true 1
+
+void robot_setup() {
+	display_clear();
+	printf("Connecting to the Create...\n");
+	while(!create_connect_once()){
+		printf("\a.");
+		msleep(100);
+	}
+	printf("Create connected!");
+	create_full();
+	create_drive_distance(10, 20, FORWARDS);
+	create_spin_degrees(15, 20, RIGHT);
+}
 
 int main()
 {	
@@ -52,14 +64,4 @@ int main()
 	drop_three_hangers_on_third_rack();
 	create_disconnect();
 	return 0;
-}
-
-void robot_setup() {
-	display_clear();
-	printf("Connecting to the Create...\n");
-	create_connect();
-	printf("Create connected!");
-	create_full();
-	create_drive_distance(10, 20, FORWARDS);
-	create_spin_degrees(15, 20, RIGHT);
 }
