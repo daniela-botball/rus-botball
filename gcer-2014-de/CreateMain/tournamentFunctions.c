@@ -6,10 +6,13 @@
 thread hold_thread;
 
 void freeze_motor() {
-	while (1) {
+	while (true) {
 		if (!digital(15)) {
-			motor(WINCH_MOTOR, 70);
+			mav(WINCH_MOTOR, 750);
+		}else{
+			freeze(WINCH_MOTOR);
 		}
+		msleep(40);
 	}
 }
 void lock_winch_new() {
@@ -344,8 +347,8 @@ void raise_winch_old() {
 }
 
 void raise_winch() {
-	motor(WINCH_MOTOR, 100);
-	while (!digital(15));
+	mav(WINCH_MOTOR, 1000);
+	while (!digital(15)){msleep(50);}
 	freeze(WINCH_MOTOR);
 }
 
