@@ -6,7 +6,7 @@
 thread hold_thread;
 
 void freeze_motor() {
-	while (true) {
+	while (1) {
 		if (!digital(15)) {
 			mav(WINCH_MOTOR, 750);
 		}else{
@@ -99,7 +99,7 @@ void unlock_winch() {
 }
 
 void moveMotorTicks(int ticks, int port){
-	int time = ticks > 0 ? ticks : (-1)*ticks);
+	int time = ticks > 0 ? ticks : (-1)*ticks;
 	mav(port, 1000);
 	msleep(time);
 	freeze(port);
