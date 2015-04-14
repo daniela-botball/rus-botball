@@ -1,6 +1,7 @@
 #include "createMovement.h"
 #include <stdint.h>
 #include <kovan/create_codes.h>
+#include "universal.h"
 
 /* SIMPLE MOVE FUNCTIONS */
 
@@ -11,6 +12,7 @@ void create_drive_distance(int direction, float centimeters, float speed) {
 	_wait_distance((millimeters * direction) - overshoot);
 	create_halt();
 	CBD();
+	press_a_to_continue();
 }
 
 void create_spin_degrees(int direction, int degrees, int speed) {
@@ -19,6 +21,7 @@ void create_spin_degrees(int direction, int degrees, int speed) {
 	_wait_degrees(direction * degrees);
 	create_halt();
 	CBD();
+	press_a_to_continue();
 }
 
 void create_drive_OI(int speed, int direction) {
@@ -99,6 +102,14 @@ void create_block_done() {
 	//printf("create free\n");
 }
 
+void create_drive_until_bump(int direction, float speed) {
+	create_drive_OI(speed * 10, direction);
+	msleep(3000);
+	while ((!get_create_lbump()) && (!get_create_rbump()));
+	create_halt();
+	press_a_to_continue();
+}
+
 void create_drive_until_line(int speed, int direction) {
 	int lcliff_reading;
 	int rcliff_reading;
@@ -112,6 +123,7 @@ void create_drive_until_line(int speed, int direction) {
 			break;
 		}
 	}
+	press_a_to_continue();
 }
 
 int create_get_sensor(int packet_number) {

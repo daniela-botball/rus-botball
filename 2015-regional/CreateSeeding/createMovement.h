@@ -3,11 +3,12 @@
 #ifndef _CREATEMOVEMENT_H_
 #define _CREATEMOVEMENT_H_
 
-// The next 4 really belong in the (generic) MOVEMENT library.
-#define FORWARDS 1
-#define BACKWARDS -1
-#define LEFT -1
-#define RIGHT 1
+// The next 4 really belong in the (generic) MOVEMENT library
+// The next 4 have been reversed for the purpose of this year's create robot. Normally, FORWARDS is 1 and BACKWARDS is -1. LEFT is -1 and RIGHT is 1
+#define FORWARDS -1
+#define BACKWARDS 1
+#define LEFT 1
+#define RIGHT -1
 
 #define write_byte create_write_byte
 #define CBD create_block_done
@@ -31,6 +32,8 @@ struct create_script_buffer {
 
 void create_drive_distance(int direction, float centimeters, float speed);
 void create_spin_degrees(int direction, int degrees, int speed);
+
+void create_drive_until_bump(int direction, float speed);
 
 void wait_duration(float seconds);
 void _wait_degrees(int degrees);

@@ -1,113 +1,103 @@
 // Created on Thu April 2 2015
 
 #include "createMovement.h"
+#include "universal.h"
+#include "tournamentFunctions.h"
 
-#define CLOSED_FOR_CUBES 800
-#define OPEN 1500
-#define CLOSED_FOR_BOTGAL 900
-#define CLOSED_FULLY 830
+// TODO: (talk to your coach about EACH of these before doing them)
+//  DONE Try all, see if works, decide what needs to be fixed asap.
+//  Learn and practice the new   adjust   function.
+//  Put comments in   score_our_cubes   for each major action (which will be a chunk of code).
+//  Have robot set itself up for the run.
+//  Have robot pull Botgal down early (so other robot can use Bot-thing)
+//  Have robot score the cube and poms on the Mesa (just after doing Botguy, or ...?)
 
-#define HAND 0
-#define ARM 0
-
-// TODO:
-//  Fix hand so that it is symmetric.
-//  Make hand sturdier.  Reverse the axle with stop.  Etc.
-//  The hand is sort of upside down.  Should the fingers be more at the half-way point of the foam board?  Or would that block the camera?
-//  Make the arm_up function smooth:  enough power, but not too fast, consider varying power as it rises?
-//  Make the arm_up function stop at the right points somehow.
-//  The library should allow the Create to specify either side as the "front".
-
-// Failure points to check:
-//  servo extender wire coming disconnected.
-//  fishing wire getting too loose or tangled or off the winch.
-
-void seeding();
-void sample_run();
-void move_arm_to_rest_position();
-void press_a_to_continue();
-void arm_up();
-void arm_down();
+void score_our_cubes();
 
 int main()
 {
-	seeding();
+	set_mode(PRACTICE_MODE);
+	score_our_cubes();
 	
 	return 0;
 }
 
-void seeding() {
-	printf("Connecting to the Create...\n");
+void score_our_cubes() {
+	printf("Trying to connect...\n");
 	create_connect();
-	printf("Connected!\n");
+	create_full();
+	printf("Connected.\n");
 	
-	set_servo_position(HAND, CLOSED_FULLY);
+	open_claw();
 	enable_servos();
+	operate_winch(WINCH_MIDDLE_POSITION);
 	press_a_to_continue();
+	//lights on
 	
-	create_spin_degrees(RIGHT, 10, 10);
-	press_a_to_continue();
+	//grab the cubes
+	create_spin_degrees(LEFT, 18, 20); 
+	operate_winch(WINCH_GROUND_POSITION);
 
-	set_servo_position(HAND, OPEN);
-	press_a_to_continue();
-
-	arm_up();
-	press_a_to_continue();
-
-	create_spin_degrees(RIGHT, 10, 10);
-	press_a_to_continue();
-
-	arm_down();
+	create_drive_distance(FORWARDS, 6, 10);
+	close_claw();
+		
+	//score our cubes
+	create_spin_degrees(LEFT, 28, 20);
+	operate_winch(WINCH_DROP_POSITION);
+	
+	create_drive_distance(FORWARDS, 66, 20);
+	open_claw();
+	
+	//set_mode(PRACTICE_MODE);
+	
+	create_drive_until_bump(BACKWARDS, 20);
+	
+	operate_winch(WINCH_MIDDLE_POSITION);
 	press_a_to_continue();
 	
-	set_servo_position(HAND, CLOSED_FOR_CUBES);
-	press_a_to_continue();
+	create_spin_degrees(RIGHT, 136, 20);
+	create_drive_distance(FORWARDS, 5, 5);
+	create_drive_until_bump(BACKWARDS, 10);
+	operate_winch(WINCH_DROP_POSITION);
+	create_spin_degrees(LEFT, 90, 20);
+	create_drive_until_bump(BACKWARDS, 20);
+	create_spin_degrees(LEFT, 90, 20);
+	create_drive_distance(FORWARDS, 5, 5);
+	create_drive_distance(BACKWARDS, 10, 20);
+	create_spin_degrees(RIGHT, 90, 20);
+	create_drive_distance(FORWARDS, 55, 20);
+	create_spin_degrees(RIGHT, 10, 20);
+	operate_winch(WINCH_GROUND_POSITION);
+	close_claw();
+	operate_winch(WINCH_DROP_POSITION);
+	create_spin_degrees(LEFT, 10, 20);
+	create_drive_distance(BACKWARDS, 45, 20);
+	create_spin_degrees(RIGHT, 45, 20);
+	create_drive_distance(FORWARDS, 54, 20);
+	open_claw();
 	
-	arm_up();
-	press_a_to_continue();
-	
-	create_spin_degrees(RIGHT, 35, 20);
-	press_a_to_continue();
-	
-	create_drive_distance(BACKWARDS, 55, 25);
-	press_a_to_continue();
-	
-	set_servo_position(HAND, OPEN);
-	press_a_to_continue();
-	
-	disable_servos();
-	create_disconnect();
+	return;
 }
-
-// Makes the Create move forward slowly,
-// centering the z
-void camera_move_to_x(int desired_x) {
-}
-
-void arm_up() {
-	motor(ARM, 100);
-	while (!a_button()) {}
-	off(ARM);
-}
-
-void arm_down() {
-	motor(ARM, -30);
-	while (!a_button()) {}
-	off(ARM);
-}
-
-void press_a_to_continue() {
-	printf("Press A to continue.\n");
-	while (!a_button()) {}
-	while (a_button()) {}
+/*
+	create_drive_distance(BACKWARDS,61,10);
+	msleep(5000);
+	create_spin_degrees(RIGHT,10,10);
+	set_servo_position(HAND,OPEN);
+	msleep(15000);
+	//set_servo_position(ARM,FLOOR);
+	set_servo_position(HAND,CLOSE);
 	msleep(1000);
+	create_spin_degrees(LEFT,10,10);
+	msleep(15000);
+	create_drive_distance(FORWARDS,30,10);
+	create_spin_degrees(RIGHT,50,10);
+	create_drive_distance(BACKWARDS,50,10);
+	//set_servo_position(ARM,HIGH);
+	return;
 }
 
 // Demonstrate the use of the Create movement library.
 void sample_run() {
-	set_servo_position(3,2000);
-	enable_servos();
-	msleep(2000);
 	// Connect to the Create.
 	// Set to "full mode" so that it does not stop when its wheels "drop".
 	printf("Trying to connect...\n");
@@ -115,50 +105,59 @@ void sample_run() {
 	create_full();
 	printf("Connected.\n");
 	
-	// Wait briefly to allow user to take finger off the Link.
+	set_servo_position(HAND,CLOSE);
+	enable_servos();
+	create_drive_distance(BACKWARDS,61,10);
+	msleep(5000);
+	create_spin_degrees(RIGHT,10,10);
+	set_servo_position(HAND,OPEN);
+	msleep(15000);
+	//set_servo_position(ARM,FLOOR);
+	set_servo_position(HAND,CLOSE);
 	msleep(1000);
+	create_spin_degrees(LEFT,10,10);
+	msleep(15000);
+	create_drive_distance(FORWARDS,30,10);
+	create_spin_degrees(RIGHT,50,10);
+	create_drive_distance(BACKWARDS,50,10);
+	//set_servo_position(ARM,HIGH);
+	return;
+	create_drive_distance(FORWARDS,10,10);
+	create_spin_degrees(RIGHT,10,10);
+	create_drive_distance(BACKWARDS,10,10);
+	create_spin_degrees(LEFT,10,10);
+	//set_servo_position(HAND,OPEN);
+	msleep(1000);
+	return ;
+	// Wait briefly to allow user to take finger off the Link.
 	
 	// Create movement commands start here.
 	// Sleeps in between are just so that
 	// the user can see the effects of each command.
 	
-	//Drive backwards 20 centimeters at 10 centimeters a second.
-	//(Mas speed is 50 centimeters a second.)
-	create_drive_distance(BACKWARDS, 20, 10);
-	msleep(1000);
-	
-	//Spin right 90 degrees at 45 degrees a second.
-	//(Max speed is ?? degrees a second.)
-	//DCM: Is the speed accurate??
-	create_spin_degrees(RIGHT, 90, 45);
-	
-	// Go backwards 60 centimeters at 30 centimeters a second.
+	// Go forwards 40 centimeters at 20 centimeters a second.
 	// (Max speed is 50 centimeters a second.)
-	create_drive_distance(BACKWARDS, 60, 30);
-	msleep(1000);
+	create_drive_distance(FORWARDS, 40, 20);
+	msleep(2000);
 	
-	 // Spin left 90 degrees at 45 degrees a second.
-	// (Max speed is about ?? degrees a second.)
-	// DCM: Is the speed accurate??
-	// It will knock over Podd Guy
-	create_spin_degrees(LEFT, 90, 45);
-	msleep(1000);
+	// Go backwards 30 centimeters at 50 centimeters a second.
+	create_drive_distance(BACKWARDS, 30, 50);
+	msleep(2000);
 	
-     // Spin left  90 degrees at 45 degrees a second.
+	// Spin left 90 degrees at 45 degrees a second.
 	// (Max speed is about ?? degrees a second.)
 	// DCM: Is the speed accurate??
 	create_spin_degrees(LEFT, 90, 45);
-	msleep(1000);
-		
-   
+	msleep(2000);
 	
-	// Go backwards 40 centimeters at 20 centimeters a second.
-	// It will halt in front of cubes
-	create_drive_distance(BACKWARDS, 40, 20);
-	msleep(1000);
-	
+	// Spin right 720 degrees (2 full turns) at 180 degrees a second.
+	// (Max speed is about ?? degrees a second.)
+	// DCM: Is the speed accurate??
+	create_spin_degrees(LEFT, 720, 180);
+	msleep(2000);
 	
 	// The following leaves the Create in a "clean" state
 	// after the run.
 	create_disconnect();
 }
+*/
