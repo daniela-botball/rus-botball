@@ -17,7 +17,9 @@
 
 void test() {
 	setup();
-	sort_while_moving(8);
+	
+	determine_camera_speed(GREEN);
+	//sort_while_moving(8);
 	//test_sorting();
 	//spin_left_until_pom_pile_is_lined_up();
 	//test_show_blobs();
@@ -502,4 +504,3 @@ void test_drive_straight() {
 	lego_drive_distance(50, 40, FORWARDS);
 	press_a_to_continue();
 }
-

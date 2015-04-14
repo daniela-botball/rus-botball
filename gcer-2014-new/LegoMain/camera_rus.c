@@ -2,6 +2,8 @@
 #include "utilities.h"
 #include "ui.h"
 #include "tournamentFunctions.h"
+#include "movement.h"
+#include "legoMovement.h"
 
 // Using the following variable because camera_close does not work correctly.
 //   -- So we keep track of whether the camera is open ourselves,
@@ -133,7 +135,6 @@ rectangle get_pile_bbox(int colors[], int number_of_colors_to_check) {
 	int k, j;
 	int old = 0;
 	int count;
-	int still_adding_boxes;
 	rectangle pile_bbox, this_bbox;
 	BLOB blob;
 	
@@ -264,4 +265,53 @@ rectangle transform_bbox2(rectangle bbox) {
 	new_bbox.ulx = bbox.uly;
 	
 	return new_bbox;
+}
+
+void determine_camera_speed(int color) {
+	float s;
+	int ulx, uly, width, height;
+	int k;
+	rectangle bbox;
+	int result;
+	
+	//initialize_camera();
+	
+	camera_update();
+	msleep(3000);
+	
+	if (get_object_count(color) < 1) {
+		printf("Cannot see an object in color model %i.\n", color);
+		printf("Try again.\n");
+		return;
+	}
+	
+	bbox = get_object_bbox(color, 0);
+	ulx = bbox.ulx;
+	uly = bbox.uly;
+	width = bbox.width;
+	height = bbox.height;
+	printf("START %3i %3i %3i %3i\n", ulx, uly, width, height);
+	
+	lego_spin(50, RIGHT);
+	
+	s = seconds();
+	for (k = 0; k < 5000; ++k) {
+		camera_update();
+		if ((result = get_object_count(color)) < 1) {
+			printf("%5.2f %2i objects.\n", seconds() - s, result);
+			continue;
+		}
+		bbox = get_object_bbox(color, 0);
+		if (bbox.ulx == ulx && bbox.uly == uly && bbox.width == width && bbox.height == height) {
+			continue;
+		}
+		
+		ulx = bbox.ulx;
+		uly = bbox.uly;
+		width = bbox.width;
+		height = bbox.height;
+		printf("%5.2f %3i %3i %3i %3i\n", seconds() - s, ulx, uly, width, height);
+		//msleep(10);
+	}
+	lego_stop();
 }

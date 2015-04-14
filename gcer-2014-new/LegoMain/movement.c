@@ -2,19 +2,19 @@
 #include "legoMovement.h"
 
 void robot_drive_distance(float distance, float speed, int direction) {
-	#if _ROBOT == CREATE
+	if (_ROBOT == CREATE) {
 	//create_drive_distance(distance, speed, direction);
-	#elif _ROBOT == LEGO
-	lego_drive_distance(distance, speed, direction);
-	#endif
+	} else if (_ROBOT == LEGO) {
+		lego_drive_distance(distance, speed, direction);
+	}
 }
 
 void robot_drive(float speed, int direction) {
-	#if _ROBOT == CREATE
-	//create_drive(speed, direction);
-	#elif _ROBOT == LEGO
-	lego_drive(speed, direction);
-	#endif
+	if (_ROBOT == CREATE) {
+		//create_drive(speed, direction);
+	} else if (_ROBOT == LEGO) {
+		lego_drive(speed, direction);
+	}
 }
 
 void robot_stop() {
@@ -26,11 +26,11 @@ void robot_stop() {
 }
 
 void robot_spin_degrees(int degrees, int speed, int direction) {
-	#if _ROBOT == CREATE
-	//create_spin_degrees(degrees, speed, direction);
-	#elif _ROBOT == LEGO
-	//lego_spin_degrees(degrees, speed, direction);
-	#endif
+	if (_ROBOT == CREATE) {
+		//create_spin_degrees(degrees, speed, direction);
+	} else if (_ROBOT == LEGO) {
+		lego_spin_degrees(degrees, speed, direction);
+	}
 }
 
 void drive_until_analog_sensor(float speed, int direction, int port, int threshold, int direction_of_comparison) {

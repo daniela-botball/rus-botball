@@ -13,6 +13,8 @@
 #define LESS_THAN -1
 #define GREATER_THAN 1
 
+extern int _ROBOT;
+
 void robot_drive_distance(float distance, float speed, int direction);
 void robot_spin_degrees(int degrees, int speed, int direction);
 void robot_drive(float speed, int direction);

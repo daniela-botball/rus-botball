@@ -13,14 +13,14 @@
 #define DUMPER_SERVO 2
 #define CAMERA_SERVO 3
 
-#define CLAW_START_POSITION 200 // ALL THE WAY OPEN
-#define SORTER_START_POSITION 400 // FIXME: Tune.
-#define CAMERA_START_POSITION 2030 // was 427
-#define DUMPER_START_POSITION 0 // FIXME: Tune.
-
 #define CLAW_OPEN_POSITION 200
 #define CLAW_HALF_OPEN_POSITION 500
 #define CLAW_CLOSED_POSITION 1150
+
+#define CLAW_START_POSITION CLAW_CLOSED_POSITION
+#define SORTER_START_POSITION 400 // FIXME: Tune.
+#define CAMERA_START_POSITION 2030 // was 427
+#define DUMPER_START_POSITION 0 // FIXME: Tune.
 
 #define PINK 0
 #define GREEN 1
@@ -58,6 +58,7 @@
 // ***********************************************************
 // Functions for EATING POMS and SORTING POMS.
 // ***********************************************************
+void grab_poms();
 void start_eating();
 void stop_eating();
 void eat_poms();
@@ -80,10 +81,12 @@ rectangle spin_until_right_edge_of_pom_pile_is_at(int direction, int colors[], i
 // ***********************************************************
 // Functions for MOVING TO VARIOUS PLACES.
 // ***********************************************************
+void get_out_of_box();
 void go_close_to_first_pom_pile();
 void turn_to_second_pom_pile();
 void go_close_to_second_pom_pile();
 void turn_to_first_dump();
+int get_position_to_move();
 void go_close_to_our_upper_storage();
 void go_close_to_opponents_upper_storage();
 void go_close_to_third_pom_pile();

@@ -1,9 +1,18 @@
 #include "utilities.h"
 #include "ui.h"
 #include "score_8_plus_8.h"
-
+#include "mc_interface.h"
 // FIXME: Talk with Aaron re why these are VARIABLEs and use of EXTERN elsewhere.
 //        And why they are defined here and not in a .h file.
+
+/*
+run diagnostic
+choose strategy from menu - 2 main strategies, 1 quickstart strategy, up to 2 extra strategies, menu with more strategies
+	button press returns a pair of functions - one for setup and one for main
+asks for tournament mode or practice mode or variations on said modes (i.e. with/without lights, with/without timelimit, etc.)
+runs setup
+lights (if in tournament mode)
+*/
 
 int _ROBOT;
 int _MODE;

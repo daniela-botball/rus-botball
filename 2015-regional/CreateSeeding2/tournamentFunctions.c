@@ -1,5 +1,5 @@
 // Created on Sat April 11 2015
-/*
+
 #include "universal.h"
 #include "createMovement.h"
 #include "tournamentFunctions.h"
@@ -35,4 +35,3 @@ void close_claw() {
 	set_servo_position(CLAW_SERVO, CLAW_CLOSE_POSITION); // TODO: Make claw close slower
 	adjust_servo(CLAW_SERVO, CLAW_CLOSE_POSITION);
 }
-*/

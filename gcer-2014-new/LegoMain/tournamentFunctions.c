@@ -2,9 +2,13 @@
 #include "utilities.h"
 #include "movement.h"
 #include "legoMovement.h"
+#include "timing.h"
+#include <stdlib.h>
+#include "ui.h"
 #include "camera_rus.h"
 #include "servos_and_motors.h"
-
+#include "mc_interface.h"
+#include "mc_movements.h" // FIXME: movement instead of movements
 /*
 This file contains functions specific to this year's contest.
 Functions that can be used in future years should go in other files.
@@ -13,6 +17,8 @@ Functions that can be used in future years should go in other files.
 // ***********************************************************
 // Functions for EATING POMS and SORTING POMS.
 // ***********************************************************
+
+void grab_poms() {}
 
 void start_eating() {
 	motor(TRACK_MOTOR, 100);
@@ -178,6 +184,29 @@ rectangle spin_left_until_pom_pile_is_lined_up() {
 // ***********************************************************
 // Functions for MOVING TO VARIOUS PLACES.
 // ***********************************************************
+void get_out_of_box() {
+	mc_move(MC_FORWARD, 14, 50);
+	mc_move(MC_RIGHT, 51, 80);
+	mc_move(MC_BACKWARD, 55, 50);
+	mc_move(MC_LEFT, 25, 80);
+	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
+	mc_move(MC_FORWARD, 30, 50);
+	set_servo_position(CLAW_SERVO, CLAW_CLOSED_POSITION);
+	msleep(1000);
+	turn_mc_on();
+	mc_move(MC_RIGHT, 148, 80);
+	mc_move(MC_FORWARD, 110, 50);
+	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION);
+	mc_move(MC_FORWARD, 30, 50); // needs camera action before move
+	set_servo_position(CLAW_SERVO, CLAW_CLOSED_POSITION);
+	mc_move(MC_RIGHT, 150, 80);
+	mc_move(MC_BACKWARD, 0, 50);
+	mc_move(MC_FORWARD, 130, 50);
+	mc_move(MC_LEFT, 180, 80);
+	mc_move(MC_BACKWARD, 10, 50);
+	
+}
+
 void go_close_to_first_pom_pile() {
 	// FIXME: Adjust this after we know the placement in the starting box.
 	// May need to "wiggle".
@@ -328,214 +357,3 @@ rectangle spin_until_right_edge_of_pom_pile_is_at(int direction, int colors[], i
 	
 	return pile;
 }
-
-
-
-
-
-
-
-
-
-
-/*
-void pom_drive() {
-	int i;
-	
-	motor(TRACK_MOTOR, 100);
-	lego_drive(PICK_UP_POM_SPEED, FORWARDS);
-	msleep(2500);  // FIXME: Should be based on DISTANCE.
-	motor(TRACK_MOTOR, 0);
-	lego_stop();
-	
-	//press_a_to_continue();
-	//drive_until_analog_sensor(PICK_UP_POM_SPEED, FORWARDS, POM_S_TOPHAT, SEEING_POMS_THRESHOLD, LESS_THAN);
-	//lego_drive_distance(16.0, PICK_UP_POM_SPEED, FORWARDS);
-	motor(LEFT_MOTOR, 40);
-	motor(RIGHT_MOTOR, 80);
-	
-	motor(TRACK_MOTOR, 100);
-	lego_drive(PICK_UP_POM_SPEED, FORWARDS);
-	move_servo_very_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
-	motor(TRACK_MOTOR, 0);
-	lego_stop();
-	//press_a_to_continue();
-	
-	lego_spin(50, LEFT); // FIXME: distance!
-	msleep(1800);
-	motor(TRACK_MOTOR, 0);
-	lego_stop();
-	//press_a_to_continue();
-	
-	set_servo_position(CLAW_SERVO, CLAW_HALF_OPEN_POSITION);
-	motor(TRACK_MOTOR, 100);
-	lego_drive(PICK_UP_POM_SPEED, FORWARDS);
-	for (i = 0; i < 10; i++) {
-		move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
-		set_servo_position(CLAW_SERVO, CLAW_HALF_OPEN_POSITION);
-	} 
-	move_servo_slowly(CLAW_SERVO, CLAW_CLOSED_POSITION);
-	msleep(20000);  // FIXME.
-	motor(TRACK_MOTOR, 0);
-	lego_stop();
-	press_a_to_continue();
-	
-	start_timer(0);
-	while (check_timer(0) < 3.0) {
-		sort_poms();
-	}
-	ao();
-	press_a_to_continue();
-}
-*/
-
-// FIXME:  Uncomment and test the following.
-	/*
-//Precondition: camera must be open
-void sort_poms() {
-
-	int state = DECIDE_IF_DUMP;
-	int object_count;
-	int green_count;
-	int pink_count;
-	int bottom_pom;
-	camera_update();
-	green_count = get_object_count(GREEN);
-	pink_count = get_object_count(PINK);
-	
-	if (state == DECIDE_IF_DUMP) {
-	bottom_pom = get_bottom_pom();
-	if (get_bottom_pom() == NO_POM) {
-	state = DECIDE_IF_DUMP;
-	} else if (get_bottom_pom() == GREEN_POM) {
-	state = DUMP_GREEN_POM;
-	} else if (get_bottom_pom() == PINK_POM) {
-	state = DUMP_PINK_POM;
-	}
-	}
-	if (state == DUMP_GREEN_POM) {
-	set_servo_position(SORTER_SERVO, GREEN_POSITION);
-	state = DECIDE_IF_DUMP;
-	}
-	else if (state == DUMP_PINK_POM) {
-	set_servo_position(SORTER_SERVO, PINK_POSITION);
-	state = DECIDE_IF_DUMP;
-	}
-}
-*/
-
-/*
-int get_bottom_pom() {
-	return 0; // FIXME: STUB.
-	// FIXME:  Uncomment and test the following.
-	int green_pom_position = -1;
-	int pink_pom_position = -1;
-	int green_pom_size = 0;
-	int pink_pom_size = 0;
-	rectangle green_bbox;
-	rectangle pink_bbox;
-	
-	if (get_object_count(GREEN) < 1 && get_object_count(PINK) < 1) {
-	return NO_POM;
-	}
-	if (get_object_count(GREEN) > 0) {
-	green_pom_size = get_object_area(GREEN, 0);
-	green_bbox = get_object_bbox(GREEN, 0);
-	green_pom_position = green_bbox.uly + green_bbox.height;
-	} 
-	if (get_object_count(PINK) > 0) {
-	pink_pom_size = get_object_area(PINK, 0);
-	pink_bbox = get_object_bbox(PINK, 0);
-	pink_pom_position = pink_bbox.uly + pink_bbox.height;
-	}
-	if (green_pom_position > pink_pom_position) {
-	return GREEN_POM;
-	} else if (pink_pom_position > green_pom_position) {
-	return PINK_POM;
-	}
-}
-&/
-
-void turn_until_poms_in_sight() {
-	// FIXME: NOT TUNED RIGHT.  MAYBE NOT SEEING RIGHT.
-	int green_rightmost_x;
-	int pink_rightmost_x;
-	int rightmost_x;
-	motor(RIGHT_MOTOR, TURNING_SPEED);
-	while (1) {
-		camera_update();
-		green_rightmost_x = get_rightmost_pom(GREEN, MINIMUM_POM_SIZE);
-		pink_rightmost_x = get_rightmost_pom(PINK, MINIMUM_POM_SIZE);
-		rightmost_x = compare(green_rightmost_x, pink_rightmost_x, LARGER);
-		printf("gr:%3i, pr:%3i, r:%3i\n", green_rightmost_x, pink_rightmost_x, rightmost_x);
-		if (rightmost_x > POM_POSITION_THRESHOLD) {
-			break;
-		}
-	}
-	off(RIGHT_MOTOR);
-}
-
-void test_rightmost_point() {
-	set_b_button_text("Stop");
-	while (!b_button()) {
-		camera_update();
-		display_printf(0, 0, "rightmost point: %3i", compare(get_rightmost_pom(GREEN, MINIMUM_POM_SIZE), get_rightmost_pom(PINK, MINIMUM_POM_SIZE), LARGER));
-		msleep(500);
-	}
-}
-
-
-//returns negative number if no pom is seen in given channel. otherwise returns x value of rightmost pom of given color
-int get_rightmost_pom(int channel, int minimum_size) {
-	int i;
-	int x = -1;
-	int this_x;
-	rectangle bbox;
-	
-	//spin_left_until_see_color(channel, minimum_size);
-	
-	int number_of_objects = get_object_count(channel);
-	for (i = 0; i < number_of_objects; i++) {
-		if (get_object_area(channel, i) < minimum_size) {
-			break;
-		}
-		bbox = transform_bbox1(get_object_bbox(channel, i));
-		printf("ulx: %3i, uly: %3i, h: %3i, w: %3i\n", bbox.ulx, bbox.uly, bbox.height, bbox.width);
-		this_x = bbox.ulx + bbox.width;
-		if (this_x > x) {
-			x = this_x;
-		}
-	}
-	return x;
-}
-
-int spin_left_until_rightmost_pom_has_right_edge_at(int x) {
-	// Precondition:  The camera can see the pom pile.
-	// Goes until the rightmost edge of the rightmost object
-	// in the pom pile is at or past x.
-	// Returns the rightmost edge of the rightmost object.
-	//
-	// Assumption: No other PINK or GREEN objects will enter the picture.
-	//    FIXME: Remove that assumption?  Lots of possibilities?
-	
-	rectangle big_box;
-	int colors[] = {PINK, GREEN};
-	int sizes[] = {MINIMUM_POM_SIZE, MINIMUM_POM_SIZE};
-	
-	return -1; // FIXME: Stub.
-	
-	lego_spin(SPIN_SPEED_WHEN_USING_CAMERA, LEFT);
-	/*
-	while (1) {
-		camera_update();
-		big_bbox = get_pile_bbox(colors, sizes, 2);
-		if (big_bbox.ulx + big_bbox.width >= x - GOOD_ENOUGH_SPIN) {
-			lego_freeze();
-			break;
-		}
-	}
-	
-	return big_bbox.ulx + big_bbox.width;
-}
-*/
-

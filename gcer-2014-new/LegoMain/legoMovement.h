@@ -23,7 +23,7 @@ typedef struct {
 } WHEELS_MOTOR_POWER;
 
 // FIXME: These don't really belong here, perhaps.
-#define ADJUST_LEFT 1.0
+#define ADJUST_LEFT 0.93
 #define ADJUST_RIGHT 1.0
 
 void lego_drive(float speed, int direction); 

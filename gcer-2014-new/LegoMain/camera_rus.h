@@ -27,4 +27,6 @@ void show_blob_numbers(int color_model, int blob, int line);
 rectangle transform_bbox1(rectangle bbox);
 rectangle transform_bbox2(rectangle bbox);
 
+void determine_camera_speed();
+
 #endif

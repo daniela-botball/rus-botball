@@ -16,7 +16,7 @@ which is:
 #include "utilities.h"
 #include "tournamentFunctions.h"
 #include "camera_rus.h"
-
+#include "mc_interface.h"
 extern int _OUR_COLOR;
 extern int _THEIR_COLOR;
 
@@ -40,14 +40,22 @@ void setup_score_8_plus_8_poms_in_upper_storage() {
 	// FIXME: Must ask for these at run-time.
 	_OUR_COLOR = PINK;
 	_THEIR_COLOR = GREEN;
+	
+	set_mc_big_amount(10, 20);
+	set_mc_small_amount(2, 3);
+	set_mc_slow_speed(50, 80);
+	set_mc_very_slow_speed(30, 50);
+
+	turn_mc_off();
 }
 
 void score_8_plus_8_poms_in_upper_storage() {
 	
 	// 1. Get and sort 4 poms closest to start box.
 	// go_close_to_first_pom_pile(); // FIXME
-	eat_poms();
-	
+	get_out_of_box();
+	//eat_poms();
+	grab_poms();
 	turn_to_second_pom_pile();
 	sort_while_moving(7); // FIXME: Add DISTANCE parameter.
 	

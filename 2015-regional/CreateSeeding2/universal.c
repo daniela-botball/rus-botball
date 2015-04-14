@@ -172,7 +172,7 @@ void adjust_servo(int servo_port, int position) {
 }
 
 void set_buttons_for_adjust(char labels [4][20]) {
-	display_clear();
+	extra_buttons_show();
 	printf("Press a button.\n");
 	
 	set_a_button_text("Continue");
