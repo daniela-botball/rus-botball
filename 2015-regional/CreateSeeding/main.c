@@ -2,13 +2,105 @@
 
 #include "createMovement.h"
 
+#define CLOSED_FOR_CUBES 800
+#define OPEN 1500
+#define CLOSED_FOR_BOTGAL 900
+#define CLOSED_FULLY 830
+
+#define HAND 0
+#define ARM 0
+
+// TODO:
+//  Fix hand so that it is symmetric.
+//  Make hand sturdier.  Reverse the axle with stop.  Etc.
+//  The hand is sort of upside down.  Should the fingers be more at the half-way point of the foam board?  Or would that block the camera?
+//  Make the arm_up function smooth:  enough power, but not too fast, consider varying power as it rises?
+//  Make the arm_up function stop at the right points somehow.
+//  The library should allow the Create to specify either side as the "front".
+
+// Failure points to check:
+//  servo extender wire coming disconnected.
+//  fishing wire getting too loose or tangled or off the winch.
+
+void seeding();
 void sample_run();
+void move_arm_to_rest_position();
+void press_a_to_continue();
+void arm_up();
+void arm_down();
 
 int main()
 {
-	sample_run();
+	seeding();
 	
 	return 0;
+}
+
+void seeding() {
+	printf("Connecting to the Create...\n");
+	create_connect();
+	printf("Connected!\n");
+	
+	set_servo_position(HAND, CLOSED_FULLY);
+	enable_servos();
+	press_a_to_continue();
+	
+	create_spin_degrees(RIGHT, 10, 10);
+	press_a_to_continue();
+
+	set_servo_position(HAND, OPEN);
+	press_a_to_continue();
+
+	arm_up();
+	press_a_to_continue();
+
+	create_spin_degrees(RIGHT, 10, 10);
+	press_a_to_continue();
+
+	arm_down();
+	press_a_to_continue();
+	
+	set_servo_position(HAND, CLOSED_FOR_CUBES);
+	press_a_to_continue();
+	
+	arm_up();
+	press_a_to_continue();
+	
+	create_spin_degrees(RIGHT, 35, 20);
+	press_a_to_continue();
+	
+	create_drive_distance(BACKWARDS, 55, 25);
+	press_a_to_continue();
+	
+	set_servo_position(HAND, OPEN);
+	press_a_to_continue();
+	
+	disable_servos();
+	create_disconnect();
+}
+
+// Makes the Create move forward slowly,
+// centering the z
+void camera_move_to_x(int desired_x) {
+}
+
+void arm_up() {
+	motor(ARM, 100);
+	while (!a_button()) {}
+	off(ARM);
+}
+
+void arm_down() {
+	motor(ARM, -30);
+	while (!a_button()) {}
+	off(ARM);
+}
+
+void press_a_to_continue() {
+	printf("Press A to continue.\n");
+	while (!a_button()) {}
+	while (a_button()) {}
+	msleep(1000);
 }
 
 // Demonstrate the use of the Create movement library.
