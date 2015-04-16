@@ -24,6 +24,17 @@ void create_spin_degrees(int direction, int degrees, int speed) {
 	adjust_spin(direction, degrees);
 }
 
+void create_drive_until_event(int direction, float speed, int event) {
+	create_drive_OI((int) (speed * 10), direction);
+	write_byte(158);
+	write_byte(0x05); // The  event  code must be between 0 and 20.
+
+	//write_byte(get_low_byte(event)); // The  event  code must be between 0 and 20.
+	create_halt();
+	CBD();
+	press_a_to_continue();
+}
+
 void create_drive_OI(int speed, int direction) {
 	write_byte(OI_DRIVE_DIRECT);
 	write_byte(get_high_byte(direction * speed));
@@ -86,7 +97,7 @@ void _wait_degrees(int degrees) {
 	write_byte(get_low_byte(degrees));
 }
 
-void wait_duration(float seconds) { // SECONDS CAN BE NO LARGER THAN 255  
+void _wait_duration(float seconds) { // SECONDS CAN BE NO LARGER THAN 255  
 	int mseconds = (int) (seconds * 10);
 	write_byte(OI_WAIT_TIME);
 	write_byte(mseconds); // SECONDS SHOULD NOT BE SPLIT INTO A HIGH BYTE AND A LOW BYTE
@@ -95,7 +106,7 @@ void wait_duration(float seconds) { // SECONDS CAN BE NO LARGER THAN 255
 /* Other functions */
 
 void create_block_done() {
-	char buffer[1];
+	char buffer[2056]; // Larger than needed, in case create_read_block puts more than requested into the buffer
 	write_byte(OI_SENSORS);
 	write_byte(PACKET_OI_MODE);
 	while (create_read_block(buffer, 1) == -1);

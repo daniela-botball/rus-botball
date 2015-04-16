@@ -10,8 +10,6 @@
 #define TOURNAMENT_MODE 1
 #define PRACTICE_MODE 0
 
-#define TOURNAMENT_SLEEP 500
-
 #define A_BUTTON 0
 #define B_BUTTON 1
 #define C_BUTTON 2
@@ -31,6 +29,7 @@
 extern int _ROBOT;
 extern int _MODE;
 extern int _ADJUST;
+extern int _TOURNAMENT_SLEEP;
 
 void set_robot(int robot);
 void set_mode(int mode);

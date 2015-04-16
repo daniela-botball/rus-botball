@@ -25,17 +25,38 @@
 #define PACKET_OI_MODE 35
 #define CURRENT 23
 
+// These codes might need to be in octal?? Left and Right are per Create, regardless of drive direction.
+#define WHEEL_DROP 1
+#define FRONT_WHEEL_DROP 2
+#define LEFT_WHEEL_DROP 3
+#define RIGHT_WHEEL_DROP 4
+#define BUMP 0x05
+#define LEFT_BUMP 0x06
+#define RIGHT_BUMP 7
+#define VIRTUAL_WALL 8
+#define WALL 9
+#define CLIFF 10
+#define LEFT_CLIFF 11
+#define FRONT_LEFT_CLIFF 12
+#define FRONT_RIGHT_CLIFF 13
+#define RIGHT_CLIFF 14
+#define HOME_BASE 15
+#define ADVANCE_BUTTON 16
+#define PLAY_BUTTON 17
+#define DIGITAL_INPUT_0 18
+#define DIGITAL_INPUT_1 19
+#define DIGITAL_INPUT_2 20
+#define DIGITAL_INPUT_3 21
+#define OI_MODE_IS_PASSIVE 22
+
 struct create_script_buffer {
 	int script[100];
 	int length;
 } create_script;
 
-void create_drive_distance(int direction, float centimeters, float speed);
-void create_spin_degrees(int direction, int degrees, int speed);
+void create_drive_until_event(int direction, float speed, int event);
 
-void create_drive_until_bump(int direction, float speed);
-
-void wait_duration(float seconds);
+void _wait_duration(float seconds);
 void _wait_degrees(int degrees);
 void _wait_distance(int distance);
 void create_drive_OI(int speed, int direction);
@@ -43,8 +64,11 @@ void create_spin(int speed, int direction);
 void create_halt();
 void create_drive_distance(int direction, float centimeters, float speed);
 void create_spin_degrees(int direction, int degrees, int speed);
-void create_block_done();
+
+void create_drive_until_bump(int direction, float speed);
 void create_drive_until_line(int speed, int direction);
+
+void create_block_done();
 int create_get_sensor(int packet_number);
 void play_script();
 void write_script_byte(int byte);
