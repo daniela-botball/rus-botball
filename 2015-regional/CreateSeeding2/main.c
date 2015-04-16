@@ -51,59 +51,44 @@ void score_our_cubes() {
 	create_spin_degrees(LEFT, 18, 20); 
 	operate_winch(WINCH_GROUND_POSITION);
 
-	create_drive_distance(FORWARDS, 6, 10);
+	create_drive_distance(FORWARDS, 8, 10);
 	close_claw();
 		
 	//score our cubes
 	create_spin_degrees(LEFT, 28, 20);
 	operate_winch(WINCH_DROP_POSITION);
 	
-	create_drive_distance(FORWARDS, 66, 20);
+	create_drive_distance(FORWARDS, 64, 20);
 	open_claw();
 	
 	//set_mode(PRACTICE_MODE);
 	
+	//back from bin
 	create_drive_until_bump(BACKWARDS, 20);
 	
-	operate_winch(WINCH_MIDDLE_POSITION);
-	
+	//other side of board
 	create_spin_degrees(RIGHT, 136, 20);
 	create_drive_distance(FORWARDS, 5, 5);
-	create_drive_until_bump(BACKWARDS, 10);
-	operate_winch(WINCH_DROP_POSITION);
-	create_spin_degrees(LEFT, 90, 20);
+	operate_winch(WINCH_MIDDLE_POSITION);
 	create_drive_until_bump(BACKWARDS, 20);
-	create_spin_degrees(LEFT, 90, 20);
-	create_drive_distance(FORWARDS, 5, 5);
-	create_drive_distance(BACKWARDS, 10, 20);
-	create_spin_degrees(RIGHT, 90, 20);
-	create_drive_distance(FORWARDS, 55, 20);
-	create_spin_degrees(RIGHT, 10, 20);
-	operate_winch(WINCH_GROUND_POSITION);
-	close_claw();
-	operate_winch(WINCH_DROP_POSITION);
-	create_spin_degrees(LEFT, 10, 20);
-	create_drive_distance(BACKWARDS, 45, 20);
-	create_spin_degrees(RIGHT, 45, 20);
-	create_drive_distance(FORWARDS, 54, 20);
-	open_claw();
 	
+	operate_winch(WINCH_DROP_POSITION);
+	create_spin_degrees(LEFT, 90, 20);
+	press_a_to_continue();
+	create_drive_until_bump(BACKWARDS, 20);
+	press_a_to_continue();
+	create_spin_degrees(RIGHT, 90, 20);
+	create_drive_distance(FORWARDS, 6, 20);
+	create_spin_degrees(LEFT, 90, 20);
+	create_drive_distance(FORWARDS, 65, 20);
+	create_drive_distance(BACKWARDS, 8, 20);
+	operate_winch(WINCH_GROUND_POSITION);
+	create_spin_degrees(RIGHT, 5, 20);
+	msleep(500);
+	close_claw();
+	// The next lines have NOT been tested yet
+	
+	create_spin_degrees(LEFT, 5, 20);
+	create_drive_until_bump(BACKWARDS, 20);
 	return;
-	/*
-	create_drive_distance(BACKWARDS,61,10);
-	msleep(5000);
-	create_spin_degrees(RIGHT,10,10);
-	set_servo_position(HAND,OPEN);
-	msleep(15000);
-	//set_servo_position(ARM,FLOOR);
-	set_servo_position(HAND,CLOSE);
-	msleep(1000);
-	create_spin_degrees(LEFT,10,10);
-	msleep(15000);
-	create_drive_distance(FORWARDS,30,10);
-	create_spin_degrees(RIGHT,50,10);
-	create_drive_distance(BACKWARDS,50,10);
-	//set_servo_position(ARM,HIGH);
-	return;
-	*/
 }

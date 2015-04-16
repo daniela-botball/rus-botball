@@ -11,11 +11,11 @@
 
 #define WINCH_LEVER 8
 
-#define CLAW_CLOSE_POSITION 1000
-#define CLAW_OPEN_POSITION 2000
+#define CLAW_CLOSE_POSITION 1527
+#define CLAW_OPEN_POSITION 814 //was 2000
 
-#define WINCH_GROUND_POSITION 2600 //was 530, then 930, was 1130
-#define WINCH_MIDDLE_POSITION 1700 //was 330, then 630, then 930
+#define WINCH_GROUND_POSITION 3000 // was 2600 //was 530, then 930, was 1130
+#define WINCH_MIDDLE_POSITION 2100 // was 1700 //was 330, then 630, then 930
 #define WINCH_DROP_POSITION 0
 
 void operate_winch(int position);

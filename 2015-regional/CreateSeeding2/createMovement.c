@@ -105,7 +105,13 @@ void create_block_done() {
 void create_drive_until_bump(int direction, float speed) {
 	create_drive_OI(speed * 10, direction);
 	msleep(3000);
-	while ((!get_create_lbump()) && (!get_create_rbump()));
+	//while ((!get_create_lbump()) && (!get_create_rbump()));
+	while (1) {
+		if (get_create_lbump() || get_create_rbump()) {
+			break;
+		}
+		msleep(100);
+	}
 	create_halt();
 	press_a_to_continue();
 }
