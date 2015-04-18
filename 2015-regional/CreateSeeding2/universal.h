@@ -30,6 +30,7 @@ extern int _ROBOT;
 extern int _MODE;
 extern int _ADJUST;
 extern int _TOURNAMENT_SLEEP;
+int get_mode();
 
 void set_robot(int robot);
 void set_mode(int mode);

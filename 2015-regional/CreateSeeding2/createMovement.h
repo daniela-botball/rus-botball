@@ -5,6 +5,16 @@
 
 // The next 4 really belong in the (generic) MOVEMENT library
 // The next 4 have been reversed for the purpose of this year's create robot. Normally, FORWARDS is 1 and BACKWARDS is -1. LEFT is -1 and RIGHT is 1
+
+#ifdef OI_WAIT_EVENT 
+#undef OI_WAIT_EVENT
+#define OI_WAIT_EVENT 158
+#endif
+
+#ifndef OI_WAIT_EVENT
+#define OI_WAIT_EVENT 158
+#endif
+
 #define FORWARDS -1
 #define BACKWARDS 1
 #define LEFT 1
@@ -65,7 +75,7 @@ void create_halt();
 void create_drive_distance(int direction, float centimeters, float speed);
 void create_spin_degrees(int direction, int degrees, int speed);
 
-void create_drive_until_bump(int direction, float speed);
+//void create_drive_until_bump(int direction, float speed);
 void create_drive_until_line(int speed, int direction);
 
 void create_block_done();

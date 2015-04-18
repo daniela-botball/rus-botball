@@ -15,6 +15,49 @@ void set_mode(int mode) {
 	_MODE = mode;
 }
 
+// Given an array of choices (they are strings), returns the choice made by the user
+int get_choice(char choices [][100], int number_of_choices) {
+	int i;
+	void* button_text_functions [6] = {set_a_button_text, set_b_button_text, set_c_button_text, set_x_button_text, set_y_button_text, set_z_button_text};
+	void* button_functions [6] = {a_button, b_button, c_button, x_button, y_button, z_button};
+	extra_buttons_show();
+	for (i = 0; i < number_of_choices; i++) {
+		button_text_functions(i)(choices[i]);
+	}
+	while (TRUE) {
+		for (i = 0; i < number_of_choices; i++) {
+			if (button_functions(i)()) {
+				printf("Hands off!\n");
+				while (button_functions(i)()) {}
+				msleep(500);
+				return i;
+			}
+		}
+	}
+}
+
+int get_mode() {
+	display_clear();
+	printf("Please select a mode\n");
+	set_a_button_text("Tournament Mode");
+	set_b_button_text("Practice Mode");
+	set_c_button_text("");
+	while (TRUE) {
+		if (a_button()) {
+			while (a_button());
+			msleep(500);
+			printf("You have selected TOURNAMENT MODE\n");
+			return TOURNAMENT_MODE;
+		}
+		if (b_button()) {
+			while (b_button());
+			msleep(500);
+			printf("You have selected PRACTICE MODE\n");
+			return PRACTICE_MODE;
+		}
+	}
+}
+
 void press_a_to_continue() {
 	if (_MODE == TOURNAMENT_MODE) {
 		if (_TOURNAMENT_SLEEP > 0) {

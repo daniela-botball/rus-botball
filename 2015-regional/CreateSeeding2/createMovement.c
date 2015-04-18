@@ -113,7 +113,10 @@ void create_block_done() {
 	//printf("create free\n");
 }
 
+// Thefollowing  does not appear to work reliably.  We don't know for sure why.
+/*
 void create_drive_until_bump(int direction, float speed) {
+
 	create_drive_OI(speed * 10, direction);
 	msleep(3000);
 	//while ((!get_create_lbump()) && (!get_create_rbump()));
@@ -126,6 +129,7 @@ void create_drive_until_bump(int direction, float speed) {
 	create_halt();
 	press_a_to_continue();
 }
+*/
 
 void create_drive_until_line(int speed, int direction) {
 	int lcliff_reading;
