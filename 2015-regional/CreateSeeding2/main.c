@@ -52,22 +52,31 @@ Lego robot -- push it forward.
 */
 void score_our_cubes();
 void demo_adjust_functions();
+void start();
 
 int main()
 {
 	// demo_adjust_functions();
 
 	set_mode(PRACTICE_MODE);
-	score_our_cubes();
+	start();
+	
+	freeze(WINCH_MOTOR);
+	create_drive_until_event(BACKWARDS, 50, BUMP);
+	
+	//score_our_cubes();
 	
 	return 0;
 }
 
-void score_our_cubes() {
+void start() {
 	printf("Trying to connect...\n");
 	create_connect();
 	create_full();
 	printf("Connected.\n");
+}
+
+void score_our_cubes() {
 	
 	open_claw();
 	enable_servos();
@@ -75,12 +84,13 @@ void score_our_cubes() {
 	
 	//lights on
 	
-	_MODE = TOURNAMENT_MODE;
-	_ADJUST = FALSE;
+	//_MODE = TOURNAMENT_MODE;
+	//_ADJUST = FALSE;
 
 	//grab the cubes
 	create_spin_degrees(LEFT, 18, 20); 
-	operate_winch(WINCH_GROUND_POSITION);
+	lower_winch();
+	//operate_winch(WINCH_GROUND_POSITION);
 
 	create_drive_distance(FORWARDS, 8, 10);
 	close_claw();
@@ -114,7 +124,8 @@ void score_our_cubes() {
 	create_drive_distance(BACKWARDS, 8, 20);
 	
 	//grab 2nd cubes 
-	operate_winch(WINCH_GROUND_POSITION);
+	lower_winch();
+	//operate_winch(WINCH_GROUND_POSITION);
 	create_drive_distance(FORWARDS, 6, 20);
 	create_spin_degrees(RIGHT, 10, 20);
 	msleep(2000); // Why this?

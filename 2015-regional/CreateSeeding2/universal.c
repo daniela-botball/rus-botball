@@ -14,7 +14,7 @@ void set_robot(int robot) {
 void set_mode(int mode) {
 	_MODE = mode;
 }
-
+/*
 // Given an array of choices (they are strings), returns the choice made by the user
 int get_choice(char choices [][100], int number_of_choices) {
 	int i;
@@ -35,7 +35,7 @@ int get_choice(char choices [][100], int number_of_choices) {
 		}
 	}
 }
-
+*/
 int get_mode() {
 	display_clear();
 	printf("Please select a mode\n");

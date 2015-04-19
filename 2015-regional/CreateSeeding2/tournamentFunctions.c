@@ -21,10 +21,26 @@ void operate_winch(int position) {
 
 void raise_winch() {
 	motor(WINCH_MOTOR, -100);
-	while (!digital(WINCH_LEVER));
+	while (!digital(WINCH_LEVER)) {}
 	freeze(WINCH_MOTOR);
-	//press_a_to_continue();
+	press_a_to_continue();
 }
+
+void lower_winch() {
+	motor(WINCH_MOTOR, 100);
+	while (TRUE) {
+		if (digital(BUTTON_ONE)  || digital(BUTTON_TWO)) {
+			break;
+		}
+	}
+	//freeze(WINCH_MOTOR);
+	//clear_motor_position_counter(WINCH_MOTOR);
+	//motor(WINCH_MOTOR, 25);
+	//while (get_motor_position_counter(WINCH_MOTOR) < WINCH_SECOND_GROUND_POSITION);
+	freeze(WINCH_MOTOR);
+	press_a_to_continue();
+}
+
 
 void open_claw() {
 	set_servo_position(CLAW_SERVO, CLAW_OPEN_POSITION); // TODO: Make claw open slower
