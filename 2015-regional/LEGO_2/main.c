@@ -25,14 +25,47 @@
 void sample_run();
 void turn_test();
 void move_servo_slowly(int servo, int position);
+void start();
 
 int main()
 {
-	initialize_camera();
+	start();
+	score_gold_poms();
 	
-	set_servo_position(PORT, SCOOP_REST_POSITION);
-	enable_servos();
-	//Starts in middle of board
+	return 0;
+}
+
+void score_gold_poms() {
+	// Go forward until at least one of the two reflectance sensors
+	// sees the black line that goes under the Mesa.
+	
+	// Make the robot move so that both reflectance sensors are
+	// on the black line that goes under the Mesa.
+	
+	// Spin clockwise until both reflectance sensors see white.
+	// At this point, those sensors should straddle the black line
+	// that goes under the Mesa.
+	
+	// Line follow to the pink/blue tape (the one that marks the
+	// edge of our side).
+	
+	// Continue until the line sensors are both just past the pink/blue tape,
+	// using a technique similar to how the robot straddled the black line
+	// in a previou step.
+	
+	// Dead-reckon the turn enough to get onto the fat black line.
+	
+	// Line follow, scooping poms.  Get the poms into the scoop.
+	
+	// Line follow backwards (hopefully) until the right point.
+	// Dump to the bin.
+	
+	// Turn 180.
+	
+	// Do the other side of poms.
+}
+
+void old() {
 	set_servo_position(PORT, SCOOP_DOWN_POSITION);
 	msleep(1000);
 	line_follow(FORWARDS, 60, STOP_BY_CAMERA);
@@ -89,6 +122,14 @@ int main()
 	ao();
 	
 	return ZERO;
+}
+
+void start() {
+	initialize_camera();
+	
+	set_servo_position(PORT, SCOOP_REST_POSITION);
+	enable_servos();
+	//Starts in middle of board
 }
 
 void turn_test(){
