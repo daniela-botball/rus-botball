@@ -6,11 +6,14 @@
 
 #define kP 4 //2
 
+extern float L_kP;
+extern float R_Kp;
+
 #define MAXIMUM_SPEED_DEVIATION 10
 #define ET_MAXIMUM_SPEED_DEVIATION 20
 
-#define L_DESIRED_VALUE 800
-#define R_DESIRED_VALUE 800
+extern int L_DESIRED_VALUE; // 800
+extern int R_DESIRED_VALUE; //  800
 
 #define L_TOPHAT 0
 #define R_TOPHAT 1

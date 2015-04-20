@@ -1,5 +1,11 @@
 // Created on Sat April 18 2015
 
+float L_kP = 0.6;
+float R_Kp = 0.6;
+
+int L_DESIRED_VALUE = 650;
+int R_DESIRED_VALUE = 640;
+
 #include "legoMovement.h"
 #include "universal.h"
 #include "lineFollow.h"
@@ -15,26 +21,26 @@ void line_follow(int direction, int desired_speed, int stopping_event) {
 		r_error = R_DESIRED_VALUE - r_reading;
 		
 		l_speed = desired_speed + (l_error * kP);
-		if (l_speed > desired_speed + MAXIMUM_SPEED_DEVIATION) {
-			l_speed = desired_speed + MAXIMUM_SPEED_DEVIATION;
-		} else if (l_speed < desired_speed - MAXIMUM_SPEED_DEVIATION) {
-			l_speed = desired_speed - MAXIMUM_SPEED_DEVIATION;
+		if (l_speed > 100) { //desired_speed + MAXIMUM_SPEED_DEVIATION) {
+			l_speed = 100; // desired_speed + MAXIMUM_SPEED_DEVIATION;
+		} else if (l_speed < 10) { // desired_speed - MAXIMUM_SPEED_DEVIATION) {
+			l_speed = 10; //desired_speed - MAXIMUM_SPEED_DEVIATION;
 		}
 		
 		r_speed = desired_speed + (r_error * kP);
-		if (r_speed > desired_speed + MAXIMUM_SPEED_DEVIATION) {
-			r_speed = desired_speed + MAXIMUM_SPEED_DEVIATION;
-		} else if (r_speed < desired_speed - MAXIMUM_SPEED_DEVIATION) {
-			r_speed = desired_speed - MAXIMUM_SPEED_DEVIATION;
+		if (r_speed > 100) { //desired_speed + MAXIMUM_SPEED_DEVIATION) {
+			r_speed = 100; // desired_speed + MAXIMUM_SPEED_DEVIATION;
+		} else if (r_speed < 10) { // desired_speed - MAXIMUM_SPEED_DEVIATION) {
+			r_speed = 10; //desired_speed - MAXIMUM_SPEED_DEVIATION;
 		}
 		
 		motor(LEFT_MOTOR, ((int) l_speed) * direction);
 		motor(RIGHT_MOTOR, ((int) r_speed) * direction);
-		if (check_stopping_event(stopping_event)) {
-			off(LEFT_MOTOR);
-			off(RIGHT_MOTOR);
-			break;
-		}
+		//if (check_stopping_event(stopping_event)) {
+		//	off(LEFT_MOTOR);
+		//	off(RIGHT_MOTOR);
+		//	break;
+		//}
 	}
 }
 

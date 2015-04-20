@@ -26,6 +26,7 @@ void sample_run();
 void turn_test();
 void move_servo_slowly(int servo, int position);
 void start();
+void score_gold_poms();
 
 int main()
 {
@@ -38,6 +39,25 @@ int main()
 void score_gold_poms() {
 	// Go forward until at least one of the two reflectance sensors
 	// sees the black line that goes under the Mesa.
+	motor(LEFT_MOTOR, 100);
+	motor(RIGHT_MOTOR, 100);
+	
+	while (TRUE) {
+		if (analog(L_TOPHAT) > 750 || analog(R_TOPHAT) > 750) {
+			freeze(LEFT_MOTOR);
+			freeze(RIGHT_MOTOR);
+			break;
+		}
+	}
+	
+	press_a_to_continue();
+	lego_drive_distance(FORWARDS, 3, 100);
+	press_a_to_continue();
+	
+	lego_spin_degrees(RIGHT, 850, 80);
+	press_a_to_continue();
+		
+	line_follow(FORWARDS, 20, STOP_BY_CAMERA);
 	
 	// Make the robot move so that both reflectance sensors are
 	// on the black line that goes under the Mesa.
@@ -78,7 +98,6 @@ void old() {
 	lego_drive_distance(FORWARDS, 5, 20);
 	move_servo_slowly(PORT, SCOOP_UP_POSITION);
 	lego_spin_degrees(RIGHT, 1600, 20);
-	return 0;
 	//Put wait for light code here
 	wall_follow(FORWARDS, 40, STOP_BY_TOPHAT);
 	adjust_onto_line(FORWARDS);
@@ -89,7 +108,6 @@ void old() {
 	lego_spin_degrees(LEFT, 800, 40);
 	
 	
-	return 0;
 	printf("i was made by hannah gabriel and john\n");
 	set_servo_position(PORT, SCOOP_REST_POSITION);
 	enable_servos();
@@ -121,14 +139,18 @@ void old() {
 	printf("the end good bye\n");
 	ao();
 	
-	return ZERO;
 }
 
 void start() {
+	set_mode(PRACTICE_MODE);
 	initialize_camera();
 	
 	set_servo_position(PORT, SCOOP_REST_POSITION);
 	enable_servos();
+	
+	press_a_to_continue();
+	
+	
 	//Starts in middle of board
 }
 

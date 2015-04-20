@@ -6,8 +6,8 @@ void lego_drive_distance(int direction, float distance, float speed) {
 	clear_motor_position_counter(LEFT_MOTOR);
 	clear_motor_position_counter(RIGHT_MOTOR);
 	
-	motor(LEFT_MOTOR, speed * direction);
-	motor(RIGHT_MOTOR, speed * 95 * direction / 100);
+	motor(LEFT_MOTOR, (int) (speed * direction));
+	motor(RIGHT_MOTOR, (int) ((speed * direction  * 90) / 100));
 	
 	while (TRUE) {
 		ticks = get_motor_position_counter(LEFT_MOTOR);
@@ -20,7 +20,7 @@ void lego_drive_distance(int direction, float distance, float speed) {
 	
 	freeze(LEFT_MOTOR);
 	freeze(RIGHT_MOTOR);
-	adjust_drive(direction,distance);
+	//adjust_drive(direction,distance);
 }
 
 void lego_spin_degrees(int direction, int distance, int speed) {
@@ -44,5 +44,5 @@ void lego_spin_degrees(int direction, int distance, int speed) {
 	freeze(LEFT_MOTOR);
 	freeze(RIGHT_MOTOR);
 	
-	adjust_spin(direction,distance);
+	//adjust_spin(direction,distance);
 }

@@ -13,6 +13,7 @@ void set_robot(int robot) {
 
 void set_mode(int mode) {
 	_MODE = mode;
+	_ADJUST = (mode == PRACTICE_MODE);
 }
 /*
 // Given an array of choices (they are strings), returns the choice made by the user
@@ -71,7 +72,7 @@ void press_a_to_continue() {
 	set_b_button_text("B");
 	set_c_button_text("C");
 	
-	printf("Press 'A' to continue\n");
+	printf("Press 'A' to continue\n");	
 	while (!a_button()) {}
 	printf("Hands off!\n");
 	while (a_button()) {}
@@ -108,6 +109,8 @@ void adjust_drive(int direction, int amount) {
 		} else if (choice == C_BUTTON) {
 			create_drive_distance(BACKWARDS, BIG_DRIVE_ADJUST, 10);
 			adjustment -= BIG_DRIVE_ADJUST;
+		} else if (choice == X_BUTTON) {
+			 break;
 		} else if (choice == Y_BUTTON) {
 			create_drive_distance(FORWARDS, SMALL_DRIVE_ADJUST, 10);
 			adjustment += SMALL_DRIVE_ADJUST;
@@ -139,7 +142,9 @@ void adjust_drive(int direction, int amount) {
 	
 	_ADJUST = TRUE;
 	
-	press_a_to_continue();
+	if (choice == X_BUTTON) {
+		press_a_to_continue();
+	}
 }
 
 void adjust_spin(int direction, int amount) {
@@ -170,6 +175,8 @@ void adjust_spin(int direction, int amount) {
 		} else if (choice == C_BUTTON) {
 			create_spin_degrees(LEFT, BIG_SPIN_ADJUST, 10);
 			adjustment -= BIG_DRIVE_ADJUST;
+		} else if (choice == X_BUTTON) {
+			break;
 		} else if (choice == Y_BUTTON) {
 			create_spin_degrees(RIGHT, SMALL_SPIN_ADJUST, 10);
 			adjustment += SMALL_DRIVE_ADJUST;
@@ -201,7 +208,9 @@ void adjust_spin(int direction, int amount) {
 	
 	_ADJUST = TRUE;
 	
-	press_a_to_continue();
+	if (choice == X_BUTTON) {
+		press_a_to_continue();
+	}
 }
 
 int get_choice() {
@@ -264,7 +273,7 @@ void adjust_motor(int motor_port, int position) {
 			motor_to_position(motor_port, -BIG_MOTOR_ADJUST);
 			adjustment -= BIG_MOTOR_ADJUST;
 		} else if (choice == X_BUTTON) {
-			printf("More options is not yet implemented.\n");
+			break;
 		} else if (choice == Y_BUTTON) {
 			motor_to_position(motor_port, SMALL_MOTOR_ADJUST);
 			adjustment += SMALL_MOTOR_ADJUST;
@@ -279,7 +288,9 @@ void adjust_motor(int motor_port, int position) {
 	
 	_ADJUST = TRUE;
 	
-	press_a_to_continue();
+	if (choice == X_BUTTON) {
+		press_a_to_continue();
+	}
 }
 
 void motor_to_position(int motor_port, int position) {
@@ -320,7 +331,7 @@ void adjust_servo(int servo_port, int position) {
 			set_servo_position(servo_port, get_servo_position(servo_port) - BIG_SERVO_ADJUST);
 			adjustment -= BIG_SERVO_ADJUST;
 		} else if (choice == X_BUTTON) {
-			printf("More options is not yet implemented.\n");
+			break;
 		} else if (choice == Y_BUTTON) {
 			set_servo_position(servo_port, get_servo_position(servo_port) + SMALL_SERVO_ADJUST);
 			adjustment += SMALL_SERVO_ADJUST;
@@ -335,15 +346,17 @@ void adjust_servo(int servo_port, int position) {
 	
 	_ADJUST = TRUE;
 	
-	press_a_to_continue();
+	if (choice == X_BUTTON) {
+		press_a_to_continue();
+	}
 }
 
 void set_buttons_for_adjust(char labels [4][20]) {
 	extra_buttons_show();
 	printf("Choose a button.\n");
 	
-	set_a_button_text("Show adjustment");
-	set_x_button_text("More options");
+	set_a_button_text("A (continue)");
+	set_x_button_text("Show adjustment");
 	
 	set_b_button_text(labels[0]);
 	set_c_button_text(labels[1]);

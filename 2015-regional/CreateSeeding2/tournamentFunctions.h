@@ -6,13 +6,11 @@
 
 
 #define WINCH_MOTOR 3
-
 #define CLAW_SERVO 0
 
 #define WINCH_LEVER 8
 
 #define BUTTON_ONE 9
-
 #define BUTTON_TWO 11
 
 #define CLAW_CLOSE_POSITION 1527

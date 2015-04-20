@@ -51,20 +51,15 @@ Aaron will make mechanical changes Saturday.
 Lego robot -- push it forward.
 */
 void score_our_cubes();
+void old_score_our_cubes();
+
 void demo_adjust_functions();
 void start();
 
 int main()
 {
-	// demo_adjust_functions();
-
-	set_mode(PRACTICE_MODE);
 	start();
-	
-	freeze(WINCH_MOTOR);
-	create_drive_until_event(BACKWARDS, 50, BUMP);
-	
-	//score_our_cubes();
+	score_our_cubes();
 	
 	return 0;
 }
@@ -74,25 +69,92 @@ void start() {
 	create_connect();
 	create_full();
 	printf("Connected.\n");
-}
-
-void score_our_cubes() {
 	
+	set_mode(PRACTICE_MODE);
+	press_a_to_continue();
+	set_mode(TOURNAMENT_MODE);
+
 	open_claw();
 	enable_servos();
 	operate_winch(WINCH_MIDDLE_POSITION);
 	
-	//lights on
+	set_mode(PRACTICE_MODE);
+	press_a_to_continue();
 	
+	//lights on
+	 
 	//_MODE = TOURNAMENT_MODE;
 	//_ADJUST = FALSE;
+}
 
+void score_our_cubes() {
+	set_mode(TOURNAMENT_MODE);
+	
+	// Grab 2 cubes on our starting zone line.
+	create_spin_degrees(LEFT, 18, 20); 
+	operate_winch(WINCH_GROUND_POSITION);
+	close_claw();
+	   
+	// Put those 2 cubes into the bin.
+	create_spin_degrees(LEFT, 28, 20);
+	operate_winch(WINCH_DROP_POSITION);
+	create_drive_distance(FORWARDS, 68, 20);
+	open_claw(); 
+	
+	// Back up, lower arm, go under the Mesa and raise arm. 
+	create_drive_distance(BACKWARDS, 50, 30);
+	operate_winch(WINCH_MIDDLE_POSITION);
+		
+	create_spin_degrees(LEFT, 40, 20); // this has been the variable one.  Why?
+	create_drive_distance(FORWARDS, 130, 30);
+	operate_winch(WINCH_DROP_POSITION);
+	
+	// Go forward until the front hits the PVC.  Square up.
+	//set_mode(PRACTICE_MODE);
+	create_drive_distance(FORWARDS, 70, 20);
+	create_drive_distance(FORWARDS, 5, 10);
+
+	// Back up the right amount so that this step ends
+	// in the right position.  Turn right 90 degrees.
+	// Close the claw (so that it does not accidentally grab a pole).
+	// Drive straight until the front hits the PVC.  Square up.
+	
+	create_drive_distance(BACKWARDS, 10, 20);
+	create_spin_degrees(RIGHT, 90, 20);
+	create_drive_until_event(BACKWARDS, 10, BUMP);
+	close_claw();
+	create_drive_distance(FORWARDS, 60, 20);
+	create_drive_distance(FORWARDS, 5, 10);
+	
+	
+	// Grab the 2 cubes on the opponent's starting zone line:
+	//   -- Lower arm to middle position.
+	//   -- Spin right to the cubes.
+	//   -- Open the claw.
+	//   -- Lower arm to ground.
+	//   -- Grab the cubes.
+	operate_winch(WINCH_MIDDLE_POSITION);
+	create_spin_degrees(RIGHT, 15, 10);
+	open_claw();
+	operate_winch(WINCH_GROUND_POSITION);
+	close_claw();
+	
+	// Put those 2 cubes into the bin.
+	
+	// Score the cube on our side of the Mesa and
+	// the 2 gold poms to the left of the BotThing on our side.
+	
+	// If time permits, score ping-pong balls.
+}
+
+void old_score_our_cubes() {
 	//grab the cubes
 	create_spin_degrees(LEFT, 18, 20); 
-	lower_winch();
+	//lower_winch();
 	//operate_winch(WINCH_GROUND_POSITION);
 
 	create_drive_distance(FORWARDS, 8, 10);
+	operate_winch(WINCH_GROUND_POSITION);
 	close_claw();
 		
 	//score our cubes
@@ -105,7 +167,7 @@ void score_our_cubes() {
 	//set_mode(PRACTICE_MODE);
 	
 	//go back from bin
-	create_drive_until_event(BACKWARDS, 20, BUMP);
+	create_drive_until_event(BACKWARDS, 20, BUMP); 
 	
 	// go to other side of board
 	create_spin_degrees(RIGHT, 136, 20);
@@ -124,8 +186,8 @@ void score_our_cubes() {
 	create_drive_distance(BACKWARDS, 8, 20);
 	
 	//grab 2nd cubes 
-	lower_winch();
-	//operate_winch(WINCH_GROUND_POSITION);
+	//lower_winch();
+	operate_winch(WINCH_GROUND_POSITION);
 	create_drive_distance(FORWARDS, 6, 20);
 	create_spin_degrees(RIGHT, 10, 20);
 	msleep(2000); // Why this?
