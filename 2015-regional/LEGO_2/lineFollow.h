@@ -20,7 +20,7 @@ extern int R_DESIRED_VALUE; //  800
 
 #define ET_kP 8
 
-#define ET_DESIRED_VALUE 250
+#define ET_DESIRED_VALUE 500 // was 250
 
 #define ET_SENSOR 2
 

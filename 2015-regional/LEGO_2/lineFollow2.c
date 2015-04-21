@@ -3,20 +3,22 @@
 #include "universal.h"
 
 // MEASURE these.
-#define LEFT_LINE_SENSOR_DESIRED_VALUE 0
-#define RIGHT_LINE_SENSOR_DESIRED_VALUE 0
+#define LEFT_LINE_SENSOR_DESIRED_VALUE 955
+#define RIGHT_LINE_SENSOR_DESIRED_VALUE 980
 
 // MEASURE these.  They are not used in the code
 // but are helpful to know in figuring out the TUNINGs below.
-#define LEFT_LINE_SENSOR_ON_BLACKEST_PLACE 0
-#define RIGHT_LINE_SENSOR_ON_BLACKEST_PLACE 0
+#define LEFT_LINE_SENSOR_ON_MOST_BLACK_PLACE 970
+#define RIGHT_LINE_SENSOR_ON_MOST_BLACK_PLACE 940
+#define LEFT_LINE_SENSOR_ON_MOST_WHITE_PLACE 460
+#define RIGHT_LINE_SENSOR_ON_MIST_WHITE_PLACE 570
 
 // TUNE (choose) these by experimenting to see what works best.
-#define LINE_FOLLOWING_MAXIMUM_SPEED 0
-#define LINE_FOLLOWING_MINIMUM_SPEED 0
-#define LINE_FOLLOWING_NORMAL_SPEED 0
-#define LEFT_kP 0.0
-#define RIGHT_kP 0.0
+#define LINE_FOLLOWING_MAXIMUM_SPEED 60
+#define LINE_FOLLOWING_MINIMUM_SPEED -30
+#define LINE_FOLLOWING_NORMAL_SPEED 30
+#define LEFT_kP 0.05
+#define RIGHT_kP 0.06
 
 // Follow a black line.
 // Assumes two sensors:
@@ -32,9 +34,9 @@ void follow_wide_black_tape_backwards() {
 	LEFT_LINE_SENSOR = L_TOPHAT;
 	RIGHT_LINE_SENSOR = R_TOPHAT;
 	
-	// Turn on the left and right motors.
-	motor(LEFT_MOTOR, LINE_FOLLOWING_NORMAL_SPEED);
-	motor(RIGHT_MOTOR, LINE_FOLLOWING_NORMAL_SPEED);
+	// Turn on the left and right motors.  NEGATIVE since backwards.
+	motor(LEFT_MOTOR, -LINE_FOLLOWING_NORMAL_SPEED);
+	motor(RIGHT_MOTOR, -LINE_FOLLOWING_NORMAL_SPEED);
 
 	while (TRUE) {
 		// The following IF determines when you want line-following to stop.
@@ -68,8 +70,9 @@ void follow_wide_black_tape_backwards() {
 			right_speed = LINE_FOLLOWING_MAXIMUM_SPEED;
 		}
 		
-		motor(LEFT_MOTOR, (int) left_speed);
-		motor(RIGHT_MOTOR, (int) right_speed);
+		// NEGATIVE since backwards.
+		motor(LEFT_MOTOR, (int) -left_speed);
+		motor(RIGHT_MOTOR, (int) -right_speed);
 	}
 	
 	off(LEFT_MOTOR);

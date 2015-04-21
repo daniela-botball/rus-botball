@@ -36,11 +36,11 @@ void line_follow(int direction, int desired_speed, int stopping_event) {
 		
 		motor(LEFT_MOTOR, ((int) l_speed) * direction);
 		motor(RIGHT_MOTOR, ((int) r_speed) * direction);
-		//if (check_stopping_event(stopping_event)) {
-		//	off(LEFT_MOTOR);
-		//	off(RIGHT_MOTOR);
-		//	break;
-		//}
+		if (check_stopping_event(stopping_event)) {
+			off(LEFT_MOTOR);
+			off(RIGHT_MOTOR);
+			break;
+		}
 	}
 }
 

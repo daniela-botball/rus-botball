@@ -27,10 +27,32 @@ void turn_test();
 void move_servo_slowly(int servo, int position);
 void start();
 void score_gold_poms();
+void follow_wide_black_tape_backwards();
 
 int main()
 {
+	analog_et(2);
+	
 	start();
+	
+	move_servo_slowly(PORT, 1100);
+	
+	lego_drive_distance(FORWARDS, 20, 30);
+	
+	clear_motor_position_counter(LEFT_MOTOR);
+	motor(LEFT_MOTOR, -80);
+	motor(RIGHT_MOTOR, 80);
+	while (get_motor_position_counter(LEFT_MOTOR) > -1550) {}
+	freeze(LEFT_MOTOR);
+	freeze(RIGHT_MOTOR);
+	
+	move_servo_slowly(PORT, 248);
+	line_follow(FORWARDS, 60, STOP_BY_ET);
+	
+	//wall_follow(BACKWARDS, 40, STOP_BY_TOPHAT);
+	//follow_wide_black_tape_backwards();
+	return 0;
+	
 	score_gold_poms();
 	
 	return 0;
@@ -108,7 +130,7 @@ void old() {
 	lego_spin_degrees(LEFT, 800, 40);
 	
 	
-	printf("i was made by hannah gabriel and john\n");
+	printf("i was made by hannah gabriel and john leschorn \n");
 	set_servo_position(PORT, SCOOP_REST_POSITION);
 	enable_servos();
 	
