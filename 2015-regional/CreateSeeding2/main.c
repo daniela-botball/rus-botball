@@ -131,7 +131,7 @@ void score_our_cubes() {
 	// ideas like those you learned last night.
 	// Just be sure that the previous step does not break the robot.
 	
-	//set_mode(PRACTICE_MODE);
+	set_mode(PRACTICE_MODE);
 	
 	// ** Darrian, Step 2: ** Write and test the following.
 	// Put those 2 cubes into the bin by:
@@ -140,11 +140,7 @@ void score_our_cubes() {
 	//   -- Spin right the right amount.
 	//   -- Go forward the right amount.
 	//   -- Open the claw.
-	operate_winch(WINCH_DROP_POSITION);
-	create_drive_distance(BACKWARDS, 50, 20);
-	create_spin_degrees(RIGHT, 35, 20);
-	create_drive_distance(FORWARDS, 60, 20);
-	open_claw();
+	
 	
 	// ** Darrian, Step 3: ** AFTER getting Step 2 to work reliably,
 	//                        write and test the following.
