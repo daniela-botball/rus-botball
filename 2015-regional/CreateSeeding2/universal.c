@@ -363,3 +363,68 @@ void set_buttons_for_adjust(char labels [4][20]) {
 	set_y_button_text(labels[2]);
 	set_z_button_text(labels[3]);
 }
+
+void initialize_camera() {
+	printf("Initializing camera\n");
+	camera_open();
+	int i;
+	for (i =0; i < 30; i++) {
+		camera_update();
+	}
+	display_clear();
+	printf("Camera is initialized!\n");
+}
+
+// Spin the Create in the specified direction at the specified speed (degrees per second)
+// until the x-coordinate of the center of the biggest box
+// of the specified color is close to the specified x.
+// Ignore blobs that are less than the given area.
+// If overshoot, switch direction.
+// ASSUMES CAMERA IS UPSIDE DOWN.
+void center_on_x(int direction, int speed, int color, int desired_x, int minimum_area, int delta) {
+	int x;
+	
+	camera_update();
+	create_spin(speed, direction);
+	
+	while (TRUE) {
+		camera_update();
+		if (get_object_count(color) == 0 || get_object_area(color, 0) < minimum_area) {
+			continue;
+		}
+		x = get_object_center(color, 0).x;
+		printf("Looking for %3i.  X is %3i.\n", desired_x, x);
+		
+		if (direction == RIGHT) {
+			if (x < desired_x - delta) {
+				continue;
+			} else if (x <= desired_x + delta) {
+				create_halt();
+				break;
+			} else {
+				direction = -direction;
+				create_spin(speed, direction);
+			}
+		} else {
+			if (x > desired_x + delta) {
+				continue;
+			} else if (x <= desired_x - delta) {
+				create_halt();
+				break;
+			} else {
+				direction = -direction;
+				create_spin(speed, direction);
+			}
+		}
+	}
+}
+
+#define PINK 1
+
+void go_to_cube() {
+	while (TRUE) {
+		center_on_x(RIGHT, 2, PINK, 79, 200, 2);
+		create_drive_distance(FORWARDS, 8, 20);
+		press_a_to_continue();
+	}
+}

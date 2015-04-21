@@ -47,5 +47,7 @@ int get_choice();
 void set_buttons_for_adjust(char labels [4][20]);
 
 void initialize_camera();
+void center_on_x(int direction, int speed, int color, int desired_x, int minimum_area, int delta);
+void go_to_cube();
 
 #endif

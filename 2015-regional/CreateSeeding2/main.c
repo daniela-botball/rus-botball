@@ -56,28 +56,41 @@ void old_score_our_cubes();
 void demo_adjust_functions();
 void start();
 
+#define ORANGE 3
+
 int main()
 {
+	initialize_camera();
+	
+	printf("Trying to connect...\n");
+	create_connect();
+	create_full();
+	printf("Connected.\n");
+	
+	set_mode(PRACTICE_MODE);
+	go_to_cube();
+	return;
+	
+	int direction = LEFT;
+	while (! a_button()) {
+		center_on_x(direction, 2, ORANGE, 80, 200, 1);
+		press_a_to_continue();
+		direction = -direction;
+	}
+	return 0;
+	
 	rectangle mybox;
 	start();
-	camera_open();
-	camera_update();
-	camera_update();
-	camera_update();
-	camera_update();
-	camera_update();
-	camera_update();
-	camera_update();
-	camera_update();
-	camera_update();
-	camera_update();
+	
+	
+	
 	operate_winch(WINCH_MIDDLE_POSITION);
 	set_mode(PRACTICE_MODE);
 	press_a_to_continue();
 	create_spin(LEFT,2);
 	while (TRUE){
 		camera_update();
-		if (get_object_count == 0) {
+		if (get_object_count(0) == 0) {
 			continue;
 		}
 		
