@@ -46,4 +46,6 @@ void motor_to_position(int motor_port, int position);
 int get_choice();
 void set_buttons_for_adjust(char labels [4][20]);
 
+void initialize_camera();
+
 #endif

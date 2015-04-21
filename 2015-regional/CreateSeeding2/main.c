@@ -58,8 +58,40 @@ void start();
 
 int main()
 {
+	rectangle mybox;
 	start();
-	score_our_cubes();
+	camera_open();
+	camera_update();
+	camera_update();
+	camera_update();
+	camera_update();
+	camera_update();
+	camera_update();
+	camera_update();
+	camera_update();
+	camera_update();
+	camera_update();
+	operate_winch(WINCH_MIDDLE_POSITION);
+	set_mode(PRACTICE_MODE);
+	press_a_to_continue();
+	create_spin(LEFT,2);
+	while (TRUE){
+		camera_update();
+		if (get_object_count == 0) {
+			continue;
+		}
+		
+		mybox = get_object_bbox(0,0);
+		
+		printf("x coord %4d y coord %4d\n", mybox.ulx, mybox.uly);
+		if (mybox.ulx<30) {
+			create_halt();
+			break;
+		}
+		//msleep(1000);
+	}
+	
+	//score_our_cubes();
 	
 	return 0;
 }
@@ -72,13 +104,22 @@ void start() {
 	
 	set_mode(PRACTICE_MODE);
 	press_a_to_continue();
-	set_mode(TOURNAMENT_MODE);
-
+    set_mode(TOURNAMENT_MODE);
 	open_claw();
 	enable_servos();
 	operate_winch(WINCH_MIDDLE_POSITION);
-	
+	create_spin_degrees(LEFT,18,20);
+	operate_winch(WINCH_GROUND_POSITION);
 	set_mode(PRACTICE_MODE);
+	press_a_to_continue();
+	close_claw();
+	press_a_to_continue();
+	open_claw();
+	set_mode(TOURNAMENT_MODE);
+	operate_winch(WINCH_MIDDLE_POSITION);
+	create_spin_degrees(RIGHT,18,20);
+	set_mode(PRACTICE_MODE);
+	
 	press_a_to_continue();
 	
 	//lights on
@@ -119,12 +160,12 @@ void score_our_cubes() {
 	// Close the claw (so that it does not accidentally grab a pole).
 	// Drive straight until the front hits the PVC.  Square up.
 	
-	create_drive_distance(BACKWARDS, 10, 20);
+	create_drive_distance(BACKWARDS, 9, 20);
 	create_spin_degrees(RIGHT, 90, 20);
 	create_drive_until_event(BACKWARDS, 10, BUMP);
 	close_claw();
 	create_drive_distance(FORWARDS, 60, 20);
-	create_drive_distance(FORWARDS, 5, 10);
+	create_drive_distance(FORWARDS, 7, 10);
 	
 	
 	// Grab the 2 cubes on the opponent's starting zone line:
