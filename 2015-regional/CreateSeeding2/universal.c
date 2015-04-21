@@ -59,6 +59,15 @@ int get_mode() {
 	}
 }
 
+void pause_for_sure() {
+	int current_mode;
+
+	current_mode = _MODE;
+	set_mode(PRACTICE_MODE);
+	press_a_to_continue();
+	set_mode(current_mode);
+}
+
 void press_a_to_continue() {
 	if (_MODE == TOURNAMENT_MODE) {
 		if (_TOURNAMENT_SLEEP > 0) {

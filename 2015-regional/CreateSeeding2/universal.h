@@ -35,6 +35,7 @@ int get_mode();
 void set_robot(int robot);
 void set_mode(int mode);
 void press_a_to_continue();
+void pause_for_sure();
 
 void adjust_drive(int direction, int amount);
 void adjust_spin(int direction, int amount);
