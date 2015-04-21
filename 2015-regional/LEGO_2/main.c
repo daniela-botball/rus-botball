@@ -27,13 +27,14 @@ void turn_test();
 void move_servo_slowly(int servo, int position);
 void start();
 void score_gold_poms();
-void follow_wide_black_tape_backwards();
+void follow_black_line();
 
 int main()
 {
-	analog_et(2);
-	
 	start();
+	score_gold_poms();
+	
+	return;
 	
 	move_servo_slowly(PORT, 1100);
 	
@@ -53,7 +54,7 @@ int main()
 	//follow_wide_black_tape_backwards();
 	return 0;
 	
-	score_gold_poms();
+	
 	
 	return 0;
 }
@@ -62,7 +63,7 @@ void score_gold_poms() {
 	// Go forward until at least one of the two reflectance sensors
 	// sees the black line that goes under the Mesa.
 	motor(LEFT_MOTOR, 100);
-	motor(RIGHT_MOTOR, 100);
+	motor(RIGHT_MOTOR, 95);
 	
 	while (TRUE) {
 		if (analog(L_TOPHAT) > 750 || analog(R_TOPHAT) > 750) {
@@ -76,10 +77,26 @@ void score_gold_poms() {
 	lego_drive_distance(FORWARDS, 3, 100);
 	press_a_to_continue();
 	
-	lego_spin_degrees(RIGHT, 850, 80);
+	lego_spin_degrees(RIGHT, 800, 80);
 	press_a_to_continue();
-		
-	line_follow(FORWARDS, 20, STOP_BY_CAMERA);
+	
+	follow_black_line();
+	press_a_to_continue();
+	
+	lego_drive_distance(FORWARDS, 15, 30);
+	press_a_to_continue();
+	
+	lego_spin_degrees(RIGHT, 425, 80);
+	press_a_to_continue();
+	
+	lego_drive_distance(FORWARDS, 10, 30);
+	press_a_to_continue();
+	
+	lego_spin_degrees(RIGHT, 425, 80);
+	press_a_to_continue();
+	
+	
+	//line_follow(FORWARDS, 20, STOP_BY_ET);
 	
 	// Make the robot move so that both reflectance sensors are
 	// on the black line that goes under the Mesa.
@@ -164,8 +181,9 @@ void old() {
 }
 
 void start() {
+	// analog_et(2); // not needed???
 	set_mode(PRACTICE_MODE);
-	initialize_camera();
+	//initialize_camera();
 	
 	set_servo_position(PORT, SCOOP_REST_POSITION);
 	enable_servos();
