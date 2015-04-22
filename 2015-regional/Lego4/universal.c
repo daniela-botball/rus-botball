@@ -319,7 +319,7 @@ void initialize_camera() {
 	printf("Camera is initialized!\n");
 }
 
-int get_mode() {
+int ask_for_mode() {
 	display_clear();
 	printf("Please select a mode\n");
 	set_a_button_text("Tournament Mode");
@@ -348,4 +348,12 @@ void pause_for_sure() {
 	set_mode(PRACTICE_MODE);
 	press_a_to_continue();
 	set_mode(current_mode);
+}
+
+int greater_than(int x, int y) {
+	return (x > y);
+}
+
+int less_than(int x, int y) {
+	return (x < y);
 }

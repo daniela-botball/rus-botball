@@ -16,16 +16,16 @@
 #define GREATER_THAN 1
 
 // Measure these:
-#define LEFT_SENSOR_ON_BLACK_DIVIDER 840
-#define RIGHT_SENSOR_ON_BLACK_DIVIDER 820
+#define LEFT_SENSOR_ON_BLACK_DIVIDER 750 // on blue: 840
+#define RIGHT_SENSOR_ON_BLACK_DIVIDER 750 // on blue: 820
 #define LEFT_SENSOR_ON_WHITE 460
 #define RIGHT_SENSOR_ON_WHITE 530
 
 // MEASURE these:
-#define LEFT_LINE_SENSOR_DESIRED_VALUE_ON_FRP 633 // on thick line: 955
-#define RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_FRP 658 // on thick line: 980
-#define LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE 955 // on thick line: 955
-#define RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE 980 // on thick line: 980
+#define LEFT_LINE_SENSOR_DESIRED_VALUE_ON_FRP 640 // on blue: 633 // on thick line: 955
+#define RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_FRP 670 // on blue: 658 // on thick line: 980
+#define LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE 970
+#define RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE 985
 
 // MEASURE these.  They are not used in the code
 // but are helpful to know in figuring out the TUNINGs below.
@@ -37,11 +37,17 @@
 // TUNE (choose) these by experimenting to see what works best.
 #define LINE_FOLLOWING_MAXIMUM_SPEED 80
 #define LINE_FOLLOWING_MINIMUM_SPEED 5
-#define LINE_FOLLOWING_NORMAL_SPEED 30
+#define LINE_FOLLOWING_NORMAL_SPEED 20
 #define LEFT_kP_FOR_FRP 0.5
 #define RIGHT_kP_FOR_FRP 0.5
+#define LEFT_kP_FOR_WIDE_TAPE 0.15
+#define RIGHT_kP_FOR_WIDE_TAPE 0.15
 
-void follow_black_line(int normal_speed, int minimum_speed, int maximum_speed, int left_desired_value, int right_desired_value, float left_kP, float right_kP);
-void go_until(int direction, int speed, int sensor, int comparison, int threshold);
+#define ORANGE 0
+
+void follow_black_line(int normal_speed, int minimum_speed, int maximum_speed, int left_desired_value, int right_desired_value, float left_kP, float right_kP, int (*stopping_function)());
+void go_until(int direction, int speed, int sensor, int (*comparator)(int, int), int threshold);
+int ET_stop();
+int camera_stop();
 
 #endif

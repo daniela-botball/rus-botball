@@ -42,7 +42,7 @@ void start() {
 	initialize_camera();
 	
 	// Human operator selects TOURNAMENT or PRACTICE mode.
-	set_mode(get_mode());
+	set_mode(ask_for_mode());
 	pause_for_sure();
 	
 	// Set the robot into its starting position.
@@ -56,7 +56,7 @@ void start() {
 	pause_for_sure();
 	
 	// Now the starting-light protocol:
-	wait_for_light(STARTING_LIGHT_PORT);
+	// wait_for_light(STARTING_LIGHT_PORT);
 	
 	if (_MODE == TOURNAMENT_MODE) {
 		_ADJUST = FALSE;
@@ -67,26 +67,31 @@ void start() {
 }
 
 void score_gold_poms() {
-	set_mode(TOURNAMENT_MODE); // Next steps should work OK, I think.
+	set_mode(TOURNAMENT_MODE); // For now.
 	
 	// Raise the scoop to its moving position.
 	// Go forward until the left sensor sees the black line that goes under the Mesa.
 	set_servo_position(PORT, SCOOP_REST_POSITION);
-	go_until(FORWARDS, 100, L_TOPHAT, GREATER_THAN, LEFT_SENSOR_ON_BLACK_DIVIDER - 100);
+	go_until(FORWARDS, 100, L_TOPHAT, greater_than, LEFT_SENSOR_ON_BLACK_DIVIDER - 100);
 	press_a_to_continue();
-
+	
+	// Move into the cave
 	lego_drive_distance(FORWARDS, 6, 100);
 	press_a_to_continue();
 	
 	lego_spin_degrees(RIGHT, 800, 80);
 	press_a_to_continue();
 	
-	follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED, LEFT_LINE_SENSOR_DESIRED_VALUE_ON_FRP, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_FRP, LEFT_kP_FOR_FRP, RIGHT_kP_FOR_FRP);
+	follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
+						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_FRP, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_FRP,
+						LEFT_kP_FOR_FRP, RIGHT_kP_FOR_FRP, ET_stop);
+						
 	press_a_to_continue();
 	
 	lego_drive_distance(FORWARDS, 15, 30);
 	press_a_to_continue();
 	
+	//Adjust onto black line -- TODO: use sensors for adjustments
 	lego_spin_degrees(RIGHT, 425, 80);
 	press_a_to_continue();
 	
@@ -96,35 +101,10 @@ void score_gold_poms() {
 	lego_spin_degrees(RIGHT, 300, 80);
 	press_a_to_continue();
 	
-	pause_for_sure();
-	set_mode(PRACTICE_MODE);
-	
-	//line_follow(FORWARDS, 20, STOP_BY_ET);
-	
-	// Make the robot move so that both reflectance sensors are
-	// on the black line that goes under the Mesa.
-	
-	// Spin clockwise until both reflectance sensors see white.
-	// At this point, those sensors should straddle the black line
-	// that goes under the Mesa.
-	
-	// Line follow to the pink/blue tape (the one that marks the
-	// edge of our side).
-	
-	// Continue until the line sensors are both just past the pink/blue tape,
-	// using a technique similar to how the robot straddled the black line
-	// in a previou step.
-	
-	// Dead-reckon the turn enough to get onto the fat black line.
-	
-	// Line follow, scooping poms.  Get the poms into the scoop.
-	
-	// Line follow backwards (hopefully) until the right point.
-	// Dump to the bin.
-	
-	// Turn 180.
-	
-	// Do the other side of poms.
+	// Pick up first four poms
+	follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
+						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE,
+						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, camera_stop);
 }
 
 /*

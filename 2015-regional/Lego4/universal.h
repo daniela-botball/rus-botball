@@ -34,7 +34,7 @@ extern int _TOURNAMENT_SLEEP;
 void set_robot(int robot);
 void set_mode(int mode);
 void press_a_to_continue();
-int get_mode();
+int ask_for_mode();
 void pause_for_sure();
 
 void adjust_drive(int direction, int amount);
@@ -48,5 +48,8 @@ int get_choice();
 void set_buttons_for_adjust(char labels [4][20]);
 
 void initialize_camera();
+
+int greater_than(int x, int y);
+int less_than(int x, int y);
 
 #endif
