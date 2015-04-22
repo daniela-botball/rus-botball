@@ -24,6 +24,8 @@ int main()
 
 // Things to happen BEFORE lights-off.
 void start() {
+	int mode_human_chose;
+	
 	// Connect to the Create.
 	printf("Trying to connect...\n");
 	create_connect();
@@ -34,6 +36,7 @@ void start() {
 	
 	// Human operator selects TOURNAMENT or PRACTICE mode.
 	set_mode(get_mode());
+	mode_human_chose = _MODE;
 	
 	// Set the robot into its starting position.
 	// The human operator should:
@@ -41,7 +44,6 @@ void start() {
 	//   -- And put the two cubes in the right position for the claw.
 	//   -- When the claw grabs and then releases the cubes, do a final adjustment of the cubes position.
 	pause_for_sure();
-	
 	set_mode(TOURNAMENT_MODE);
 	
 	open_claw();
@@ -63,6 +65,9 @@ void start() {
 	create_spin_degrees(RIGHT, STARTING_ANGLE, 20);
 	pause_for_sure();
 	
+	// Back to the human's choice of mode:
+	set_mode(mode_human_chose);
+	
 	// Now the starting-light protocol:
 	wait_for_light(STARTING_LIGHT_PORT);
 	
@@ -75,7 +80,7 @@ void start() {
 }
 
 void score_our_cubes() {
-	set_mode(TOURNAMENT_MODE); // This first part works fine, I think.
+	//set_mode(TOURNAMENT_MODE); // This first part works fine, I think.
 	
 	// Grab 2 cubes on our starting zone line.
 	create_spin_degrees(LEFT, STARTING_ANGLE, 20); 
@@ -87,6 +92,15 @@ void score_our_cubes() {
 	operate_winch(WINCH_DROP_POSITION);
 	create_drive_distance(FORWARDS, 68, 20);
 	open_claw(); 
+	
+	// get cube on mesa into bin.
+	create_drive_distance(BACKWARDS,10,20);
+	create_spin_degrees(LEFT,5,20);
+	operate_winch(WINCH_MESA_POSITION);
+	//create_drive_distance(FORWARDS,8,20);
+	close_claw();
+	create_spin_degrees(RIGHT,5,20);
+	open_claw();
 	
 	// Back up, lower arm, go under the Mesa and raise arm. 
 	create_drive_distance(BACKWARDS, 50, 30);
@@ -119,7 +133,7 @@ void score_our_cubes() {
 	//   -- Lower arm to ground.
 	//   -- Grab the cubes.
 	operate_winch(WINCH_MIDDLE_POSITION);
-	create_spin_degrees(RIGHT, 13, 10);
+	create_spin_degrees(RIGHT, 15, 10);
 	open_claw();
 	operate_winch(WINCH_GROUND_POSITION);
 	close_claw();
@@ -140,7 +154,12 @@ void score_our_cubes() {
 	//   -- Spin right the right amount.
 	//   -- Go forward the right amount.
 	//   -- Open the claw.
-	
+	operate_winch(WINCH_DROP_POSITION);
+	create_drive_distance(BACKWARDS, 43, 20);
+	create_spin_degrees(RIGHT, 35, 20);
+	create_drive_distance(FORWARDS, 47, 20);
+	create_spin_degrees(RIGHT, 5, 20);
+	open_claw();
 	
 	// ** Darrian, Step 3: ** AFTER getting Step 2 to work reliably,
 	//                        write and test the following.

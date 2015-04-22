@@ -20,6 +20,7 @@
 #define WINCH_MIDDLE_POSITION 2100 // was 1700 //was 330, then 630, then 930
 #define WINCH_DROP_POSITION 0
 #define WINCH_SECOND_GROUND_POSITION 800
+#define WINCH_MESA_POSITION 400
 
 void operate_winch(int position);
 void open_claw();
