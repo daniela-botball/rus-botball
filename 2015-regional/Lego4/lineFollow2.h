@@ -45,9 +45,14 @@
 
 #define ORANGE 0
 
+#define PINGPONG_THRESHOLD 1000
+
 void follow_black_line(int normal_speed, int minimum_speed, int maximum_speed, int left_desired_value, int right_desired_value, float left_kP, float right_kP, int (*stopping_function)());
-void go_until(int direction, int speed, int sensor, int (*comparator)(int, int), int threshold);
+void drive_until(int direction, int speed, int sensor, int (*comparator)(int, int), int threshold);
+void spin_until(int direction, int speed, int sensor, int (*comparator)(int, int), int threshold);
+void turn_around_on_black_line(int direction, int speed);
 int ET_stop();
 int camera_stop();
-
+int camera_with_time_stop();
+int wall_opening_stop();
 #endif

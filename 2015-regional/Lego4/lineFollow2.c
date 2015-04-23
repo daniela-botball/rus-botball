@@ -1,7 +1,7 @@
 #include "legoMovement.h"
 #include "universal.h"
 #include "lineFollow2.h"
-
+#include "timing.h"
 // Follow a black line.
 // Assumes two sensors:
 //   -- LEFT_LINE_SENSOR controlling the LEFT_MOTOR speed
@@ -74,15 +74,15 @@ void follow_black_line(int normal_speed, int minimum_speed, int maximum_speed, i
 // goes in specified direction at specified speed
 // until given sensor is <comparison> given threshold.
 
-void go_until(int direction, int speed, int sensor, int (*comparator)(int, int), int threshold) {
+void drive_until(int direction, int speed, int sensor, int (*comparator)(int, int), int threshold) {
 	int left_speed, right_speed;
 	
 	if (direction == FORWARDS || direction == BACKWARDS) {
 		left_speed = speed * direction;
 		right_speed = speed * direction;
 	} else {
-		left_speed = speed * direction;
-		right_speed = -(speed * direction);	
+		right_speed = speed * direction;
+		left_speed = -(speed * direction);	
 	}
 	
 	motor(LEFT_MOTOR, left_speed);
@@ -96,6 +96,36 @@ void go_until(int direction, int speed, int sensor, int (*comparator)(int, int),
 	
 	freeze(LEFT_MOTOR);
 	freeze(RIGHT_MOTOR);
+}
+
+void spin_until(int direction, int speed, int sensor, int (*comparator)(int, int), int threshold) {
+	int left_speed, right_speed;
+	
+	if (direction == LEFT || direction == RIGHT) {
+		left_speed = speed * direction;
+		right_speed = -speed * direction;
+	}
+	
+	motor(LEFT_MOTOR, left_speed);
+	motor(RIGHT_MOTOR, right_speed);
+	
+	while (TRUE) {
+		if (comparator(analog(sensor), threshold)) {
+			break;
+		}
+	}
+	
+	freeze(LEFT_MOTOR);
+	freeze(RIGHT_MOTOR);
+}
+
+void turn_around_on_black_line(int direction, int speed) {
+	msleep(500);
+	spin_until(direction, speed, L_TOPHAT, less_than, LEFT_SENSOR_ON_WHITE);
+	msleep(200);
+	spin_until(direction, speed, L_TOPHAT, greater_than, LEFT_SENSOR_ON_BLACK_DIVIDER);
+	msleep(200);
+	spin_until(direction, speed, L_TOPHAT, less_than, LEFT_SENSOR_ON_WHITE);
 }
 
 int _count = 0;
@@ -114,7 +144,37 @@ int ET_stop() {
 	}
 }
 
+int wall_opening_stop() {
+	if (analog_et(ET_SENSOR) < 350) {
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
+
 int camera_stop() {
 	camera_update();
-	return (get_object_count(ORANGE) > 0 && get_object_area(ORANGE, 0) > 1000);
+	display_printf(0, 0, "Object size: %4i", get_object_area(ORANGE, 0));
+	return (get_object_count(ORANGE) > 0 && get_object_area(ORANGE, 0) > PINGPONG_THRESHOLD);
+}
+
+int camera_with_time_stop() {
+	
+	if (a_button()) {
+		return 1;
+	} else {
+		return 0;
+	}
+	
+	if (check_timer(0) < 0) {
+		start_timer(0);
+		display_clear();
+	} else if (check_timer(0) > 5) {
+		camera_update();
+		display_printf(0, 0, "Object size: %4i", get_object_area(ORANGE, 0));
+		return (get_object_count(ORANGE) > 0 && get_object_area(ORANGE, 0) > PINGPONG_THRESHOLD);
+	} else {
+		return FALSE;
+	}
+	
 }

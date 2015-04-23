@@ -11,9 +11,10 @@
 #define SCOOP_UP_POSITION 2000
 #define SCOOP_REST_POSITION 248
 #define SCOOP_START_POSITION 150
-#define SCOOP_DOWN_POSITION 65
+#define SCOOP_TURN_POSITION 1050
+#define SCOOP_DOWN_POSITION 50
 #define NINETY_DEGREES 800
-#define ONE_EIGHTY_DEGREES 1600
+#define ONE_EIGHTY_DEGREES 1400
 #define HALF 1500
 #define TO_MIDDLE_OF_BOARD 5300
 #define TO_THE_OTHER_SIDE_OF_BOARD 11400
@@ -39,6 +40,7 @@ int main() {
 
 // Things to happen BEFORE lights-off.
 void start() {
+	
 	initialize_camera();
 	
 	// Human operator selects TOURNAMENT or PRACTICE mode.
@@ -66,13 +68,15 @@ void start() {
 	}
 }
 
+
+
 void score_gold_poms() {
 	set_mode(TOURNAMENT_MODE); // For now.
 	
 	// Raise the scoop to its moving position.
 	// Go forward until the left sensor sees the black line that goes under the Mesa.
 	set_servo_position(PORT, SCOOP_REST_POSITION);
-	go_until(FORWARDS, 100, L_TOPHAT, greater_than, LEFT_SENSOR_ON_BLACK_DIVIDER - 100);
+	drive_until(FORWARDS, 100, L_TOPHAT, greater_than, LEFT_SENSOR_ON_BLACK_DIVIDER - 100);
 	press_a_to_continue();
 	
 	// Move into the cave
@@ -88,23 +92,81 @@ void score_gold_poms() {
 						
 	press_a_to_continue();
 	
-	lego_drive_distance(FORWARDS, 15, 30);
+	lego_drive_distance(FORWARDS, 13, 30);
 	press_a_to_continue();
 	
-	//Adjust onto black line -- TODO: use sensors for adjustments
+	//Adjust onto black line
 	lego_spin_degrees(RIGHT, 425, 80);
 	press_a_to_continue();
 	
-	lego_drive_distance(FORWARDS, 10, 30);
+	drive_until(FORWARDS, 100, R_TOPHAT, greater_than, RIGHT_SENSOR_ON_BLACK_DIVIDER - 100);
+	drive_until(FORWARDS, 100, L_TOPHAT, greater_than, LEFT_SENSOR_ON_BLACK_DIVIDER - 100);
+	lego_drive_distance(FORWARDS, 6, 40);
 	press_a_to_continue();
 	
 	lego_spin_degrees(RIGHT, 300, 80);
 	press_a_to_continue();
+	set_servo_position(PORT, SCOOP_DOWN_POSITION);
+	msleep(200);
 	
 	// Pick up first four poms
 	follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
 						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE,
 						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, camera_stop);
+	lego_drive_distance(FORWARDS, 3, 40);
+						
+	// Drop of first four poms
+	lego_drive_distance(BACKWARDS, 7, 30);
+	move_servo_slowly(PORT, SCOOP_TURN_POSITION); 
+	lego_drive_distance(FORWARDS, 10, 30);
+	lego_spin_degrees(LEFT, ONE_EIGHTY_DEGREES, 40);
+	
+	move_servo_slowly(PORT, SCOOP_REST_POSITION);
+	
+	follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
+						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE,
+						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, wall_opening_stop);
+						
+	
+	lego_drive_distance(FORWARDS, 28, 70);				
+	/*follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
+						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE,
+						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, ET_stop);*/
+	
+	set_servo_position(PORT, SCOOP_UP_POSITION);
+	msleep(2000);
+	
+	// On to the second set of four poms
+	
+	move_servo_slowly(PORT, SCOOP_DOWN_POSITION);
+	
+	follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
+						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE,
+						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, camera_stop);
+	lego_drive_distance(FORWARDS, 3, 40);
+						
+	// Drop of first four poms
+	lego_drive_distance(BACKWARDS, 7, 30);
+	move_servo_slowly(PORT, SCOOP_TURN_POSITION); 
+	lego_drive_distance(FORWARDS, 10, 30);
+	lego_spin_degrees(LEFT, ONE_EIGHTY_DEGREES, 40);
+	
+	move_servo_slowly(PORT, SCOOP_REST_POSITION);
+	
+	follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
+						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE,
+						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, wall_opening_stop);
+						
+	
+	lego_drive_distance(FORWARDS, 28, 70);				
+	/*follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
+						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE,
+						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, ET_stop);*/
+	
+	set_servo_position(PORT, SCOOP_UP_POSITION);
+	msleep(2000);
+	
+						
 }
 
 /*
