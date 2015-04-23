@@ -18,6 +18,10 @@ void follow_black_line(int normal_speed, int minimum_speed, int maximum_speed, i
 	RIGHT_LINE_SENSOR = R_TOPHAT;
 	
 	display_clear();
+	int i;
+	for (i = 0; i < 15; i++) { 
+		camera_update();
+	}
 	
 	// Turn on the left and right motors.  NEGATIVE since backwards.
 	motor(LEFT_MOTOR, normal_speed);
@@ -177,4 +181,14 @@ int camera_with_time_stop() {
 		return FALSE;
 	}
 	
+}
+
+int time_stop() {
+	if (check_timer(0) < 0) {
+		start_timer(0);
+		display_clear();
+	} else if (check_timer(0) > 5) {
+		return TRUE;
+	}
+	return FALSE;
 }

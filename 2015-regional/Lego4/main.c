@@ -8,11 +8,11 @@
 
 //#define OPEN 555
 //#define CLOSE 1235
-#define SCOOP_UP_POSITION 2000
-#define SCOOP_REST_POSITION 248
-#define SCOOP_START_POSITION 150
-#define SCOOP_TURN_POSITION 1050
-#define SCOOP_DOWN_POSITION 50
+#define SCOOP_UP_POSITION 1600 //2047
+#define SCOOP_REST_POSITION 220
+#define SCOOP_START_POSITION SCOOP_DOWN_POSITION
+#define SCOOP_TURN_POSITION 975 //1120
+#define SCOOP_DOWN_POSITION 135
 #define NINETY_DEGREES 800
 #define ONE_EIGHTY_DEGREES 1400
 #define HALF 1500
@@ -62,6 +62,7 @@ void start() {
 	
 	if (_MODE == TOURNAMENT_MODE) {
 		_ADJUST = FALSE;
+		wait_for_light(3);
 		shut_down_in(119);
 	} else {
 		_ADJUST = TRUE;
@@ -71,7 +72,6 @@ void start() {
 
 
 void score_gold_poms() {
-	set_mode(TOURNAMENT_MODE); // For now.
 	
 	// Raise the scoop to its moving position.
 	// Go forward until the left sensor sees the black line that goes under the Mesa.
@@ -116,7 +116,7 @@ void score_gold_poms() {
 	lego_drive_distance(FORWARDS, 3, 40);
 						
 	// Drop of first four poms
-	lego_drive_distance(BACKWARDS, 7, 30);
+	lego_drive_distance(BACKWARDS, 7, 20);
 	move_servo_slowly(PORT, SCOOP_TURN_POSITION); 
 	lego_drive_distance(FORWARDS, 10, 30);
 	lego_spin_degrees(LEFT, ONE_EIGHTY_DEGREES, 40);
@@ -128,12 +128,12 @@ void score_gold_poms() {
 						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, wall_opening_stop);
 						
 	
-	lego_drive_distance(FORWARDS, 28, 70);				
+	lego_drive_distance(FORWARDS, 32, 80);				
 	/*follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
 						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE,
 						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, ET_stop);*/
 	
-	set_servo_position(PORT, SCOOP_UP_POSITION);
+	move_servo_slowly(PORT, SCOOP_UP_POSITION); //set_servo_position(PORT, SCOOP_UP_POSITION);
 	msleep(2000);
 	
 	// On to the second set of four poms
@@ -142,11 +142,15 @@ void score_gold_poms() {
 	
 	follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
 						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE,
+						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, time_stop);
+						
+	follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
+						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE,
 						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, camera_stop);
 	lego_drive_distance(FORWARDS, 3, 40);
 						
-	// Drop of first four poms
-	lego_drive_distance(BACKWARDS, 7, 30);
+	// Drop of second four poms
+	lego_drive_distance(BACKWARDS, 7, 20);
 	move_servo_slowly(PORT, SCOOP_TURN_POSITION); 
 	lego_drive_distance(FORWARDS, 10, 30);
 	lego_spin_degrees(LEFT, ONE_EIGHTY_DEGREES, 40);
@@ -158,13 +162,13 @@ void score_gold_poms() {
 						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, wall_opening_stop);
 						
 	
-	lego_drive_distance(FORWARDS, 28, 70);				
+	lego_drive_distance(FORWARDS, 32, 80);				
 	/*follow_black_line(LINE_FOLLOWING_NORMAL_SPEED, LINE_FOLLOWING_MINIMUM_SPEED, LINE_FOLLOWING_MAXIMUM_SPEED,
 						LEFT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE, RIGHT_LINE_SENSOR_DESIRED_VALUE_ON_WIDE_TAPE,
 						LEFT_kP_FOR_WIDE_TAPE, RIGHT_kP_FOR_WIDE_TAPE, ET_stop);*/
 	
-	set_servo_position(PORT, SCOOP_UP_POSITION);
-	msleep(2000);
+	move_servo_slowly(PORT, SCOOP_UP_POSITION); //set_servo_position(PORT, SCOOP_UP_POSITION);
+	msleep(5000);
 	
 						
 }
@@ -262,12 +266,12 @@ void move_servo_slowly(int servo, int position) {
 	if (position > starting_position) {
 		for (current_position = starting_position; current_position <= position; current_position = current_position + 5) {
 			set_servo_position(servo, current_position);
-			msleep(20);
+			msleep(15);
 		}			
 	} else if (position < starting_position) {
 		for (current_position = starting_position; current_position >= position; current_position = current_position - 5) {
 			set_servo_position(servo, current_position);
-			msleep(20);
+			msleep(15);
 		}
 	} else if (position == starting_position) {
 		return;

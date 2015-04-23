@@ -5,7 +5,7 @@
 int _ROBOT = -1;
 int _MODE = TOURNAMENT_MODE;
 int _ADJUST = TRUE;
-int _TOURNAMENT_SLEEP = 1000;
+int _TOURNAMENT_SLEEP = 500;
 
 void set_robot(int robot) {
 	_ROBOT = robot;

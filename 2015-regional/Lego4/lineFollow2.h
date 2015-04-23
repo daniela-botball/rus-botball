@@ -37,7 +37,7 @@
 // TUNE (choose) these by experimenting to see what works best.
 #define LINE_FOLLOWING_MAXIMUM_SPEED 80
 #define LINE_FOLLOWING_MINIMUM_SPEED 5
-#define LINE_FOLLOWING_NORMAL_SPEED 20
+#define LINE_FOLLOWING_NORMAL_SPEED 40 // worked with 20. Changed to 40 to speed up run
 #define LEFT_kP_FOR_FRP 0.5
 #define RIGHT_kP_FOR_FRP 0.5
 #define LEFT_kP_FOR_WIDE_TAPE 0.15
@@ -55,4 +55,5 @@ int ET_stop();
 int camera_stop();
 int camera_with_time_stop();
 int wall_opening_stop();
+int time_stop();
 #endif
