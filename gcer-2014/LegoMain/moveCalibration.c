@@ -32,33 +32,33 @@ void move_calibration(float distance, float speed, int direction) {
 			display_printf(0, 1, "new distance: %.2f cm", new_distance);
 			display_printf(0, 2, "press 'a' to continue");
 			msleep(100);
-			while (!a_button());
+			while (!a_button()) msleep(10);
 			msleep(500);
 			break;
 		}
 		if (b_button()) {
-			while (b_button());
+			while (b_button()) msleep(10);
 			msleep(500);
 			robot_drive_distance(SMALL_INCREMENT, CALIBRATION_SPEED, FORWARDS);
 			new_distance += SMALL_INCREMENT;
 			display_printf(0, 0, "distance: %.2f cm", new_distance);
 		}
 		if (c_button()) {
-			while (c_button());
+			while (c_button()) msleep(10);
 			msleep(500);
 			robot_drive_distance(LARGE_INCREMENT, CALIBRATION_SPEED, FORWARDS);
 			new_distance += LARGE_INCREMENT;
 			display_printf(0, 0, "distance: %.2f cm", new_distance);
 		}
 		if (y_button()) {
-			while (y_button());
+			while (y_button()) msleep(10);
 			msleep(500);
 			robot_drive_distance(SMALL_INCREMENT, CALIBRATION_SPEED, BACKWARDS);
 			new_distance -= SMALL_INCREMENT;
 			display_printf(0, 0, "distance: %.2f cm", new_distance);
 		}
 		if (z_button()) {
-			while (z_button());
+			while (z_button()) msleep(10);
 			msleep(500);
 			robot_drive_distance(LARGE_INCREMENT, CALIBRATION_SPEED, BACKWARDS);
 			new_distance -= LARGE_INCREMENT;

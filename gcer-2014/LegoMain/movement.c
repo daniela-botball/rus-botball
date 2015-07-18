@@ -19,6 +19,6 @@ void robot_spin_degrees(int degrees, int speed, int direction) {
 
 void drive_to_poms(int speed) {
 	lego_drive(speed, FORWARDS);
-	while (analog10(POM_S_TOPHAT) > SEEING_POMS_THRESHOLD);
+	while (analog10(POM_S_TOPHAT) > SEEING_POMS_THRESHOLD) msleep(30); 
 	lego_stop();
 }
